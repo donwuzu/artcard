@@ -30,6 +30,15 @@ return [
 
     'disks' => [
 
+
+        'public_html_disk' => [
+            'driver' => 'local',
+            'root' => public_path('storage/portraits'),
+            'url' => env('APP_URL') . '/storage/portraits',
+            'visibility' => 'public',
+        ],
+
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),

@@ -84,7 +84,7 @@
          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     @foreach($portraits as $portrait)
         <div class="bg-white p-4 rounded-2xl shadow relative">
-            <img src="{{ Storage::url($portrait->image_path) }}" class="w-full h-48 object-cover rounded-xl mb-2">
+           <img src="{{ url('storage/' . $portrait->image_path) }}"class="w-full h-48 object-cover rounded-xl mb-2">
             <h2 class="text-xl font-semibold">Portrait #{{ $portrait->id }}</h2>
             <p class="text-gray-600">Unit Price: KSh {{ number_format($portrait->price) }}</p>
             

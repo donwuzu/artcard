@@ -26,13 +26,14 @@ class PortraitController extends Controller
             'price' => 'required|numeric|min:0',
         ]);
 
-        $path = $request->file('portrait')->store('portraits', 'public');
+       $filename = uniqid().'.'.$request->file('portrait')->getClientOriginalExtension();
+       $request->file('portrait')->storeAs('', $filename, 'public_html_disk');
 
         Portrait::create([
-            
-            'image_path' => $path,
+            'image_path' => 'portraits/'.$filename,
             'price' => $request->price,
         ]);
+
 
         return redirect()->route('dashboard')->with('success', 'Portrait uploaded!');
     }
