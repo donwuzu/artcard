@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Log;
+
+
 
 
 class PortraitController extends Controller
@@ -20,52 +23,56 @@ class PortraitController extends Controller
     }
 
 
-    public function store(Request $request)
-        {
-            $request->validate([
-                'portrait' => 'required|array',
-                'portrait.*' => 'required|image|max:30720',
-                'price' => 'required|numeric|min:0',
-            ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'portrait' => 'required|array',
+        'portrait.*' => 'required|image|max:30720',
+        'price' => 'required|numeric|min:0',
+    ]);
 
-            foreach ($request->file('portrait') as $file) {
-                $mime = $file->getMimeType();
-                $filename = uniqid() . '.jpg';
+    foreach ($request->file('portrait') as $file) {
+        $mime = $file->getMimeType();
+        $extension = match (true) {
+            str_contains($mime, 'jpeg') => 'jpg',
+            str_contains($mime, 'png')  => 'jpg', // convert PNG to JPEG
+            str_contains($mime, 'webp') => 'jpg', // convert to JPEG for universal support
+            default => abort(415, 'Unsupported image type.'),
+        };
 
-                // Load the image using native PHP
-                $src = match (true) {
-                    str_contains($mime, 'jpeg') => imagecreatefromjpeg($file->getPathname()),
-                    str_contains($mime, 'png')  => imagecreatefrompng($file->getPathname()),
-                    str_contains($mime, 'webp') => imagecreatefromwebp($file->getPathname()),
-                    default => abort(415, 'Unsupported image type.'),
-                };
+        $filename = uniqid() . '.' . $extension;
 
-                // Resize to 1200px width (keep aspect ratio)
-                $originalWidth = imagesx($src);
-                $originalHeight = imagesy($src);
-                $newWidth = 1200;
-                $newHeight = intval(($newWidth / $originalWidth) * $originalHeight);
+        // Load original image
+        $src = match ($extension) {
+            'jpg' => imagecreatefromstring(file_get_contents($file->getPathname())),
+        };
 
-                $resized = imagecreatetruecolor($newWidth, $newHeight);
-                imagecopyresampled($resized, $src, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+        // Resize (max width 1200)
+        $originalWidth = imagesx($src);
+        $originalHeight = imagesy($src);
+        $newWidth = 1200;
+        $newHeight = intval(($newWidth / $originalWidth) * $originalHeight);
 
-                // Save resized image to final path
-                $savePath = '/home1/artcardc/public_html/storage/portraits/' . $filename;
-                imagejpeg($resized, $savePath, 75);
+        $resized = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($resized, $src, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
 
-                // Clean up
-                imagedestroy($src);
-                imagedestroy($resized);
+        // Final save path (publicly accessible)
+        $savePath = '/home1/artcardc/public_html/storage/portraits/' . $filename;
+        imagejpeg($resized, $savePath, 75);
 
-                // Save DB record
-                Portrait::create([
-                    'image_path' => 'storage/portraits/' . $filename,
-                    'price' => $request->price,
-                ]);
-            }
+        // Clean up memory
+        imagedestroy($src);
+        imagedestroy($resized);
 
-            return redirect()->route('dashboard')->with('success', 'Portraits uploaded!');
-        }
+        // Save to database
+        Portrait::create([
+            'image_path' => 'storage/portraits/' . $filename,
+            'price' => $request->price,
+        ]);
+    }
+
+    return redirect()->route('dashboard')->with('success', 'Portraits uploaded successfully!');
+}
 
 
  public function update(Request $request, Portrait $portrait)
