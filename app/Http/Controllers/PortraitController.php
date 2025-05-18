@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 
 
+
 class PortraitController extends Controller
 {
     public function index()
@@ -19,24 +20,53 @@ class PortraitController extends Controller
         return view('dashboard', compact('portraits'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'portrait' => 'required|image|max:30720',
-            'price' => 'required|numeric|min:0',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'portrait' => 'required|image|max:30720',
+        'price' => 'required|numeric|min:0',
+    ]);
 
-       $filename = uniqid().'.'.$request->file('portrait')->getClientOriginalExtension();
-       $request->file('portrait')->storeAs('', $filename, 'public_html_disk');
+    $file = $request->file('portrait');
+    $mime = $file->getMimeType();
 
-        Portrait::create([
-            'image_path' => 'portraits/'.$filename,
-            'price' => $request->price,
-        ]);
+    // Generate unique filename
+    $filename = uniqid() . '.jpg'; // or .webp
 
+    // Load the image using native PHP
+    $src = match (true) {
+        str_contains($mime, 'jpeg') => imagecreatefromjpeg($file->getPathname()),
+        str_contains($mime, 'png')  => imagecreatefrompng($file->getPathname()),
+        str_contains($mime, 'webp') => imagecreatefromwebp($file->getPathname()),
+        default => abort(415, 'Unsupported image type.'),
+    };
 
-        return redirect()->route('dashboard')->with('success', 'Portrait uploaded!');
-    }
+    // Resize to 1200px width (keep aspect ratio)
+    $originalWidth = imagesx($src);
+    $originalHeight = imagesy($src);
+    $newWidth = 1200;
+    $newHeight = intval(($newWidth / $originalWidth) * $originalHeight);
+
+    $resized = imagecreatetruecolor($newWidth, $newHeight);
+    imagecopyresampled($resized, $src, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+
+    // Save resized image to final path
+    $savePath = public_path('storage/portraits/' . $filename);
+    imagejpeg($resized, $savePath, 75); // Save as JPEG (75% quality)
+
+    // Clean up memory
+    imagedestroy($src);
+    imagedestroy($resized);
+
+    // Save DB entry
+    Portrait::create([
+        'image_path' => 'portraits/' . $filename,
+        'price' => $request->price,
+    ]);
+
+    return redirect()->route('dashboard')->with('success', 'Portrait uploaded!');
+}
+
 
  public function update(Request $request, Portrait $portrait)
     {
