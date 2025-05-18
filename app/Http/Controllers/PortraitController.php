@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Storage;
 
 
 
-
 class PortraitController extends Controller
 {
     public function index()
@@ -20,7 +19,7 @@ class PortraitController extends Controller
         return view('dashboard', compact('portraits'));
     }
 
-public function store(Request $request)
+ public function store(Request $request)
 {
     $request->validate([
         'portrait' => 'required|image|max:30720',
@@ -51,7 +50,7 @@ public function store(Request $request)
     imagecopyresampled($resized, $src, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
 
     // Save resized image to final path
-    $savePath = public_path('storage/portraits/' . $filename);
+    $savePath = '/home1/artcardc/public_html/storage/portraits/' . $filename;
     imagejpeg($resized, $savePath, 75); // Save as JPEG (75% quality)
 
     // Clean up memory
@@ -66,7 +65,6 @@ public function store(Request $request)
 
     return redirect()->route('dashboard')->with('success', 'Portrait uploaded!');
 }
-
 
  public function update(Request $request, Portrait $portrait)
     {
