@@ -7,7 +7,13 @@ use Illuminate\Http\Request;
 use App\Models\Portrait;
 use Illuminate\Support\Facades\Auth;
 
+
+
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
+
+
+
 
 
 
@@ -19,24 +25,36 @@ class PortraitController extends Controller
         return view('dashboard', compact('portraits'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'portrait' => 'required|image|max:2048',
-            'price' => 'required|numeric|min:0',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'portrait' => 'required|image|max:30720', // up to 30MB
+        'price' => 'required|numeric|min:0',
+    ]);
 
-       $filename = uniqid().'.'.$request->file('portrait')->getClientOriginalExtension();
-       $request->file('portrait')->storeAs('', $filename, 'public_html_disk');
+    $file = $request->file('portrait');
+    $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
-        Portrait::create([
-            'image_path' => 'portraits/'.$filename,
-            'price' => $request->price,
-        ]);
+    // Resize + compress image using Intervention
+    $image = Image::make($file)
+        ->resize(1200, null, function ($constraint) {
+            $constraint->aspectRatio();    // maintain aspect
+            $constraint->upsize();         // no upscaling
+        })
+        ->encode($file->getClientOriginalExtension(), 75); // 75% quality
+
+    // Save to public_html storage
+    Storage::disk('public_html_disk')->put($filename, $image);
+
+    Portrait::create([
+        'image_path' => 'portraits/' . $filename,
+        'price' => $request->price,
+    ]);
+
+    return redirect()->route('dashboard')->with('success', 'Portrait uploaded!');
+}
 
 
-        return redirect()->route('dashboard')->with('success', 'Portrait uploaded!');
-    }
 
  public function update(Request $request, Portrait $portrait)
     {

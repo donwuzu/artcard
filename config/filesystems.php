@@ -33,7 +33,7 @@ return [
 
         'public_html_disk' => [
             'driver' => 'local',
-            'root' => public_path('storage/portraits'),
+            'root' => '/home1/artcardc/public_html/storage/portraits',
             'url' => env('APP_URL') . '/storage/portraits',
             'visibility' => 'public',
         ],
