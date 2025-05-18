@@ -36,14 +36,15 @@
             <form method="POST" action="{{ route('portraits.store') }}" enctype="multipart/form-data" class="bg-white shadow p-6 rounded-xl space-y-6">
                 @csrf
             
-                <div x-data="{ previewUrl: null }" class="space-y-2">
+              <div x-data="{ previewUrl: [] }" class="space-y-2">
+
                     <label for="portrait" class="block text-sm font-medium text-gray-700 mb-2">Upload Portrait</label>
                     <div class="flex items-center justify-center w-full">
                        <label for="portrait" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100">
     <div class="flex flex-col items-center justify-center pt-5 pb-6">
-        <template x-if="previewUrl">
-            <img :src="previewUrl" class="h-40 w-40 object-cover rounded shadow border border-gray-300">
-        </template>
+                <template x-for="src in previewUrl" :key="src">
+                <img :src="src" class="h-40 w-40 object-cover rounded shadow border border-gray-300 mr-2">
+            </template>
         <template x-if="!previewUrl">
             <div>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-9 mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,8 +58,9 @@
             </div>
         </template>
     </div>
-    <input id="portrait" name="portrait" type="file" class="hidden" required
-           @change="const file = $event.target.files[0]; if (file) previewUrl = URL.createObjectURL(file);" />
+    <input id="portrait" name="portrait[]" type="file" multiple required
+       @change="previewUrl = Array.from($event.target.files).map(f => URL.createObjectURL(f));" />
+
 </label>
 
                     </div>

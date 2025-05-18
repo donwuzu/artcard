@@ -67,7 +67,7 @@
                  class="cursor-pointer w-full h-40 sm:h-48 object-cover">
             
             <div class="p-3">
-                <h3 class="font-medium text-sm truncate">Portrait #{{ $portrait->id }}</h3>
+               
                 <p class="text-xs text-gray-600 mb-2">
                     Price: <span class="unit-price-display font-medium">KSh 250</span>
                 </p>
