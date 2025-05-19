@@ -40,46 +40,167 @@
     <h2 class="text-xl font-bold text-gray-800">Portrait Gallery</h2>
 
         <div class="flex space-x-2">
+
+
+                        <button id="carouselViewBtn" class="p-2 bg-green-100 rounded-lg text-green-700">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8v3h2v-3l4 8z" clip-rule="evenodd" />
+                             </svg>
+                        </button>
+
                         <button id="gridViewBtn" class="p-2 bg-green-600 rounded-lg text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                             </svg>
                         </button>
-                        <button id="carouselViewBtn" class="p-2 bg-green-100 rounded-lg text-green-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8v3h2v-3l4 8z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
+                      
          </div>
 </div>
 
-<!-- Grid View -->
-<div id="gridView" class=" px-4">
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+
+
+
+<div id="gridView" class="hidden px-4 py-6">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         @foreach ($portraits as $portrait)
-        <div class="portrait-card bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-[1.02]"
+        <div class="portrait-card group flex flex-col bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1 h-full"
+             data-id="{{ $portrait->id }}"
+             data-price="{{ $portrait->price }}"  {{-- Assuming this is the raw price for JS calculations --}}
+             data-name="Portrait #{{ $portrait->id }}">
+
+            <div class="relative flex-shrink-0">
+                <img src="{{ Storage::url($portrait->image_path) }}"
+                     alt="Portrait #{{ $portrait->id }}"
+                     onclick="openModal(this.src)"
+                     class="cursor-pointer w-full h-56 sm:h-64 object-cover transition-transform duration-300 group-hover:scale-105">
+                {{-- Optional: Add an overlay on hover if desired --}}
+                {{-- <div class="absolute inset-0 bg-black bg-opacity-25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span class="text-white text-lg font-semibold">View</span>
+                </div> --}}
+            </div>
+
+            <div class="p-4 flex flex-col flex-grow">
+                {{-- Portrait Name/ID (Optional but good for context) --}}
+                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="Portrait #{{ $portrait->id }}">
+                    Portrait #{{ $portrait->id }}
+                </h3>
+
+                {{-- Price Display --}}
+                <p class="text-sm text-gray-700 mb-3">
+                    Price: <span class="unit-price-display font-bold text-indigo-600">KSh 250</span> {{-- Or use {{ $portrait->formatted_price }} if available --}}
+                </p>
+
+                {{-- Spacer to push subsequent content to bottom --}}
+                <div class="flex-grow"></div>
+
+                {{-- Quantity Controls --}}
+                <div class="flex items-center justify-between mb-3">
+                    <button
+                        onclick="updateQuantity(this, -1, true)"
+                        aria-label="Decrease quantity for Portrait #{{ $portrait->id }}"
+                        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <input
+                        type="number"
+                        name="quantities[{{ $portrait->id }}]"
+                        min="0"
+                        value="0"
+                        aria-label="Quantity for Portrait #{{ $portrait->id }}"
+                        class="quantity-input text-center w-16 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-1.5 text-sm mx-2">
+                    <button
+                        onclick="updateQuantity(this, 1, true)"
+                        aria-label="Increase quantity for Portrait #{{ $portrait->id }}"
+                        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Subtotal Display --}}
+                <p class="text-green-700 text-sm font-semibold text-right">
+                    Subtotal: <span class="subtotal">KSh 0</span>
+                </p>
+
+                {{-- Optional: Add to Cart Button (if applicable) --}}
+                {{-- <button class="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 text-sm font-medium">
+                    Add to Cart
+                </button> --}}
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+
+
+
+
+
+<!-- Updated Carousel View -->
+<div id="carouselView" class=" relative overflow-hidden px-4 py-6">
+    <button onclick="scrollCarousel(-1)"
+            aria-label="Previous portrait"
+            class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white shadow rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-400">
+        ‹
+    </button>
+
+    <div id="portraitCarousel" class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 scroll-smooth hide-scrollbar">
+        @foreach ($portraits as $portrait)
+        <div class="portrait-card group flex flex-col flex-shrink-0 snap-center bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1"
+             style="width: auto; max-width: 100%;"
              data-id="{{ $portrait->id }}"
              data-price="{{ $portrait->price }}"
              data-name="Portrait #{{ $portrait->id }}">
-            
-            <img src="{{ Storage::url($portrait->image_path) }}"
-                 onclick="openModal(this.src)"
-                 class="cursor-pointer w-full h-40 sm:h-48 object-cover">
-            
-            <div class="p-3">
-               
-                <p class="text-xs text-gray-600 mb-2">
-                    Price: <span class="unit-price-display font-medium">KSh 250</span>
+
+            <div class="relative flex-shrink-0">
+                <img src="{{ Storage::url($portrait->image_path) }}"
+                     alt="Portrait #{{ $portrait->id }}"
+                     onclick="openModal(this.src)"
+                     class="cursor-pointer w-full object-contain rounded-xl mb-4 shadow transition-transform duration-300 group-hover:scale-105"
+                     style="max-height: 420px; height: auto;">
+            </div>
+
+            <div class="p-4 flex flex-col flex-grow">
+                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="Portrait #{{ $portrait->id }}">
+                    Portrait #{{ $portrait->id }}
+                </h3>
+
+                <p class="text-sm text-gray-700 mb-3">
+                    Price: <span class="unit-price-display font-bold text-indigo-600">KSh 250</span>
                 </p>
-                
-                <div class="flex items-center justify-between mb-2">
-                    <button onclick="updateQuantity(this, -1, true)" class="px-2 py-1 bg-gray-100 rounded text-sm">-</button>
-                    <input type="number" name="quantities[{{ $portrait->id }}]" min="0" value="0" 
-                           class="quantity-input text-center w-12 border rounded px-1 py-1 text-sm">
-                    <button onclick="updateQuantity(this, 1, true)" class="px-2 py-1 bg-gray-100 rounded text-sm">+</button>
+
+                <div class="flex-grow"></div>
+
+                <div class="flex items-center justify-between mb-3">
+                    <button
+                        onclick="updateQuantity(this, -1)"
+                        aria-label="Decrease quantity for Portrait #{{ $portrait->id }}"
+                        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <input
+                        type="number"
+                        name="quantities_carousel[{{ $portrait->id }}]"
+                        min="0"
+                        value="0"
+                        aria-label="Quantity for Portrait #{{ $portrait->id }}"
+                        class="quantity-input text-center w-16 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-1.5 text-sm mx-2">
+                    <button
+                        onclick="updateQuantity(this, 1)"
+                        aria-label="Increase quantity for Portrait #{{ $portrait->id }}"
+                        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
-                
-                <p class="text-green-700 text-xs font-medium">
+
+                <p class="text-green-700 text-sm font-semibold text-right">
                     Subtotal: <span class="subtotal">KSh 0</span>
                 </p>
             </div>
@@ -87,53 +208,24 @@
         @endforeach
     </div>
 
-   
-
-
-</div>
-
-<!-- Carousel View (Hidden by default) -->
-<div id="carouselView" class="hidden relative overflow-hidden px-4">
-    <button onclick="scrollCarousel(-1)" 
-            class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white shadow rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-green-600 transition">
-        ‹
-    </button>
-
-    <div id="portraitCarousel" class="flex overflow-x-auto snap-x snap-mandatory space-x-4 sm:space-x-6 pb-6 scroll-smooth hide-scrollbar">
-        @foreach ($portraits as $portrait)
-        <div class="portrait-card min-w-[70vw] sm:min-w-[45vw] md:min-w-[30vw] lg:min-w-[25vw] xl:min-w-[20vw] flex-shrink-0 snap-center bg-white p-4 rounded-xl shadow-lg transition-transform transform hover:scale-[1.02]"
-             data-id="{{ $portrait->id }}"
-             data-price="{{ $portrait->price }}"
-             data-name="Portrait #{{ $portrait->id }}">
-            
-            <img src="{{ Storage::url($portrait->image_path) }}"
-                 onclick="openModal(this.src)"
-                 class="cursor-pointer w-full h-48 sm:h-56 md:h-64 object-cover rounded-lg mb-3">
-            
-            <h2 class="text-lg font-semibold mb-1 truncate">Portrait #{{ $portrait->id }}</h2>
-            <p class="text-gray-600 text-sm mb-2">
-                Unit Price: <span class="unit-price-display font-medium">KSh 250</span>
-            </p>
-            
-            <div class="flex items-center justify-center space-x-2 mb-3">
-                <button onclick="updateQuantity(this, -1)" class="px-2 sm:px-3 py-1 bg-gray-100 rounded text-sm sm:text-base">-</button>
-                <input type="number" name="quantities[{{ $portrait->id }}]" min="0" value="0" 
-                       class="quantity-input text-center w-12 sm:w-16 border rounded px-1 sm:px-2 py-1 text-sm">
-                <button onclick="updateQuantity(this, 1)" class="px-2 sm:px-3 py-1 bg-gray-100 rounded text-sm sm:text-base">+</button>
-            </div>
-            
-            <p class="text-green-700 font-medium text-sm">
-                Subtotal: <span class="subtotal">KSh 0</span>
-            </p>
-        </div>
-        @endforeach
-    </div>
-
-    <button onclick="scrollCarousel(1)" 
-            class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white shadow rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-green-600 transition">
+    <button onclick="scrollCarousel(1)"
+            aria-label="Next portrait"
+            class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white shadow rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-400">
         ›
     </button>
 </div>
+
+<!-- Shared Styles -->
+<style>
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .snap-x { scroll-snap-type: x mandatory; }
+    .snap-center { scroll-snap-align: center; }
+</style>
+
+
+
+
 
 
 
@@ -459,15 +551,36 @@ function showSuccessBanner() {
 
 
 <script>
-    // Toggle between grid and carousel views
-    document.getElementById('gridViewBtn').addEventListener('click', function() {
-        document.getElementById('gridView').classList.remove('hidden');
-        document.getElementById('carouselView').classList.add('hidden');
-        this.classList.add('bg-green-600', 'text-white');
-        this.classList.remove('bg-green-100', 'text-green-700');
-        document.getElementById('carouselViewBtn').classList.add('bg-green-100', 'text-green-700');
-        document.getElementById('carouselViewBtn').classList.remove('bg-green-600', 'text-white');
-    });
+   // Set initial state - Carousel visible & active, Grid hidden & inactive
+document.getElementById('gridView').classList.add('hidden');
+document.getElementById('carouselView').classList.remove('hidden');
+
+// Set Carousel button as active (green-600, white text)
+document.getElementById('carouselViewBtn').classList.add('bg-green-600', 'text-white');
+document.getElementById('carouselViewBtn').classList.remove('bg-green-100', 'text-green-700');
+
+// Set Grid button as inactive (green-100, green text)
+document.getElementById('gridViewBtn').classList.add('bg-green-100', 'text-green-700');
+document.getElementById('gridViewBtn').classList.remove('bg-green-600', 'text-white');
+
+// Toggle between views (unchanged)
+document.getElementById('gridViewBtn').addEventListener('click', function() {
+    document.getElementById('gridView').classList.remove('hidden');
+    document.getElementById('carouselView').classList.add('hidden');
+    this.classList.add('bg-green-600', 'text-white');
+    this.classList.remove('bg-green-100', 'text-green-700');
+    document.getElementById('carouselViewBtn').classList.add('bg-green-100', 'text-green-700');
+    document.getElementById('carouselViewBtn').classList.remove('bg-green-600', 'text-white');
+});
+
+document.getElementById('carouselViewBtn').addEventListener('click', function() {
+    document.getElementById('carouselView').classList.remove('hidden');
+    document.getElementById('gridView').classList.add('hidden');
+    this.classList.add('bg-green-600', 'text-white');
+    this.classList.remove('bg-green-100', 'text-green-700');
+    document.getElementById('gridViewBtn').classList.add('bg-green-100', 'text-green-700');
+    document.getElementById('gridViewBtn').classList.remove('bg-green-600', 'text-white');
+});
     
     document.getElementById('carouselViewBtn').addEventListener('click', function() {
         document.getElementById('carouselView').classList.remove('hidden');
