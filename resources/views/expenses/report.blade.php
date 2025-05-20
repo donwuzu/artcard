@@ -18,68 +18,67 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Expenses') }}
+            {{ __('Reports') }}
         </h2>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white p-6 rounded-xl shadow">
-                <h1 class="text-2xl font-bold mb-6">Expense Manager</h1>
+                <h1 class="text-2xl font-bold mb-6">Reports</h1>
 
-           <form method="GET" action="{{ route('expenses.index') }}" class="mb-6 flex flex-col sm:flex-row sm:flex-wrap gap-4 items-start sm:items-center">
-   
-      <div class="flex flex-col sm:flex-row sm:justify-between gap-6">
-    <div class="flex flex-col gap-4 w-full sm:w-1/2">
-            <label for="search" class="text-sm font-medium">Search by name/phone</label>
-            <input id="search" type="text" name="search" value="{{ request('search') }}" placeholder="Search by name/phone" class="px-4 py-2 rounded border w-full">
+        <form method="GET" action="{{ route('expenses.report') }}" class="mb-6 flex flex-col sm:flex-row sm:flex-wrap gap-4 items-start sm:items-center">
+    <div class="flex flex-col sm:flex-row sm:justify-between gap-6">
+       
+
+        <div class="flex flex-col gap-4 w-60 sm:w-1/2">
+            <label for="from_date" class="text-sm font-medium">From Date</label>
+            <input id="from_date" type="date" name="from_date" value="{{ request('from_date') }}" class="px-4 py-2 rounded border w-full">
+
+            <label for="to_date" class="text-sm font-medium">To Date</label>
+            <input id="to_date" type="date" name="to_date" value="{{ request('to_date') }}" class="px-4 py-2 rounded border w-full">
 
             <div class="flex gap-4">
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full">
-                    Search
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-60">
+                    Filter
                 </button>
+                <a href="{{ route('expenses.report') }}" class="bg-gray-300 text-gray-800 px-4 py-2 rounded w-full text-center">
+                    Reset
+                </a>
             </div>
         </div>
+    </div>
 
-
-
-      </div>
-
-   
-
-
-
-   <div class="flex gap-2 flex-wrap w-full sm:w-auto sm:flex-nowrap">
-     <a href="{{ route('expenses.index') }}"
-       class="px-4 py-2 rounded text-center {{ !request('status') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
-        ALL
-    </a>
-   
-    <a href="{{ route('expenses.index', ['status' => 'paid', 'search' => request('search')]) }}"
-       class="px-4 py-2 rounded text-center {{ request('status') === 'paid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
-        Paid
-    </a>
-    <a href="{{ route('expenses.index', ['status' => 'unpaid', 'search' => request('search')]) }}"
-       class="px-4 py-2 rounded text-center {{ request('status') === 'unpaid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
-        Unpaid
-    </a>
-   
-</div>
-
-
-
-
-
+    <div class="flex gap-2 flex-wrap w-full sm:w-auto sm:flex-nowrap mt-4">
+       <a href="{{ route('expenses.report') }}"
+           class="px-4 py-2 rounded text-center {{ !request('status') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
+            ALL
+        </a>
+      
+        <a href="{{ route('expenses.report', ['status' => 'paid', 'search' => request('search')]) }}"
+           class="px-4 py-2 rounded text-center {{ request('status') === 'paid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
+            Paid
+        </a>
+        <a href="{{ route('expenses.report', ['status' => 'unpaid', 'search' => request('search')]) }}"
+           class="px-4 py-2 rounded text-center {{ request('status') === 'unpaid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
+            Unpaid
+        </a>
+       
+    </div>
 </form>
 
 
              <div class="flex flex-col sm:flex-row justify-end gap-4 mb-4 text-right">
-    <div class="text-red-600 font-semibold">
-        Total Unpaid: KSh {{ number_format($unpaidTotal) }}
-    </div>
-    <div class="text-green-700 font-semibold">
+   
+    <div class="text-green-700 font-extrabold">
         Total Paid: KSh {{ number_format($paidTotal) }}
     </div>
+   
+   
+    <div class="text-red-600 font-extrabold">
+        Total Unpaid: KSh {{ number_format($unpaidTotal) }}
+    </div>
+   
 </div>
 
 
@@ -157,7 +156,6 @@
         </tbody>
     </table>
 </div>
-
 
 
   

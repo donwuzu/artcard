@@ -32,6 +32,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
     Route::post('/expenses/{order}/toggle', [ExpenseController::class, 'toggleStatus'])->name('expenses.toggleStatus');
 
+    Route::get('/reports', [ExpenseController::class, 'report'])->name('expenses.report');
+    Route::post('/reports/{order}/toggle', [ExpenseController::class, 'toggleStatusFromReport'])->name('expenses.toggleFromReport');
+
+    Route::delete('/expenses/{order}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
 
 
     // Profile routes
