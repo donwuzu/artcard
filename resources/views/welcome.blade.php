@@ -250,35 +250,44 @@
     </div>
 </div>
 
-        <!-- Pricing -->
-        <div class="mt-8 text-right space-y-2 px-4 mb-8">
-            <p class="text-lg text-gray-700">Delivery Fee: <span id="delivery-fee" class="text-green-700">KSh 0</span></p>
-            <p class="text-xl font-bold">Total: <span id="total" class="text-green-700">KSh 0</span></p>
-         <button type="button" onclick="showUserDetailsModal()" class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">Checkout</button>
+      <!-- Pricing & Checkout -->
+<div class="mt-8 text-right space-y-2 px-4 mb-8">
+    <p class="text-lg text-gray-700">Delivery Fee: <span id="delivery-fee" class="text-green-700">KSh 300</span></p>
+    <p class="text-xl font-bold">Total: <span id="total" class="text-green-700">KSh 0</span></p>
 
+    <!-- Trigger Modal -->
+    <button type="button" onclick="document.getElementById('user-details-modal').classList.remove('hidden')" class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">
+        Checkout
+    </button>
+</div>
+
+<!-- Detail Input Modal -->
+<div id="user-details-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="bg-white p-6 rounded-xl w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Enter Your Details</h2>
+
+        <div class="space-y-4">
+            <input type="text" name="name" form="order-form" placeholder="Full Name" class="w-full border rounded px-4 py-2" required>
+            <input type="text" name="phone" form="order-form" placeholder="Phone Number" class="w-full border rounded px-4 py-2" required>
+            <input type="text" name="location" form="order-form" placeholder="Location" class="w-full border rounded px-4 py-2" required>
         </div>
 
-      <!-- Detail Input Modal -->  
+        <div class="mt-4 flex justify-end space-x-2">
+            <button type="button" onclick="document.getElementById('user-details-modal').classList.add('hidden')" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
 
-            <div id="user-details-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
-                    <div class="bg-white p-6 rounded-xl w-full max-w-md">
-                        <h2 class="text-xl font-bold mb-4">Enter Your Details</h2>
-                        <div class="space-y-4">
-                            <input type="text" name="name" form="order-form" placeholder="Full Name" class="w-full border rounded px-4 py-2" required>
-                            <input type="text" name="phone" form="order-form" placeholder="Phone Number" class="w-full border rounded px-4 py-2" required>
-                            <input type="text" name="location" form="order-form" placeholder="Location" class="w-full border rounded px-4 py-2" required>
-                        </div>
-                        <div class="mt-4 flex justify-end space-x-2">
-                            <button type="button" onclick="document.getElementById('user-details-modal').classList.add('hidden')" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-                            <button type="submit" form="order-form" onclick="showSuccessBanner()" class="px-4 py-2 bg-green-600 text-white rounded">Submit</button>
-                        </div>
-                    </div>
-            </div>
-
-                <!-- Notification Banner -->
-        <div id="notification-banner" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-900 px-6 py-3 rounded shadow z-50 border border-green-300">
-        ✅ Portraits Submitted Successfully
+            <!-- ✅ Final Submit -->
+            <button type="submit" form="order-form" class="px-4 py-2 bg-green-600 text-white rounded">
+                Submit Order
+            </button>
         </div>
+    </div>
+</div>
+
+<!-- Notification Banner -->
+<div id="notification-banner" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-900 px-6 py-3 rounded shadow z-50 border border-green-300">
+    ✅ Portraits Submitted Successfully
+</div>
+
 
     </form> 
     
@@ -290,6 +299,15 @@
 
 
 <script>
+
+    document.querySelector('form#order-form').addEventListener('submit', function () {
+  // Optionally show banner
+  document.getElementById('notification-banner')?.classList.remove('hidden');
+});
+
+
+
+
     document.addEventListener("DOMContentLoaded", () => {
         window.showUserDetailsModal = function () {
             const inputs = document.querySelectorAll("input[name^='quantities']");
