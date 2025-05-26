@@ -6,7 +6,7 @@
 
     <div class="text-center mt-12">
         <h2 class="text-2xl font-semibold mb-4">ARTCARD COMPANY PORTRAITS</h2>
-        <p class="mb-6 text-gray-600">Explore our gallery and order custom portraits directly.</p>
+        <p class="mb-6 text-gray-600">Explore our gallery and order custom portraits directly via Whatsapp.</p>
     </div>
 
 
@@ -257,9 +257,11 @@
 
     <!-- Trigger Modal -->
     <button type="button" onclick="document.getElementById('user-details-modal').classList.remove('hidden')" class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">
-        Checkout
+        Order Via Whatsapp
     </button>
 </div>
+
+
 
 <!-- Detail Input Modal -->
 <div id="user-details-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">

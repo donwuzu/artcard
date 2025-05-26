@@ -10,6 +10,9 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+       
+        <!-- Whatsapp icon -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-pap+yFxaZ3Oc2JZ6JbFj7ghX0r6V+SgBoZk5Fe1KxZYO1czKwUmYDh3m8zTy2/81mIYFYYM2n6tq3R8O5T2XnA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
