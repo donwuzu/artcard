@@ -10,7 +10,7 @@ use App\Models\Portrait;
 use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
-    $portraits = Portrait::latest()->paginate(50); // Show 50 items per page
+    $portraits = Portrait::latest()->paginate(5); // Show 50 items per page
     return view('welcome', [
         'portraits' => $portraits,
         'showDiscountBanner' => true

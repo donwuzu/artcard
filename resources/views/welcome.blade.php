@@ -227,16 +227,10 @@
 
 
 
-
-
-
-
 <!-- Pagination Section -->
-<div class="mt-8 px-4 flex justify-center">
+<div class="mt-8 mb-8 px-4 flex justify-center">
     {{ $portraits->links() }}
 </div>
-
-
 
 
 
@@ -250,16 +244,77 @@
     </div>
 </div>
 
-      <!-- Pricing & Checkout -->
-<div class="mt-8 text-right space-y-2 px-4 mb-8">
-    <p class="text-lg text-gray-700">Delivery Fee: <span id="delivery-fee" class="text-green-700">KSh 300</span></p>
-    <p class="text-xl font-bold">Total: <span id="total" class="text-green-700">KSh 0</span></p>
 
-    <!-- Trigger Modal -->
-    <button type="button" onclick="document.getElementById('user-details-modal').classList.remove('hidden')" class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 font-semibold">
-        Order Via Whatsapp
-    </button>
+
+
+
+<div class="mt-6 px-4 mb-6 max-w-md w-full mx-auto space-y-4">
+
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-green-50/80 px-4 py-3 font-medium text-green-700 text-center text-sm border-b border-green-100/50">
+        Your Selected Portraits
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-[13px] text-gray-600">
+            <thead class="bg-gray-50/60 text-gray-500">
+                <tr class="[&>th]:font-medium [&>th]:py-2.5 [&>th]:align-middle [&>th]:px-2">
+                    <th class="text-left w-[45%] pl-4">Portrait</th>
+                    <th class="text-center w-[10%]">Qty</th>
+                    <th class="text-right w-[22%]">Price</th>
+                    <th class="text-right w-[23%] pr-4">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="checkout-summary-body" class="divide-y divide-gray-100/80">
+                <tr class="[&>td]:py-2.5 [&>td]:align-baseline [&>td]:px-2">
+                    <td class="pl-4">Sample Portrait Name</td>
+                    <td class="text-center">1</td>
+                    <td class="text-right">KSh 1,200</td>
+                    <td class="pr-4 text-right font-medium">KSh 1,200</td>
+                </tr>
+                <tr class="[&>td]:py-2.5 [&>td]:align-baseline [&>td]:px-2">
+                    <td class="pl-4">Another Portrait With A Longer Name To Test Responsiveness</td>
+                    <td class="text-center">2</td>
+                    <td class="text-right">KSh 900</td>
+                    <td class="pr-4 text-right font-medium">KSh 1,800</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="border-t border-gray-200 px-4 py-3 space-y-2">
+      <p class="flex justify-between items-center text-sm">
+          <span class="text-gray-600">Total Portraits:</span>
+          <span id="summary-portraits-total" class="font-medium text-gray-800">KSh 3,000</span>
+      </p>
+      <p class="flex justify-between items-center text-sm">
+          <span class="text-gray-600">Delivery Fee:</span>
+          <span id="delivery-fee" class="font-medium text-green-600">KSh 300</span>
+      </p>
+    </div>
 </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-3">
+       <p class="flex justify-between items-center text-base font-semibold">
+            <span class="text-gray-700">Grand Total:</span>
+            <span id="total" class="text-green-600 text-lg">KSh 3,300</span>
+        </p>
+    </div>
+
+    <div class="pt-1 text-center">
+        <button type="button"
+                onclick="document.getElementById('user-details-modal').classList.remove('hidden')"
+                class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium w-full max-w-[280px] mx-auto shadow-sm hover:shadow-md transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+            Order Via WhatsApp
+        </button>
+    </div>
+</div>
+
+
+
+
+
+
 
 
 
@@ -285,6 +340,9 @@
     </div>
 </div>
 
+
+
+
 <!-- Notification Banner -->
 <div id="notification-banner" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-900 px-6 py-3 rounded shadow z-50 border border-green-300">
     ✅ Portraits Submitted Successfully
@@ -292,169 +350,30 @@
 
 
     </form> 
+
+
+
+
     
     <div style="background-color: #f1f1f1; padding: 20px; text-align: center; font-size: 14px; color: #555;">
             &copy; <script>document.write(new Date().getFullYear())</script> ATCARD Company. All rights reserved.
     </div>
 
 
-
-
 <script>
+window.addEventListener('DOMContentLoaded', () => {
+    setupInitialViewToggle();
 
-    document.querySelector('form#order-form').addEventListener('submit', function () {
-  // Optionally show banner
-  document.getElementById('notification-banner')?.classList.remove('hidden');
-});
+    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
 
-
-
-
-    document.addEventListener("DOMContentLoaded", () => {
-        window.showUserDetailsModal = function () {
-            const inputs = document.querySelectorAll("input[name^='quantities']");
-            let totalSelected = 0;
-
-            inputs.forEach(input => {
-                const val = parseInt(input.value);
-                if (!isNaN(val)) totalSelected += val;
-            });
-
-         
-
-            const modal = document.getElementById('user-details-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.querySelector('input[name="name"]').focus();
-            }
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        const id = input.name.match(/\[(\d+)\]/)[1];
+        if (selections[id]) {
+            input.value = selections[id];
+            updateSubtotal(input.closest('.portrait-card'));
         }
     });
 
-    function scrollCarousel(direction) {
-        const carousel = document.getElementById('portraitCarousel');
-        const cardWidth = carousel.querySelector('div').offsetWidth + 24;
-        carousel.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
-    }
-
-    function openModal(src) {
-        document.getElementById('fullscreenImage').src = src;
-        document.getElementById('fullscreenModal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-        document.getElementById('fullscreenModal').classList.add('hidden');
-    }
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeModal();
-    });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    const deliveryFee = 300;
-    const tier1Price = 250; // Price if total units < 5
-    const tier2Price = 190; // Price if total units >= 5
-    const tierThreshold = 5; // Min units for Tier 2 price
-
-    const deliveryFeeSpan = document.getElementById('delivery-fee');
-    const totalSpan = document.getElementById('total');
-    const portraitContainer = document.getElementById('portraitContainer'); // Add this container in your HTML
-
-    // Function to handle +/- button clicks for both views
-    window.updateQuantity = function(button, change, isGrid = false) {
-        let input;
-        
-        if (isGrid) {
-            // For grid view, the structure is different
-            const buttonContainer = button.parentElement;
-            input = buttonContainer.querySelector('.quantity-input');
-        } else {
-            // For carousel view
-            input = (change > 0) 
-                ? button.previousElementSibling 
-                : button.nextElementSibling;
-        }
-
-        if (input && input.classList.contains('quantity-input')) {
-            let currentValue = parseInt(input.value) || 0;
-            let newValue = Math.max(0, currentValue + change);
-            input.value = newValue;
-            
-            // Trigger input event for calculation
-            const event = new Event('input', { bubbles: true });
-            input.dispatchEvent(event);
-        }
-    }
-
-    // Main calculation function
-    function calculateAndUpdateUI() {
-        let overallSubtotal = 0;
-        let totalUnits = 0;
-        
-        // Get all portrait cards from both views
-        const allCards = document.querySelectorAll('.portrait-card');
-
-        // First pass: Calculate total units
-        allCards.forEach(card => {
-            const quantityInput = card.querySelector('.quantity-input');
-            totalUnits += parseInt(quantityInput.value) || 0;
-        });
-
-        // Determine applicable unit price
-        const currentUnitPrice = (totalUnits >= tierThreshold && totalUnits > 0) ? tier2Price : tier1Price;
-        const displayUnitPrice = totalUnits === 0 ? tier1Price : currentUnitPrice;
-
-        // Second pass: Update each card
-        allCards.forEach(card => {
-            const quantityInput = card.querySelector('.quantity-input');
-            const quantity = parseInt(quantityInput.value) || 0;
-            const unitPriceSpan = card.querySelector('.unit-price-display');
-            const subtotalSpan = card.querySelector('.subtotal');
-
-            // Update displayed prices
-            unitPriceSpan.textContent = `KSh ${displayUnitPrice.toLocaleString()}`;
-            
-            // Calculate subtotal using the actual price tier
-            const cardSubtotal = quantity * currentUnitPrice;
-            subtotalSpan.textContent = `KSh ${cardSubtotal.toLocaleString()}`;
-            
-            overallSubtotal += cardSubtotal;
-        });
-
-        // Update summary
-        const currentDeliveryFee = (totalUnits > 0) ? deliveryFee : 0;
-        deliveryFeeSpan.textContent = `KSh ${currentDeliveryFee.toLocaleString()}`;
-        
-        const overallTotal = overallSubtotal + currentDeliveryFee;
-        totalSpan.textContent = `KSh ${overallTotal.toLocaleString()}`;
-    }
-
-    // Event delegation for both views
     document.addEventListener('input', function(event) {
         if (event.target.classList.contains('quantity-input')) {
             calculateAndUpdateUI();
@@ -463,49 +382,275 @@ document.addEventListener('DOMContentLoaded', function() {
 
     calculateAndUpdateUI();
 
-    
+    document.querySelector('form#order-form')?.addEventListener('submit', function () {
+        document.getElementById('notification-banner')?.classList.remove('hidden');
+    });
+
+    setupAjaxPagination();
 });
 
+function setupAjaxPagination() {
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetchPortraits(this.href);
+        });
+    });
+}
 
+function fetchPortraits(url) {
+    saveCurrentSelections();
 
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
 
+            const newCarousel = doc.getElementById('carouselView');
+            if (newCarousel) document.getElementById('carouselView').outerHTML = newCarousel.outerHTML;
 
+            const newGridView = doc.getElementById('gridView');
+            if (newGridView) document.getElementById('gridView').outerHTML = newGridView.outerHTML;
 
+            const newPagination = doc.querySelector('.pagination');
+            if (newPagination) document.querySelector('.pagination').outerHTML = newPagination.outerHTML;
 
+            const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                const id = input.name.match(/\[(\d+)\]/)[1];
+                if (selections[id]) {
+                    input.value = selections[id];
+                    updateSubtotal(input.closest('.portrait-card'));
+                }
+            });
 
+            setupInitialViewToggle();
+            calculateAndUpdateUI();
+            setupAjaxPagination();
+        });
+}
 
+function saveCurrentSelections() {
+    const selections = {};
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        const id = input.name.match(/\[(\d+)\]/)[1];
+        const value = parseInt(input.value) || 0;
+        if (value > 0) selections[id] = value;
+    });
+    localStorage.setItem('portraitSelections', JSON.stringify(selections));
+}
 
+function updateSubtotal(card) {
+    const quantityInput = card.querySelector('.quantity-input');
+    const quantity = parseInt(quantityInput.value) || 0;
+    const price = parseFloat(card.dataset.price) || 250;
+    const subtotal = quantity * price;
+    card.querySelector('.subtotal').textContent = `KSh ${subtotal.toLocaleString()}`;
+}
 
+function showUserDetailsModal() {
+    const inputs = document.querySelectorAll("input[name^='quantities']");
+    let totalSelected = 0;
+    inputs.forEach(input => totalSelected += parseInt(input.value) || 0);
+    const modal = document.getElementById('user-details-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.querySelector('input[name="name"]').focus();
+    }
+}
 
+function scrollCarousel(direction) {
+    const carousel = document.getElementById('portraitCarousel');
+    const scrollAmount = carousel.clientWidth * 0.8 * direction;
+    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+}
 
+function openModal(src) {
+    document.getElementById('fullscreenImage').src = src;
+    document.getElementById('fullscreenModal').classList.remove('hidden');
+}
 
+function closeModal() {
+    document.getElementById('fullscreenModal').classList.add('hidden');
+}
 
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+});
 
+function updateQuantity(button, change, isGrid = false) {
+    let input = isGrid ? 
+        button.parentElement.querySelector('.quantity-input') : 
+        (change > 0 ? button.previousElementSibling : button.nextElementSibling);
+    
+    if (!input || !input.classList.contains('quantity-input')) return;
 
+    let currentValue = parseInt(input.value) || 0;
+    let newValue = Math.max(0, currentValue + change);
+    input.value = newValue;
 
+    const event = new Event('input', { bubbles: true });
+    input.dispatchEvent(event);
 
+    const id = input.name.match(/\[(\d+)\]/)[1];
+    let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+    if (newValue > 0) selections[id] = newValue;
+    else delete selections[id];
+    localStorage.setItem('portraitSelections', JSON.stringify(selections));
 
+    updateSubtotal(input.closest('.portrait-card'));
+    calculateAndUpdateUI();
+}
 
+function calculateAndUpdateUI() {
+    const deliveryFee = 300;
+    const tier1Price = 250;
+    const tier2Price = 190;
+    const tierThreshold = 5;
 
+    const deliveryFeeSpan = document.getElementById('delivery-fee');
+    const totalSpan = document.getElementById('total');
 
+    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+    let totalUnits = Object.values(selections).reduce((sum, q) => sum + parseInt(q), 0);
+    const unitPrice = totalUnits >= tierThreshold ? tier2Price : tier1Price;
+
+    let overallSubtotal = 0;
+
+    for (const id in selections) {
+        const quantity = parseInt(selections[id]) || 0;
+        overallSubtotal += quantity * unitPrice;
+    }
+
+    document.querySelectorAll('.portrait-card').forEach(card => {
+        const quantityInput = card.querySelector('.quantity-input');
+        const id = card.dataset.id;
+        const quantity = selections[id] ? parseInt(selections[id]) : 0;
+
+        if (quantityInput) quantityInput.value = quantity;
+        card.querySelector('.unit-price-display').textContent = `KSh ${unitPrice.toLocaleString()}`;
+
+        const cardSubtotal = quantity * unitPrice;
+        card.querySelector('.subtotal').textContent = `KSh ${cardSubtotal.toLocaleString()}`;
+    });
+
+    const currentDeliveryFee = totalUnits > 0 ? deliveryFee : 0;
+    if (deliveryFeeSpan) deliveryFeeSpan.textContent = `KSh ${currentDeliveryFee.toLocaleString()}`;
+    if (totalSpan) totalSpan.textContent = `KSh ${(overallSubtotal + currentDeliveryFee).toLocaleString()}`;
+
+    renderSelectionTable();
+}
 
 
 function showSuccessBanner() {
     const banner = document.getElementById('notification-banner');
+    if (!banner) return;
+
     banner.classList.remove('hidden', 'opacity-0');
     banner.classList.add('opacity-100', 'transition-opacity', 'duration-500');
-
     setTimeout(() => {
         banner.classList.remove('opacity-100');
         banner.classList.add('opacity-0');
         setTimeout(() => banner.classList.add('hidden'), 500);
-    }, 5000); // visible for 5 seconds
+    }, 5000);
+}
+
+function setupInitialViewToggle() {
+    const gridView = document.getElementById('gridView');
+    const carouselView = document.getElementById('carouselView');
+    const carouselBtn = document.getElementById('carouselViewBtn');
+    const gridBtn = document.getElementById('gridViewBtn');
+
+    if (!gridView || !carouselView || !carouselBtn || !gridBtn) return;
+
+    gridView.classList.add('hidden');
+    carouselView.classList.remove('hidden');
+    carouselBtn.classList.add('bg-green-600', 'text-white');
+    carouselBtn.classList.remove('bg-green-100', 'text-green-700');
+    gridBtn.classList.add('bg-green-100', 'text-green-700');
+    gridBtn.classList.remove('bg-green-600', 'text-white');
+
+    gridBtn.addEventListener('click', () => {
+        gridView.classList.remove('hidden');
+        carouselView.classList.add('hidden');
+        gridBtn.classList.add('bg-green-600', 'text-white');
+        gridBtn.classList.remove('bg-green-100', 'text-green-700');
+        carouselBtn.classList.add('bg-green-100', 'text-green-700');
+        carouselBtn.classList.remove('bg-green-600', 'text-white');
+    });
+
+    carouselBtn.addEventListener('click', () => {
+        carouselView.classList.remove('hidden');
+        gridView.classList.add('hidden');
+        carouselBtn.classList.add('bg-green-600', 'text-white');
+        carouselBtn.classList.remove('bg-green-100', 'text-green-700');
+        gridBtn.classList.add('bg-green-100', 'text-green-700');
+        gridBtn.classList.remove('bg-green-600', 'text-white');
+    });
+}
 
 
+
+function renderSelectionTable() {
+    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+    const tbody = document.getElementById('checkout-summary-body');
+    const portraitTotal = document.getElementById('summary-portraits-total');
+    if (!tbody || !portraitTotal) return;
+    tbody.innerHTML = '';
+
+    let totalUnits = 0;
+    let totalCost = 0;
+    const totalQty = Object.values(selections).reduce((sum, q) => sum + parseInt(q), 0);
+    const unitPrice = totalQty >= 5 ? 190 : 250;
+
+    for (const id in selections) {
+        const quantity = parseInt(selections[id]);
+        totalUnits += quantity;
+        const name = `Portrait #${id}`;
+        const subtotal = quantity * unitPrice;
+        totalCost += subtotal;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="px-3 py-1.5">${name}</td>
+            <td class="px-2 py-1.5 text-right">${quantity}</td>
+            <td class="px-2 py-1.5 text-right">KSh ${unitPrice}</td>
+            <td class="px-2 py-1.5 text-right">KSh ${subtotal.toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
     }
 
-</script>
+    portraitTotal.textContent = `KSh ${totalCost.toLocaleString()}`;
+}
 
+
+// Hook into quantity change
+function updateQuantity(button, change, isGrid = false) {
+    let input = isGrid ? 
+        button.parentElement.querySelector('.quantity-input') : 
+        (change > 0 ? button.previousElementSibling : button.nextElementSibling);
+
+    if (!input || !input.classList.contains('quantity-input')) return;
+
+    let currentValue = parseInt(input.value) || 0;
+    let newValue = Math.max(0, currentValue + change);
+    input.value = newValue;
+
+    const event = new Event('input', { bubbles: true });
+    input.dispatchEvent(event);
+
+    const id = input.name.match(/\[(\d+)\]/)[1];
+    let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+    if (newValue > 0) selections[id] = newValue;
+    else delete selections[id];
+    localStorage.setItem('portraitSelections', JSON.stringify(selections));
+
+    updateSubtotal(input.closest('.portrait-card'));
+    calculateAndUpdateUI();
+    renderSelectionTable();
+}
+</script>
 
     
     
@@ -568,61 +713,6 @@ function showSuccessBanner() {
 }
 </style>
 
-
-
-<script>
-   // Set initial state - Carousel visible & active, Grid hidden & inactive
-document.getElementById('gridView').classList.add('hidden');
-document.getElementById('carouselView').classList.remove('hidden');
-
-// Set Carousel button as active (green-600, white text)
-document.getElementById('carouselViewBtn').classList.add('bg-green-600', 'text-white');
-document.getElementById('carouselViewBtn').classList.remove('bg-green-100', 'text-green-700');
-
-// Set Grid button as inactive (green-100, green text)
-document.getElementById('gridViewBtn').classList.add('bg-green-100', 'text-green-700');
-document.getElementById('gridViewBtn').classList.remove('bg-green-600', 'text-white');
-
-// Toggle between views (unchanged)
-document.getElementById('gridViewBtn').addEventListener('click', function() {
-    document.getElementById('gridView').classList.remove('hidden');
-    document.getElementById('carouselView').classList.add('hidden');
-    this.classList.add('bg-green-600', 'text-white');
-    this.classList.remove('bg-green-100', 'text-green-700');
-    document.getElementById('carouselViewBtn').classList.add('bg-green-100', 'text-green-700');
-    document.getElementById('carouselViewBtn').classList.remove('bg-green-600', 'text-white');
-});
-
-document.getElementById('carouselViewBtn').addEventListener('click', function() {
-    document.getElementById('carouselView').classList.remove('hidden');
-    document.getElementById('gridView').classList.add('hidden');
-    this.classList.add('bg-green-600', 'text-white');
-    this.classList.remove('bg-green-100', 'text-green-700');
-    document.getElementById('gridViewBtn').classList.add('bg-green-100', 'text-green-700');
-    document.getElementById('gridViewBtn').classList.remove('bg-green-600', 'text-white');
-});
-    
-    document.getElementById('carouselViewBtn').addEventListener('click', function() {
-        document.getElementById('carouselView').classList.remove('hidden');
-        document.getElementById('gridView').classList.add('hidden');
-        this.classList.add('bg-green-600', 'text-white');
-        this.classList.remove('bg-green-100', 'text-green-700');
-        document.getElementById('gridViewBtn').classList.add('bg-green-100', 'text-green-700');
-        document.getElementById('gridViewBtn').classList.remove('bg-green-600', 'text-white');
-    });
-
-    // Carousel navigation
-    function scrollCarousel(direction) {
-        const carousel = document.getElementById('portraitCarousel');
-        const scrollAmount = carousel.clientWidth * 0.8 * direction;
-        carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-    
-    // Quantity update function (you'll need to adapt your existing function)
-    function updateQuantity(button, change, isGrid = false) {
-        // Your existing quantity update logic here
-    }
-</script>
 
 
 
