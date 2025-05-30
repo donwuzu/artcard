@@ -617,6 +617,9 @@ function renderSelectionTable() {
             <td class="px-2 py-1.5 text-right">${quantity}</td>
             <td class="px-2 py-1.5 text-right">KSh ${unitPrice}</td>
             <td class="px-2 py-1.5 text-right">KSh ${subtotal.toLocaleString()}</td>
+             <td class="px-2 py-1.5 text-right">
+                <button onclick="removePortrait('${id}')" class="text-red-600 hover:underline text-xs">Remove</button>
+            </td>
         `;
         tbody.appendChild(row);
     }
@@ -624,6 +627,13 @@ function renderSelectionTable() {
     portraitTotal.textContent = `KSh ${totalCost.toLocaleString()}`;
 }
 
+
+function removePortrait(id) {
+    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+    delete selections[id];
+    localStorage.setItem('portraitSelections', JSON.stringify(selections));
+    calculateAndUpdateUI();
+}
 
 // Hook into quantity change
 function updateQuantity(button, change, isGrid = false) {
