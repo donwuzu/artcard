@@ -11,65 +11,83 @@ class OrderController extends Controller
 {
     public function store(Request $request)
     {
-        // 1. Validate incoming data
+        // 1. Corrected Validation
+        // 'quantities' and 'quantities_carousel' are now both 'nullable'.
+        // This allows users to order exclusively from either the grid or carousel view without validation errors.
+        // The real check for an empty order is handled after we merge the quantities.
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'location' => 'required|string|max:255',
-            'quantities' => 'required|array',
+            'quantities' => 'nullable|array',
             'quantities.*' => 'integer|min:0',
             'quantities_carousel' => 'nullable|array',
             'quantities_carousel.*' => 'integer|min:0',
         ]);
 
-        // 2. Merge and filter non-zero quantities with keys preserved
-        $mergedQuantities = array_replace(
-            $validated['quantities'] ?? [],
-            $validated['quantities_carousel'] ?? []
-        );
+        // 2. Corrected Quantity Merging Logic
+        // We now loop through both arrays and SUM the values for each portrait ID.
+        // This correctly combines selections from both grid and carousel views.
+        $finalQuantities = [];
+        $quantitiesGrid = $validated['quantities'] ?? [];
+        $quantitiesCarousel = $validated['quantities_carousel'] ?? [];
 
-        $selectedQuantities = array_filter($mergedQuantities, fn($qty) => $qty > 0);
+        // Sum quantities from the grid view
+        foreach ($quantitiesGrid as $id => $qty) {
+            if ($qty > 0) {
+                $finalQuantities[$id] = ($finalQuantities[$id] ?? 0) + (int)$qty;
+            }
+        }
 
-        if (empty($selectedQuantities)) {
+        // Sum quantities from the carousel view
+        foreach ($quantitiesCarousel as $id => $qty) {
+            if ($qty > 0) {
+                $finalQuantities[$id] = ($finalQuantities[$id] ?? 0) + (int)$qty;
+            }
+        }
+
+        // 3. Check for Empty Order (using the correctly merged quantities)
+        if (empty($finalQuantities)) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['quantities' => 'Please select at least one portrait with a quantity greater than zero.']);
         }
 
-        // 3. Get valid portraits
-        $portraitIds = array_keys($selectedQuantities);
+        // 4. Get valid portraits (This logic is sound and now uses the correct data)
+        $portraitIds = array_keys($finalQuantities);
         $portraits = Portrait::whereIn('id', $portraitIds)->get();
 
-        if ($portraits->count() !== count($selectedQuantities)) {
-            Log::error('Invalid portrait selection.', [
-                'expected' => $portraitIds,
-                'found' => $portraits->pluck('id')->all()
+        if ($portraits->count() !== count($finalQuantities)) {
+            Log::error('Invalid portrait selection during order.', [
+                'expected_ids' => $portraitIds,
+                'found_ids' => $portraits->pluck('id')->all(),
+                'request_data' => $request->all()
             ]);
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['quantities' => 'One or more selected portraits are invalid.']);
+                ->withErrors(['quantities' => 'An error occurred with your selection. Please try again.']);
         }
 
-        // 4. Calculate pricing
-        $totalUnits = array_sum($selectedQuantities);
+        // 5. Calculate pricing (This logic is sound and now uses the correct data)
+        $totalUnits = array_sum($finalQuantities);
         $unitPrice = $totalUnits >= 5 ? 190 : 250;
         $subtotal = $totalUnits * $unitPrice;
         $deliveryFee = 300;
         $totalPrice = $subtotal + $deliveryFee;
 
-        // 5. Save order with only required fields
+        // 6. Save order with correctly merged items
         $order = Order::create([
             'name' => $validated['name'],
             'phone' => $validated['phone'],
             'location' => $validated['location'],
-            'items' => $selectedQuantities,
+            'items' => $finalQuantities, // Use the correctly summed quantities
             'total_price' => $totalPrice,
         ]);
 
-        // 6. Generate WhatsApp link
+        // 7. Generate WhatsApp link (This logic is sound)
         $whatsappUrl = $this->sendWhatsappNotification($order, $portraits, $totalUnits, $subtotal, $deliveryFee);
 
-        // 7. Redirect to WhatsApp
+        // 8. Redirect to WhatsApp
         session()->flash('success', 'Order placed successfully! Redirecting to WhatsApp.');
 
         return redirect()->away($whatsappUrl);

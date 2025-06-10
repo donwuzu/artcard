@@ -39,28 +39,25 @@
 <div class="flex justify-between items-center px-4 mb-4">
     <h2 class="text-xl font-bold text-gray-800">Portrait Gallery</h2>
 
-        <div class="flex space-x-2">
-
-
-                        <button id="carouselViewBtn" class="p-2 bg-green-100 rounded-lg text-green-700">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8v3h2v-3l4 8z" clip-rule="evenodd" />
-                             </svg>
-                        </button>
-
-                        <button id="gridViewBtn" class="p-2 bg-green-600 rounded-lg text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <div class="flex space-x-2">
+                    <button id="gridViewBtn" class="p-2 bg-green-600 rounded-lg text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                            </svg>
-                        </button>
-                      
-         </div>
+                        </svg>
+                    </button>
+
+                    <button id="carouselViewBtn" class="p-2 bg-green-100 rounded-lg text-green-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8v3h2v-3l4 8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+            </div>
 </div>
 
 
 
 
-<div id="gridView" class="hidden px-4 py-6">
+<div id="gridView" class=" px-4 py-6">
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         @foreach ($portraits as $portrait)
         <div class="portrait-card group flex flex-col bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1 h-full"
@@ -140,7 +137,7 @@
 
 
 <!-- Updated Carousel View -->
-<div id="carouselView" class=" relative overflow-hidden px-4 py-6">
+<div id="carouselView" class="hidden relative overflow-hidden px-4 py-6">
     <button onclick="scrollCarousel(-1)"
             aria-label="Previous portrait"
             class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white shadow rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-400">
@@ -564,12 +561,19 @@ function setupInitialViewToggle() {
 
     if (!gridView || !carouselView || !carouselBtn || !gridBtn) return;
 
-    gridView.classList.add('hidden');
-    carouselView.classList.remove('hidden');
-    carouselBtn.classList.add('bg-green-600', 'text-white');
-    carouselBtn.classList.remove('bg-green-100', 'text-green-700');
-    gridBtn.classList.add('bg-green-100', 'text-green-700');
-    gridBtn.classList.remove('bg-green-600', 'text-white');
+    // --- MODIFIED SECTION: Set Grid View as the default ---
+
+    // 1. Show the grid view and hide the carousel view
+    gridView.classList.remove('hidden');
+    carouselView.classList.add('hidden');
+
+    // 2. Set the grid button to the "active" state
+    gridBtn.classList.add('bg-green-600', 'text-white');
+    gridBtn.classList.remove('bg-green-100', 'text-green-700');
+
+    // 3. Set the carousel button to the "inactive" state
+    carouselBtn.classList.add('bg-green-100', 'text-green-700');
+    carouselBtn.classList.remove('bg-green-600', 'text-white');
 
     gridBtn.addEventListener('click', () => {
         gridView.classList.remove('hidden');
