@@ -93,7 +93,7 @@
                 {{-- Quantity Controls --}}
                 <div class="flex items-center justify-between mb-3">
                     <button
-                        onclick="updateQuantity(this, -1, true)"
+                        onclick="updateQuantity(this, -1, )"
                         aria-label="Decrease quantity for Portrait #{{ $portrait->id }}"
                         class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -108,7 +108,7 @@
                         aria-label="Quantity for Portrait #{{ $portrait->id }}"
                         class="quantity-input text-center w-16 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-1.5 text-sm mx-2">
                     <button
-                        onclick="updateQuantity(this, 1, true)"
+                        onclick="updateQuantity(this, 1, )"
                         aria-label="Increase quantity for Portrait #{{ $portrait->id }}"
                         class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -476,29 +476,7 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeModal();
 });
 
-function updateQuantity(button, change, isGrid = false) {
-    let input = isGrid ? 
-        button.parentElement.querySelector('.quantity-input') : 
-        (change > 0 ? button.previousElementSibling : button.nextElementSibling);
-    
-    if (!input || !input.classList.contains('quantity-input')) return;
 
-    let currentValue = parseInt(input.value) || 0;
-    let newValue = Math.max(0, currentValue + change);
-    input.value = newValue;
-
-    const event = new Event('input', { bubbles: true });
-    input.dispatchEvent(event);
-
-    const id = input.name.match(/\[(\d+)\]/)[1];
-    let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-    if (newValue > 0) selections[id] = newValue;
-    else delete selections[id];
-    localStorage.setItem('portraitSelections', JSON.stringify(selections));
-
-    updateSubtotal(input.closest('.portrait-card'));
-    calculateAndUpdateUI();
-}
 
 function calculateAndUpdateUI() {
     const deliveryFee = 300;
@@ -639,31 +617,41 @@ function removePortrait(id) {
     calculateAndUpdateUI();
 }
 
-// Hook into quantity change
-function updateQuantity(button, change, isGrid = false) {
-    let input = isGrid ? 
-        button.parentElement.querySelector('.quantity-input') : 
-        (change > 0 ? button.previousElementSibling : button.nextElementSibling);
 
-    if (!input || !input.classList.contains('quantity-input')) return;
 
-    let currentValue = parseInt(input.value) || 0;
-    let newValue = Math.max(0, currentValue + change);
+function updateQuantity(button, change) {
+    // Find the parent '.portrait-card' for the button that was clicked.
+    const card = button.closest('.portrait-card');
+    if (!card) return;
+
+    // Find the quantity input field within that specific card.
+    const input = card.querySelector('.quantity-input');
+    if (!input) return;
+
+    // Calculate the new value, ensuring it doesn't go below zero.
+    const currentValue = parseInt(input.value) || 0;
+    const newValue = Math.max(0, currentValue + change);
     input.value = newValue;
 
-    const event = new Event('input', { bubbles: true });
-    input.dispatchEvent(event);
-
-    const id = input.name.match(/\[(\d+)\]/)[1];
+    // Get the portrait's ID and selections from localStorage.
+    const id = card.dataset.id;
     let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-    if (newValue > 0) selections[id] = newValue;
-    else delete selections[id];
+
+    // Update the selections object and save it back to localStorage.
+    if (newValue > 0) {
+        selections[id] = newValue;
+    } else {
+        delete selections[id]; // Remove the item if its quantity becomes zero.
+    }
     localStorage.setItem('portraitSelections', JSON.stringify(selections));
 
-    updateSubtotal(input.closest('.portrait-card'));
+    // Call the main UI function to redraw everything consistently based on the new state.
     calculateAndUpdateUI();
-    renderSelectionTable();
 }
+
+
+
+
 </script>
 
     
