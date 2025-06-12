@@ -91,31 +91,33 @@
                 <div class="flex-grow"></div>
 
                 {{-- Quantity Controls --}}
-                <div class="flex items-center justify-between mb-3">
-                    <button
-                        onclick="updateQuantity(this, -1, )"
-                        aria-label="Decrease quantity for Portrait #{{ $portrait->id }}"
-                        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <input
-                        type="number"
-                        name="quantities[{{ $portrait->id }}]"
-                        min="0"
-                        value="0"
-                        aria-label="Quantity for Portrait #{{ $portrait->id }}"
-                        class="quantity-input text-center w-16 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-1.5 text-sm mx-2">
-                    <button
-                        onclick="updateQuantity(this, 1, )"
-                        aria-label="Increase quantity for Portrait #{{ $portrait->id }}"
-                        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
+              <div class="flex items-center justify-between mb-3">
+    <button
+        onclick="updateQuantity(this, -1)"
+        aria-label="Decrease quantity for Portrait #{{ $portrait->id }}"
+        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+        </svg>
+    </button>
+    <input
+        type="number"
+        name="quantities[{{ $portrait->id }}]"
+        min="0"
+        value="0"
+        aria-label="Quantity for Portrait #{{ $portrait->id }}"
+        class="quantity-input text-center w-16 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-1.5 text-sm mx-2"
+    >
+    <button
+        onclick="updateQuantity(this, 1)"
+        aria-label="Increase quantity for Portrait #{{ $portrait->id }}"
+        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+    </button>
+</div>
+
 
                 {{-- Subtotal Display --}}
                 <p class="text-green-700 text-sm font-semibold text-right">
@@ -176,7 +178,7 @@
                         onclick="updateQuantity(this, -1)"
                         aria-label="Decrease quantity for Portrait #{{ $portrait->id }}"
                         class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
                         </svg>
                     </button>
@@ -191,7 +193,7 @@
                         onclick="updateQuantity(this, 1)"
                         aria-label="Increase quantity for Portrait #{{ $portrait->id }}"
                         class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
                     </button>
@@ -373,6 +375,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('input', function(event) {
         if (event.target.classList.contains('quantity-input')) {
+              const input = event.target;
+        const card = input.closest('.portrait-card');
+        const id = card?.dataset.id;
+        const value = Math.max(0, parseInt(input.value) || 0);
+
+        input.value = value;
+
+        let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+
+        if (value > 0) {
+            selections[id] = value;
+        } else {
+            delete selections[id];
+        }
+
+        localStorage.setItem('portraitSelections', JSON.stringify(selections));
             calculateAndUpdateUI();
         }
     });
