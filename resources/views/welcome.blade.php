@@ -290,7 +290,7 @@
        role="dialog" 
        aria-modal="true" 
        aria-labelledby="cart-heading"
-       class="absolute right-0 top-0 h-3/4 w-full max-w-md bg-white flex flex-col">
+       class="absolute right-0 top-0 bottom-5 h-full w-full max-w-md bg-white flex flex-col">
 
       <header class="flex-shrink-0 relative border-b border-slate-200 px-5 py-4">
           <h2 id="cart-heading" class="text-lg font-semibold text-slate-800 text-center">Your Selected Portraits</h2>
