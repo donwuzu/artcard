@@ -285,65 +285,66 @@
 
 <!-- Sidebar Cart (Replace your existing static cart) -->
 <div id="cart-overlay" class="cart-overlay fixed inset-0 bg-black hidden z-40">
-  
   <div id="cartSidebar" 
        role="dialog" 
        aria-modal="true" 
        aria-labelledby="cart-heading"
        class="absolute right-0 top-0 h-full w-full max-w-md bg-white flex flex-col">
 
-      <header class="flex-shrink-0 relative border-b border-slate-200 px-5 py-4">
-          <h2 id="cart-heading" class="text-lg font-semibold text-slate-800 text-center">Your Selected Portraits</h2>
-          <button id="closeCart" 
-                  aria-label="Close cart"
-                  class="absolute top-1/2 right-4 -translate-y-1/2 text-2xl font-semibold text-slate-500 hover:text-red-600 transition-colors">
-              &times;
-          </button>
-      </header>
+    <header class="flex-shrink-0 relative border-b border-slate-200 px-5 py-4">
+      <h2 id="cart-heading" class="text-lg font-semibold text-slate-800 text-center">Your Selected Portraits</h2>
+      <button id="closeCart" 
+              aria-label="Close cart"
+              class="absolute top-1/2 right-4 -translate-y-1/2 text-2xl font-semibold text-slate-500 hover:text-red-600 transition-colors">
+          &times;
+      </button>
+    </header>
 
-      <div class="flex-grow overflow-y-auto p-5">
-          <table class="w-full text-sm text-slate-600">
-              <thead>
-                  <tr class="border-b border-slate-200">
-                      <th class="w-2/5 text-left font-medium pb-3 pl-2">Portrait</th>
-                      <th class="w-1/6 text-center font-medium pb-3">Qty</th>
-                      <th class="w-1/5 text-right font-medium pb-3">Price</th>
-                      <th class="w-1/5 text-right font-medium pb-3">Subtotal</th>
-                      <th class="w-auto text-right font-medium pb-3 pr-2"><span class="sr-only">Actions</span></th>
-                  </tr>
-              </thead>
-              <tbody id="checkout-summary-body" class="divide-y divide-slate-100">
-                   <tr>
-                      <td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td>
-                  </tr>
-              </tbody>
-          </table>
+    <!-- Make this scrollable -->
+    <div class="flex-grow overflow-y-auto max-h-[60vh] p-5">
+      <table class="w-full text-sm text-slate-600">
+        <thead>
+          <tr class="border-b border-slate-200">
+            <th class="w-2/5 text-left font-medium pb-3 pl-2">Portrait</th>
+            <th class="w-1/6 text-center font-medium pb-3">Qty</th>
+            <th class="w-1/5 text-right font-medium pb-3">Price</th>
+            <th class="w-1/5 text-right font-medium pb-3">Subtotal</th>
+            <th class="w-auto text-right font-medium pb-3 pr-2"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="checkout-summary-body" class="divide-y divide-slate-100">
+          <tr>
+            <td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="flex-shrink-0 px-5 py-4 border-t border-slate-200 space-y-4">
+      <div class="space-y-2 text-sm">
+        <p class="flex justify-between">
+          <span class="text-slate-600">Subtotal:</span>
+          <span id="summary-portraits-total" class="font-medium text-slate-800">KSh 0</span>
+        </p>
+        <p class="flex justify-between">
+          <span class="text-slate-600">Delivery Fee:</span>
+          <span id="delivery-fee" class="font-medium text-slate-800">KSh 0</span>
+        </p>
       </div>
 
-      <footer class="flex-shrink-0 px-5 py-4 border-t border-slate-200 space-y-4">
-          <div class="space-y-2 text-sm">
-              <p class="flex justify-between">
-                  <span class="text-slate-600">Subtotal:</span>
-                  <span id="summary-portraits-total" class="font-medium text-slate-800">KSh 0</span>
-              </p>
-              <p class="flex justify-between">
-                  <span class="text-slate-600">Delivery Fee:</span>
-                  <span id="delivery-fee" class="font-medium text-slate-800">KSh 0</span>
-              </p>
-          </div>
+      <div class="flex justify-between items-center font-semibold text-lg border-t border-dashed pt-4">
+        <span class="text-slate-800">Grand Total:</span>
+        <span id="total" class="text-green-600">KSh 0</span>
+      </div>
 
-          <div class="flex justify-between items-center font-semibold text-lg border-t border-dashed pt-4">
-              <span class="text-slate-800">Grand Total:</span>
-              <span id="total" class="text-green-600">KSh 0</span>
-          </div>
-
-          <button  type="button" id="orderButton"
-                  class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:shadow-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
-              Order Via WhatsApp
-          </button>
-      </footer>
+      <button type="button" id="orderButton"
+              class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:shadow-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
+        Order Via WhatsApp
+      </button>
+    </footer>
   </div>
 </div>
+
 
 
 
