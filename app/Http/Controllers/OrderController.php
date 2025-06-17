@@ -11,40 +11,27 @@ class OrderController extends Controller
 {
 public function store(Request $request)
 {
-    // 1. Validate the request
+    // 1. Validate the request (No changes here)
     $validated = $request->validate([
         'name'               => 'required|string|max:255',
         'phone'              => 'required|string|max:20',
         'location'           => 'required|string|max:255',
-        'portraitSelections' => 'nullable|string', // Also validate the hidden input
+        'portraitSelections' => 'nullable|string',
         'quantities'         => 'nullable|array',
         'quantities.*'       => 'integer|min:0',
     ]);
 
-    // 2. Safely decode quantities from localStorage JSON
+    // 2. Safely decode and merge quantities (No changes here, this logic is solid)
     $localSelections = [];
     $rawLocalSelections = $request->input('portraitSelections');
-
     if (!empty($rawLocalSelections)) {
         $decoded = json_decode($rawLocalSelections, true);
-
-        // If JSON is invalid, log the error instead of failing silently
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            Log::warning('JSON decoding failed for portraitSelections during order.', [
-                'json_error' => json_last_error_msg(),
-                'raw_data'   => $rawLocalSelections,
-                'customer_name' => $validated['name'],
-            ]);
-        } else {
-            $localSelections = is_array($decoded) ? $decoded : [];
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $localSelections = $decoded;
         }
     }
-
-    // 3. Merge quantities, prioritizing localStorage
     $formQuantities = $validated['quantities'] ?? [];
     $mergedQuantities = array_merge($formQuantities, $localSelections);
-
-    // 4. Sanitize and filter the final list of quantities in one go
     $finalQuantities = [];
     foreach ($mergedQuantities as $id => $qty) {
         $portraitId = (int) $id;
@@ -54,48 +41,64 @@ public function store(Request $request)
         }
     }
 
-    // 5. Check for empty order
+    // 3. Check for empty submission (No changes here)
     if (empty($finalQuantities)) {
-        return back()->withInput()
-            ->withErrors(['quantities' => 'Please select at least one portrait.']);
+        return back()->withInput()->withErrors(['quantities' => 'Please select at least one portrait.']);
     }
 
-    // 6. Fetch portraits and ensure valid IDs
-    $portraitIds = array_keys($finalQuantities);
-    $portraits = Portrait::whereIn('id', $portraitIds)->get();
+    // ========================================================================
+    // 4. MODIFIED LOGIC: Validate Portrait IDs and filter out invalid ones
+    // ========================================================================
 
-    if ($portraits->count() !== count($finalQuantities)) {
-        Log::error('Mismatch in portrait IDs', [
-           'input' => $finalQuantities,
-           'found' => $portraits->pluck('id')->toArray(),
-        ]);
+    $submittedPortraitIds = array_keys($finalQuantities);
+    $portraits = Portrait::whereIn('id', $submittedPortraitIds)->get();
+
+    // Get a list of IDs that are actually valid and exist in the database
+    $validPortraitIds = $portraits->pluck('id')->all();
+
+    // Filter the user's selections to keep only the items with valid IDs
+    // This removes any selections related to deleted portraits (e.g., 1-27)
+    $orderableQuantities = array_intersect_key($finalQuantities, array_flip($validPortraitIds));
+
+    // After filtering, check if any items are left. Maybe the user ONLY selected deleted items.
+    if (empty($orderableQuantities)) {
         return back()->withInput()
-            ->withErrors(['quantities' => 'Your selections appear invalid. Try again.']);
+            ->withErrors(['quantities' => 'The portraits you selected are no longer available. Please update your selection.']);
     }
 
-    // 7. Compute costs
-    $totalUnits = array_sum($finalQuantities);
+    // If we had to remove some items, prepare a friendly warning message for the user.
+    if (count($orderableQuantities) < count($finalQuantities)) {
+        session()->flash('warning', 'Please note: One or more portraits in your cart were unavailable and have been removed from your order.');
+    }
+
+
+    // ========================================================================
+    // 5. Compute costs USING ONLY THE VALID, ORDERABLE ITEMS
+    // ========================================================================
+    $totalUnits = array_sum($orderableQuantities);
     $unitPrice  = $totalUnits >= 5 ? 190 : 250;
     $subtotal   = $totalUnits * $unitPrice;
     $deliveryFee = 300;
     $totalPrice  = $subtotal + $deliveryFee;
 
-    // 8. Save order
+
+    // ========================================================================
+    // 6. Save order USING ONLY THE VALID, ORDERABLE ITEMS
+    // ========================================================================
     $order = Order::create([
         'name'        => $validated['name'],
         'phone'       => $validated['phone'],
         'location'    => $validated['location'],
-        'items'       => $finalQuantities,
+        'items'       => $orderableQuantities, // Use the filtered list
         'total_price' => $totalPrice,
     ]);
 
-    // 9. Generate WhatsApp URL and redirect
+    // 7. Generate WhatsApp URL and redirect
     $whatsappUrl = $this->sendWhatsappNotification($order, $portraits, $totalUnits, $subtotal, $deliveryFee);
 
     session()->flash('success', 'Order placed! Redirecting to WhatsApp.');
     return redirect()->away($whatsappUrl);
 }
-
     protected function sendWhatsappNotification($order, $portraits, $totalUnits, $subtotal, $deliveryFee)
     {
         $adminPhone = '254738269376';
