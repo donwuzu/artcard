@@ -463,14 +463,18 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.addEventListener('input', function(event) {
-        if (event.target.classList.contains('quantity-input')) {
-              const input = event.target;
+ // CORRECTED CODE
+document.addEventListener('change', function(event) {
+    if (event.target.classList.contains('quantity-input')) {
+        const input = event.target;
         const card = input.closest('.portrait-card');
         const id = card?.dataset.id;
-        const value = Math.max(0, parseInt(input.value) || 0);
+        
+        // Ensure you have an id to prevent errors
+        if (!id) return;
 
-        input.value = value;
+        const value = Math.max(0, parseInt(input.value) || 0);
+        input.value = value; // Normalize the value in the input field
 
         let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
 
@@ -481,26 +485,32 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         localStorage.setItem('portraitSelections', JSON.stringify(selections));
-            calculateAndUpdateUI();
-        }
-    });
+        calculateAndUpdateUI();
+    }
+});
 
     calculateAndUpdateUI();
 
-  document.querySelector('form#order-form')?.addEventListener('submit', function (e) {
-    // Clear previous hidden inputs
-    const form = this;
-    form.querySelectorAll('input[name^="quantities["]').forEach(el => el.remove());
-
-    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-
-    for (const id in selections) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = `quantities[${id}]`;
-        input.value = selections[id];
-        form.appendChild(input);
+ // RECOMMENDED SUBMIT HANDLER
+document.querySelector('form#order-form')?.addEventListener('submit', function(e) {
+    // Get the final, reliable state from localStorage
+    const selectionsJSON = localStorage.getItem('portraitSelections') || '{}';
+    
+    // Find or create the single hidden input for the backend
+    let hiddenInput = this.querySelector('input[name="portraitSelections"]');
+    if (!hiddenInput) {
+        hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'portraitSelections';
+        this.appendChild(hiddenInput);
     }
+    
+    // Update its value. This is the only portrait data the form needs to send.
+    hiddenInput.value = selectionsJSON;
+
+    // Remove the other quantity inputs to avoid confusion and conflicts
+    this.querySelectorAll('input[name^="quantities["]').forEach(el => el.remove());
+    this.querySelectorAll('input[name^="quantities_carousel["]').forEach(el => el.remove());
 
     document.getElementById('notification-banner')?.classList.remove('hidden');
 });
