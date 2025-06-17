@@ -290,7 +290,7 @@
        role="dialog" 
        aria-modal="true" 
        aria-labelledby="cart-heading"
-       class="absolute right-0 top-0 bottom-5 h-full w-full max-w-md bg-white flex flex-col">
+       class="absolute right-0 top-0 h-full w-full max-w-md bg-white flex flex-col">
 
       <header class="flex-shrink-0 relative border-b border-slate-200 px-5 py-4">
           <h2 id="cart-heading" class="text-lg font-semibold text-slate-800 text-center">Your Selected Portraits</h2>
@@ -321,7 +321,7 @@
           </table>
       </div>
 
-      <footer class="flex-shrink-0 px-5 py-4 border-t border-slate-200 space-y-4">
+      <footer class="flex-shrink-0 px-5 pt-4 pb-8 border-t border-slate-200 space-y-4">
           <div class="space-y-2 text-sm">
               <p class="flex justify-between">
                   <span class="text-slate-600">Subtotal:</span>
