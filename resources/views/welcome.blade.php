@@ -487,9 +487,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
     calculateAndUpdateUI();
 
-    document.querySelector('form#order-form')?.addEventListener('submit', function () {
-        document.getElementById('notification-banner')?.classList.remove('hidden');
-    });
+  document.querySelector('form#order-form')?.addEventListener('submit', function (e) {
+    // Clear previous hidden inputs
+    const form = this;
+    form.querySelectorAll('input[name^="quantities["]').forEach(el => el.remove());
+
+    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+
+    for (const id in selections) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `quantities[${id}]`;
+        input.value = selections[id];
+        form.appendChild(input);
+    }
+
+    document.getElementById('notification-banner')?.classList.remove('hidden');
+});
+
 
     setupAjaxPagination();
 });
