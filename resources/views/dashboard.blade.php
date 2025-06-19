@@ -71,6 +71,24 @@
             </form>
 
           
+            <h3 class="text-lg font-bold mt-6">Your Portraits</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @foreach($portraits as $portrait)
+                    <div class="bg-white p-4 rounded-2xl shadow relative">
+                        <img src="{{ url('storage/' . $portrait->image_path) }}" class="w-full h-48 object-cover rounded-xl mb-2">
+                        <h2 class="text-xl font-semibold">Portrait #{{ $portrait->id }}</h2>
+                        <p class="text-gray-600">Unit Price: KSh {{ number_format($portrait->price) }}</p>
+                        <div class="mt-4 flex space-x-2">
+                            <button onclick="openEditModal({{ $portrait->id }}, {{ $portrait->price }})" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Edit</button>
+                            <form action="{{ route('portraits.destroy', $portrait->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600" onclick="return confirm('Are you sure you want to delete this portrait?')">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
 
             <!-- Edit Modal -->
             <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">

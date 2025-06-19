@@ -155,80 +155,7 @@
 
 
 <!-- Updated Carousel View -->
-<div id="carouselView" class="hidden relative overflow-hidden px-4 py-6">
-    <button onclick="scrollCarousel(-1)"
-            aria-label="Previous portrait"
-            class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white shadow rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-400">
-        ‹
-    </button>
 
-    <div id="portraitCarousel" class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 scroll-smooth hide-scrollbar">
-        @foreach ($portraits as $portrait)
-        <div class="portrait-card group flex flex-col flex-shrink-0 snap-center bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1"
-             style="width: auto; max-width: 100%;"
-             data-id="{{ $portrait->id }}"
-             data-price="{{ $portrait->price }}"
-             data-name="Portrait #{{ $portrait->id }}">
-
-            <div class="relative flex-shrink-0">
-                <img src="{{ Storage::url($portrait->image_path) }}"
-                     alt="Portrait #{{ $portrait->id }}"
-                     onclick="openModal(this.src)"
-                     class="cursor-pointer w-full object-contain rounded-xl mb-4 shadow transition-transform duration-300 group-hover:scale-105"
-                     style="max-height: 420px; height: auto;">
-            </div>
-
-            <div class="p-4 flex flex-col flex-grow">
-                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="Portrait #{{ $portrait->id }}">
-                    Portrait #{{ $portrait->id }}
-                </h3>
-
-                <p class="text-sm text-gray-700 mb-3">
-                    Price: <span class="unit-price-display font-bold text-indigo-600">KSh 250</span>
-                </p>
-
-                <div class="flex-grow"></div>
-
-                <div class="flex items-center justify-between mb-3">
-                    <button
-                        onclick="updateQuantity(this, -1)"
-                        aria-label="Decrease quantity for Portrait #{{ $portrait->id }}"
-                        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <input
-                        type="number"
-                        name="quantities_carousel[{{ $portrait->id }}]"
-                        min="0"
-                        value="0"
-                        aria-label="Quantity for Portrait #{{ $portrait->id }}"
-                        class="quantity-input text-center w-16 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-1.5 text-sm mx-2">
-                    <button
-                        onclick="updateQuantity(this, 1)"
-                        aria-label="Increase quantity for Portrait #{{ $portrait->id }}"
-                        class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
-
-                <p class="text-green-700 text-sm font-semibold text-right">
-                    Subtotal: <span class="subtotal">KSh 0</span>
-                </p>
-            </div>
-        </div>
-        @endforeach
-    </div>
-
-    <button onclick="scrollCarousel(1)"
-            aria-label="Next portrait"
-            class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-green-500 text-white shadow rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-400">
-        ›
-    </button>
-</div>
 
 <!-- Shared Styles -->
 <style>
@@ -451,73 +378,71 @@
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-    setupInitialViewToggle();
-
     const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
 
     document.querySelectorAll('.quantity-input').forEach(input => {
         const id = input.name.match(/\[(\d+)\]/)[1];
         if (selections[id]) {
             input.value = selections[id];
-            updateSubtotal(input.closest('.portrait-card'));
         }
     });
 
- // CORRECTED CODE
-document.addEventListener('change', function(event) {
-    if (event.target.classList.contains('quantity-input')) {
-        const input = event.target;
-        const card = input.closest('.portrait-card');
-        const id = card?.dataset.id;
-        
-        // Ensure you have an id to prevent errors
-        if (!id) return;
+    document.addEventListener('change', function(event) {
+        if (event.target.classList.contains('quantity-input')) {
+            const input = event.target;
+            const card = input.closest('.portrait-card');
+            const id = card?.dataset.id;
+            if (!id) return;
 
-        const value = Math.max(0, parseInt(input.value) || 0);
-        input.value = value; // Normalize the value in the input field
+            const value = Math.max(0, parseInt(input.value) || 0);
+            input.value = value;
 
-        let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+            let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+            if (value > 0) {
+                selections[id] = value;
+            } else {
+                delete selections[id];
+            }
 
-        if (value > 0) {
-            selections[id] = value;
-        } else {
-            delete selections[id];
+            localStorage.setItem('portraitSelections', JSON.stringify(selections));
+            calculateAndUpdateUI();
         }
-
-        localStorage.setItem('portraitSelections', JSON.stringify(selections));
-        calculateAndUpdateUI();
-    }
-});
+    });
 
     calculateAndUpdateUI();
 
- // RECOMMENDED SUBMIT HANDLER
-document.querySelector('form#order-form')?.addEventListener('submit', function(e) {
-    // Get the final, reliable state from localStorage
-    const selectionsJSON = localStorage.getItem('portraitSelections') || '{}';
-    
-    // Find or create the single hidden input for the backend
-    let hiddenInput = this.querySelector('input[name="portraitSelections"]');
-    if (!hiddenInput) {
-        hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'portraitSelections';
-        this.appendChild(hiddenInput);
-    }
-    
-    // Update its value. This is the only portrait data the form needs to send.
-    hiddenInput.value = selectionsJSON;
+    document.querySelector('form#order-form')?.addEventListener('submit', function(e) {
+        const selectionsJSON = localStorage.getItem('portraitSelections') || '{}';
 
-    // Remove the other quantity inputs to avoid confusion and conflicts
-    this.querySelectorAll('input[name^="quantities["]').forEach(el => el.remove());
-    this.querySelectorAll('input[name^="quantities_carousel["]').forEach(el => el.remove());
+        let hiddenInput = this.querySelector('input[name="portraitSelections"]');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'portraitSelections';
+            this.appendChild(hiddenInput);
+        }
 
-    document.getElementById('notification-banner')?.classList.remove('hidden');
+        hiddenInput.value = selectionsJSON;
+
+        // Optional, since quantities aren't being submitted anymore
+        this.querySelectorAll('input[name^="quantities["]').forEach(el => el.remove());
+
+        document.getElementById('notification-banner')?.classList.remove('hidden');
+    });
+
+    // Only keep this if you’re doing AJAX pagination
+     setupAjaxPagination();
 });
 
 
-    setupAjaxPagination();
-});
+function setupAjaxPagination() {
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetchPortraits(this.href);
+        });
+    });
+}
 
 function setupAjaxPagination() {
     document.querySelectorAll('.pagination a').forEach(link => {
@@ -537,27 +462,29 @@ function fetchPortraits(url) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
-            const newCarousel = doc.getElementById('carouselView');
-            if (newCarousel) document.getElementById('carouselView').outerHTML = newCarousel.outerHTML;
-
+            // Replace grid view with newly fetched HTML
             const newGridView = doc.getElementById('gridView');
-            if (newGridView) document.getElementById('gridView').outerHTML = newGridView.outerHTML;
+            if (newGridView) {
+                document.getElementById('gridView').outerHTML = newGridView.outerHTML;
+            }
 
+            // Replace pagination controls
             const newPagination = doc.querySelector('.pagination');
-            if (newPagination) document.querySelector('.pagination').outerHTML = newPagination.outerHTML;
+            if (newPagination) {
+                document.querySelector('.pagination').outerHTML = newPagination.outerHTML;
+            }
 
+            // Restore selected quantities from localStorage
             const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
             document.querySelectorAll('.quantity-input').forEach(input => {
                 const id = input.name.match(/\[(\d+)\]/)[1];
                 if (selections[id]) {
                     input.value = selections[id];
-                    updateSubtotal(input.closest('.portrait-card'));
                 }
             });
 
-            setupInitialViewToggle();
             calculateAndUpdateUI();
-            setupAjaxPagination();
+            setupAjaxPagination(); // Re-bind pagination links
         });
 }
 
@@ -565,8 +492,10 @@ function saveCurrentSelections() {
     const selections = {};
     document.querySelectorAll('.quantity-input').forEach(input => {
         const id = input.name.match(/\[(\d+)\]/)[1];
-        const value = parseInt(input.value) || 0;
-        if (value > 0) selections[id] = value;
+        const value = parseInt(input.value, 10);
+        if (value > 0) {
+            selections[id] = value;
+        }
     });
     localStorage.setItem('portraitSelections', JSON.stringify(selections));
 }
@@ -622,44 +551,44 @@ function scrollCarousel(direction) {
   });
 
 
-function calculateAndUpdateUI() {
-    const deliveryFee = 300;
-    const tier1Price = 250;
-    const tier2Price = 190;
-    const tierThreshold = 5;
+  function calculateAndUpdateUI() {
+        const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+        
+        // Define pricing rules
+        const deliveryFee = 300;
+        const tier1Price = 250;
+        const tier2Price = 190;
+        const tierThreshold = 5;
 
-    const deliveryFeeSpan = document.getElementById('delivery-fee');
-    const totalSpan = document.getElementById('total');
+        // Calculate total units to determine the correct unit price
+        const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
+        const unitPrice = totalUnits >= tierThreshold ? tier2Price : tier1Price;
+        
+        let overallSubtotal = 0;
 
-    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-    let totalUnits = Object.values(selections).reduce((sum, q) => sum + parseInt(q), 0);
-    const unitPrice = totalUnits >= tierThreshold ? tier2Price : tier1Price;
+        // Update each portrait card on the main page
+        document.querySelectorAll('.portrait-card').forEach(card => {
+            const id = card.dataset.id;
+            const quantity = selections[id] ? parseInt(selections[id], 10) : 0;
+            const quantityInput = card.querySelector('.quantity-input');
 
-    let overallSubtotal = 0;
+            if (quantityInput) quantityInput.value = quantity;
+            card.querySelector('.unit-price-display').textContent = `KSh ${unitPrice.toLocaleString()}`;
+            card.querySelector('.subtotal').textContent = `KSh ${(quantity * unitPrice).toLocaleString()}`;
+        });
 
-    for (const id in selections) {
-        const quantity = parseInt(selections[id]) || 0;
-        overallSubtotal += quantity * unitPrice;
+        // Recalculate the overall subtotal with the correct unit price
+        overallSubtotal = totalUnits * unitPrice;
+
+        // Update the cart footer totals
+        const finalDeliveryFee = totalUnits > 0 ? deliveryFee : 0;
+        document.getElementById('summary-portraits-total').textContent = `KSh ${overallSubtotal.toLocaleString()}`;
+        document.getElementById('delivery-fee').textContent = `KSh ${finalDeliveryFee.toLocaleString()}`;
+        document.getElementById('total').textContent = `KSh ${(overallSubtotal + finalDeliveryFee).toLocaleString()}`;
+
+        // Update the detailed table inside the cart sidebar
+        renderSelectionTable(selections, unitPrice);
     }
-
-    document.querySelectorAll('.portrait-card').forEach(card => {
-        const quantityInput = card.querySelector('.quantity-input');
-        const id = card.dataset.id;
-        const quantity = selections[id] ? parseInt(selections[id]) : 0;
-
-        if (quantityInput) quantityInput.value = quantity;
-        card.querySelector('.unit-price-display').textContent = `KSh ${unitPrice.toLocaleString()}`;
-
-        const cardSubtotal = quantity * unitPrice;
-        card.querySelector('.subtotal').textContent = `KSh ${cardSubtotal.toLocaleString()}`;
-    });
-
-    const currentDeliveryFee = totalUnits > 0 ? deliveryFee : 0;
-    if (deliveryFeeSpan) deliveryFeeSpan.textContent = `KSh ${currentDeliveryFee.toLocaleString()}`;
-    if (totalSpan) totalSpan.textContent = `KSh ${(overallSubtotal + currentDeliveryFee).toLocaleString()}`;
-
-    renderSelectionTable();
-}
 
 
 function showSuccessBanner() {
@@ -718,48 +647,45 @@ function setupInitialViewToggle() {
 
 
 
-function renderSelectionTable() {
-    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-    const tbody = document.getElementById('checkout-summary-body');
-    const portraitTotal = document.getElementById('summary-portraits-total');
-    if (!tbody || !portraitTotal) return;
-    tbody.innerHTML = '';
+ function renderSelectionTable(selections, unitPrice) {
+        const tbody = document.getElementById('checkout-summary-body');
+        tbody.innerHTML = ''; // Clear previous entries
 
-    let totalUnits = 0;
-    let totalCost = 0;
-    const totalQty = Object.values(selections).reduce((sum, q) => sum + parseInt(q), 0);
-    const unitPrice = totalQty >= 5 ? 190 : 250;
+        if (Object.keys(selections).length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td></tr>';
+            return;
+        }
 
-    for (const id in selections) {
-        const quantity = parseInt(selections[id]);
-        totalUnits += quantity;
-        const name = `Portrait #${id}`;
-        const subtotal = quantity * unitPrice;
-        totalCost += subtotal;
+        for (const id in selections) {
+            const quantity = parseInt(selections[id], 10);
+            const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
+            const name = card ? card.dataset.name : `Portrait #${id}`; // Get real name from data-name attribute
+            const subtotal = quantity * unitPrice;
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="px-3 py-1.5">${name}</td>
-            <td class="px-2 py-1.5 text-right">${quantity}</td>
-            <td class="px-2 py-1.5 text-right">KSh ${unitPrice}</td>
-            <td class="px-2 py-1.5 text-right">KSh ${subtotal.toLocaleString()}</td>
-             <td class="px-2 py-1.5 text-right">
-                <button onclick="removePortrait('${id}')" class="text-red-600 hover:underline text-xs">Remove</button>
-            </td>
-        `;
-        tbody.appendChild(row);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-3 py-2 text-left">${name}</td>
+                <td class="px-2 py-2 text-center">${quantity}</td>
+                <td class="px-2 py-2 text-right">KSh ${unitPrice.toLocaleString()}</td>
+                <td class="px-2 py-2 text-right">KSh ${subtotal.toLocaleString()}</td>
+                <td class="px-2 py-2 text-center">
+                    <button onclick="removePortrait('${id}')" title="Remove ${name}" class="text-red-500 hover:text-red-700 text-xs">
+                      Remove  &times;
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
     }
 
-    portraitTotal.textContent = `KSh ${totalCost.toLocaleString()}`;
-}
 
 
-function removePortrait(id) {
-    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-    delete selections[id];
-    localStorage.setItem('portraitSelections', JSON.stringify(selections));
-    calculateAndUpdateUI();
-}
+ window.removePortrait = function(id) {
+        let selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
+        delete selections[id];
+        localStorage.setItem('portraitSelections', JSON.stringify(selections));
+        calculateAndUpdateUI(); // Redraw everything
+    }
 
 
 
