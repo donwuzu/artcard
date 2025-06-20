@@ -113,7 +113,7 @@
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
                             <form action="{{ route('expenses.toggleStatus', $order->id) }}" method="POST">
                                 @csrf
-                                <button class="{{ $order->status === 'paid' ? 'bg-black' : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
+                                <button class="{{ $order->status === 'paid' ? 'bg-gray-600' : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
                                     {{ $order->status === 'paid' ? 'Mark Unpaid' : 'Mark Paid' }}
                                 </button>
                             </form>

@@ -12,15 +12,13 @@
             <p class="text-gray-600">Explore our gallery and order custom portraits directly via Whatsapp.</p>
         </div>
 
-        <div class="ml-4 flex-shrink-0">
-             <button id="cartButton" type="button"
-                class="relative bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 flex items-center space-x-2 z-10 group">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <span id="cartBadge" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full hidden">0</span>
-            </button>
-        </div>
+
+
+
+
+
+
+        
     </div>
 </div>
 
@@ -55,19 +53,40 @@
 <div class="flex justify-between items-center px-4 mb-4">
     <h2 class="text-xl font-bold text-gray-800">Portrait Gallery</h2>
 
-                <div class="flex space-x-2">
-                    <button id="gridViewBtn" class="p-2 bg-green-600 rounded-lg text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                        </svg>
-                    </button>
 
-                    <button id="carouselViewBtn" class="p-2 bg-green-100 rounded-lg text-green-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8v3h2v-3l4 8z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-            </div>
+    
+
+      <div class="
+    ml-4 p-2 sm:p-3 md:p-4
+    flex justify-center sm:justify-start
+">
+    <button type="button" id="cartButton" class="
+        inline-flex items-center justify-center
+        w-full sm:w-auto
+        px-4 py-2 text-sm
+        sm:px-6 sm:py-3 sm:text-base
+        font-medium text-center text-white
+        bg-green-600 rounded-lg
+        hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300
+        dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
+        shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
+        cursor-pointer
+    ">
+        <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Portraits </span>
+
+        <span id="selectedPortraitsCount" class="
+            inline-flex items-center justify-center flex-shrink-0
+            w-6 h-6 text-base font-bold text-blue-900 bg-blue-300 rounded-full
+            sm:w-7 sm:h-7 sm:text-lg
+        ">
+            0
+        </span>
+
+        <span class="block sm:inline ms-1 sm:ms-2 whitespace-nowrap px-4">Items</span>
+    </button>
+</div>
+
+
 </div>
 
 
@@ -649,15 +668,20 @@ function setupInitialViewToggle() {
 
  function renderSelectionTable(selections, unitPrice) {
         const tbody = document.getElementById('checkout-summary-body');
+         const countSpan = document.getElementById('selectedPortraitsCount'); // Get the span element
+        let totalSelectedItems = 0; // Initialize a counter for total items
+
         tbody.innerHTML = ''; // Clear previous entries
 
         if (Object.keys(selections).length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td></tr>';
+            countSpan.textContent = '0'; // Update the span to 0 when empty
             return;
         }
 
         for (const id in selections) {
             const quantity = parseInt(selections[id], 10);
+                    totalSelectedItems += quantity; // Add quantity to total
             const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
             const name = card ? card.dataset.name : `Portrait #${id}`; // Get real name from data-name attribute
             const subtotal = quantity * unitPrice;
@@ -669,13 +693,23 @@ function setupInitialViewToggle() {
                 <td class="px-2 py-2 text-right">KSh ${unitPrice.toLocaleString()}</td>
                 <td class="px-2 py-2 text-right">KSh ${subtotal.toLocaleString()}</td>
                 <td class="px-2 py-2 text-center">
-                    <button onclick="removePortrait('${id}')" title="Remove ${name}" class="text-red-500 hover:text-red-700 text-xs">
-                      Remove  &times;
-                    </button>
+                   <button onclick="removePortrait('${id}')" title="Remove ${name}" class="
+    text-red-600 hover:text-red-800
+    text-xs sm:text-sm md:text-base
+    underline decoration-red-600 decoration-solid decoration-1
+    hover:decoration-red-800
+    transition-colors duration-200 ease-in-out
+    focus:outline-none focus:ring-1 focus:ring-red-400 focus:ring-offset-1
+    font-medium
+">
+    Remove 
+</button>
                 </td>
             `;
             tbody.appendChild(row);
         }
+          // Update the count span with the total number of selected items
+    countSpan.textContent = totalSelectedItems.toString();
     }
 
 
@@ -811,6 +845,9 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.querySelector('input[name="name"]').focus();
   }
 }
+
+
+
 
 
 </script>
@@ -994,6 +1031,73 @@ document.addEventListener('DOMContentLoaded', () => {
     color: #a0aec0;
     cursor: not-allowed;
 }
+
+
+
+
+
+  /* Animation for the continuous pulsing glow */
+    @keyframes pulse-glow {
+        0%, 100% {
+            box-shadow: 0 0 15px 5px rgba(37, 211, 102, 0.6);
+        }
+        50% {
+            box-shadow: 0 0 25px 10px rgba(37, 211, 102, 0.4);
+        }
+    }
+
+    /* Base style for the floating button container */
+    .glowing-button {
+        position: fixed;
+        bottom: 1.5rem; /* 24px */
+        right: 1.5rem;  /* 24px */
+        z-index: 30;
+        /* Applying the glow animation here */
+        animation: pulse-glow 2.5s infinite ease-in-out;
+        border-radius: 9999px; /* Make the glow match the button shape */
+    }
+    
+    /* The visible content part of the button (icon and text) */
+    .glowing-button-content {
+        display: flex;
+        align-items: center;
+        background-color: #25D366; /* WhatsApp Green */
+        color: white;
+        padding: 0.75rem 1rem; /* 12px 16px */
+        border-radius: 9999px; /* Fully rounded pill shape */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    /* Hover effect for the button content */
+    .glowing-button:hover .glowing-button-content {
+        background-color: #128C7E; /* Darker WhatsApp Green */
+        transform: translateY(-2px); /* Slight lift effect */
+    }
+    
+    /* Style for the icon inside the button */
+    .glowing-button-icon {
+        font-size: 1.25rem; /* 20px */
+        height: 1.25rem; /* 20px */
+        width: 1.25rem;  /* 20px */
+    }
+    
+    /* The text that appears on hover */
+    .glowing-button .text {
+        margin-left: 0.5rem; /* 8px */
+        max-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        transition: max-width 0.4s ease, opacity 0.3s ease 0.1s;
+        opacity: 0;
+        font-weight: 600;
+    }
+    
+    /* When the main container is hovered, expand the text */
+    .glowing-button:hover .text {
+        max-width: 200px; /* Max width for the text to expand to */
+        opacity: 1;
+    }
 </style>
 
 
