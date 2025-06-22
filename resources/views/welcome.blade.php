@@ -229,31 +229,31 @@
 
 
 
-<!-- Sidebar Cart (Replace your existing static cart) -->
-<div id="cart-overlay" class="cart-overlay fixed inset-0 bg-black bg-opacity-50 hidden z-40">
+<!-- Sidebar Cart -->
+<div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40 overflow-y-auto">
   <div
     id="cartSidebar"
     role="dialog"
     aria-modal="true"
     aria-labelledby="cart-heading"
-    class="absolute right-0 top-0 h-full w-full max-w-md bg-white flex flex-col"
+    class="relative w-full max-w-md bg-white mx-auto my-0 min-h-screen flex flex-col"
   >
     <!-- Header -->
-    <header class="flex-shrink-0 relative border-b border-slate-200 px-5 py-4">
+    <header class="border-b border-slate-200 px-5 py-4">
       <h2 id="cart-heading" class="text-lg font-semibold text-slate-800 text-center">
         Your Selected Portraits
       </h2>
       <button
         id="closeCart"
         aria-label="Close cart"
-        class="absolute top-1/2 right-4 -translate-y-1/2 text-2xl font-semibold text-slate-500 hover:text-red-600 transition-colors"
+        class="absolute top-4 right-4 text-2xl font-semibold text-slate-500 hover:text-red-600 transition-colors"
       >
         &times;
       </button>
     </header>
 
-    <!-- Scrollable Content -->
-    <div class="flex-grow overflow-y-auto px-5 py-4">
+    <!-- Cart Content -->
+    <div class="px-5 py-4">
       <table class="w-full text-sm text-slate-600">
         <thead>
           <tr class="border-b border-slate-200">
@@ -261,19 +261,23 @@
             <th class="w-1/6 text-center font-medium pb-3">Qty</th>
             <th class="w-1/5 text-right font-medium pb-3">Price</th>
             <th class="w-1/5 text-right font-medium pb-3">Subtotal</th>
-            <th class="w-auto text-right font-medium pb-3 pr-2"><span class="sr-only">Actions</span></th>
+            <th class="w-auto text-right font-medium pb-3 pr-2">
+              <span class="sr-only">Actions</span>
+            </th>
           </tr>
         </thead>
         <tbody id="checkout-summary-body" class="divide-y divide-slate-100">
           <tr>
-            <td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td>
+            <td colspan="5" class="text-center text-slate-500 py-10">
+              Your cart is currently empty.
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Sticky Footer -->
-    <footer class="flex-shrink-0 bg-slate-50 px-5 pt-5 pb-6 border-t border-slate-200">
+    <!-- Footer -->
+    <footer class="bg-slate-50 px-5 pt-5 pb-6 border-t border-slate-200">
       <div class="space-y-3 text-sm">
         <div class="flex justify-between">
           <span class="text-slate-600">Subtotal:</span>
@@ -284,10 +288,12 @@
           <span id="delivery-fee" class="font-medium text-slate-800">KSh 0</span>
         </div>
       </div>
+
       <div class="flex justify-between items-center font-semibold text-lg border-t border-slate-200 mt-4 pt-4">
         <span class="text-slate-800">Grand Total:</span>
         <span id="total" class="text-green-600">KSh 0</span>
       </div>
+
       <button
         type="button"
         id="orderButton"
@@ -298,6 +304,7 @@
     </footer>
   </div>
 </div>
+
 
 
 
@@ -908,11 +915,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
 /* Optional: Add these for extra polish */
-@keyframes subtleBounce {
-    0% { transform: translateX(110%); }
-    90% { transform: translateX(-3%); }
-    100% { transform: translateX(0); }
-}
+
 
 #cartSidebar.open {
     animation: subtleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
