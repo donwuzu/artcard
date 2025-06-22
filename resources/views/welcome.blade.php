@@ -230,7 +230,7 @@
 
 
 <!-- Sidebar Cart (Replace your existing static cart) -->
-<div id="cart-overlay" class="cart-overlay fixed inset-0 bg-black hidden z-40">
+<div id="cart-overlay" class="cart-overlay fixed inset-0 bg-black bg-opacity-50 hidden z-40">
   
   <div id="cartSidebar" 
        role="dialog" 
@@ -247,8 +247,7 @@
           </button>
       </header>
 
-      <!-- Scrollable Content -->
-      <div class="flex-grow overflow-y-auto px-5 py-4" style="max-height: calc(100vh - 240px);">
+      <div id="cart-content" class="flex-grow overflow-y-auto px-5 py-4">
           <table class="w-full text-sm text-slate-600">
               <thead>
                   <tr class="border-b border-slate-200">
@@ -260,6 +259,14 @@
                   </tr>
               </thead>
               <tbody id="checkout-summary-body" class="divide-y divide-slate-100">
+                   <tr class="h-20"><td>Item 1</td><td></td><td></td><td></td><td></td></tr>
+                   <tr class="h-20"><td>Item 2</td><td></td><td></td><td></td><td></td></tr>
+                   <tr class="h-20"><td>Item 3</td><td></td><td></td><td></td><td></td></tr>
+                   <tr class="h-20"><td>Item 4</td><td></td><td></td><td></td><td></td></tr>
+                   <tr class="h-20"><td>Item 5</td><td></td><td></td><td></td><td></td></tr>
+                   <tr class="h-20"><td>Item 6</td><td></td><td></td><td></td><td></td></tr>
+                   <tr class="h-20"><td>Item 7</td><td></td><td></td><td></td><td></td></tr>
+                   <tr class="h-20"><td>Item 8</td><td></td><td></td><td></td><td></td></tr>
                    <tr>
                       <td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td>
                   </tr>
@@ -267,33 +274,28 @@
           </table>
       </div>
 
-<!-- Footer section - improved -->
-<footer class="flex-shrink-0 bg-slate-50 px-5 pt-5 pb-6 border-t border-slate-200">
-    <div class="space-y-3 text-sm">
-        <div class="flex justify-between">
-            <span class="text-slate-600">Subtotal:</span>
-            <span id="summary-portraits-total" class="font-medium text-slate-800">KSh 0</span>
-        </div>
-        <div class="flex justify-between">
-            <span class="text-slate-600">Delivery Fee:</span>
-            <span id="delivery-fee" class="font-medium text-slate-800">KSh 0</span>
-        </div>
+      <footer class="flex-shrink-0 bg-slate-50 px-5 pt-5 pb-6 border-t border-slate-200">
+          <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                  <span class="text-slate-600">Subtotal:</span>
+                  <span id="summary-portraits-total" class="font-medium text-slate-800">KSh 0</span>
+              </div>
+              <div class="flex justify-between">
+                  <span class="text-slate-600">Delivery Fee:</span>
+                  <span id="delivery-fee" class="font-medium text-slate-800">KSh 0</span>
+              </div>
+          </div>
 
+          <div class="flex justify-between items-center font-semibold text-lg border-t border-slate-200 mt-4 pt-4">
+              <span class="text-slate-800">Grand Total:</span>
+              <span id="total" class="text-green-600">KSh 0</span>
+          </div>
 
-   <div class="flex justify-between items-center font-semibold text-lg border-t border-slate-200 mt-4 pt-4">
-        <span class="text-slate-800">Grand Total:</span>
-        <span id="total" class="text-green-600">KSh 0</span>
-    </div>
-
-    <button type="button" id="orderButton"
-            class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:shadow-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
-        Order Via WhatsApp
-    </button>
-
-    </div>
-
- 
-</footer>
+          <button type="button" id="orderButton"
+                  class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:shadow-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white mt-4">
+              Order Via WhatsApp
+          </button>
+      </footer>
   </div>
 </div>
 
