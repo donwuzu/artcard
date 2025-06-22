@@ -82,37 +82,37 @@
 </div>
 
 
-  <div class="overflow-x-auto rounded-lg shadow">
-    <div class="min-w-[600px] sm:min-w-0"> <!-- Ensures table has minimum width on mobile -->
-        <table class="w-full table-auto divide-y divide-gray-300 text-xs sm:text-sm">
-            <thead class="bg-gray-100 font-semibold text-gray-700">
+ 
+   <div class="relative overflow-x-auto shadow-md sm:rounded-lg"> <!-- Ensures table has minimum width on mobile -->
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
                 <tr>
-                    <th class="px-2 py-3 sm:px-4 whitespace-nowrap">#</th>
-                    <th class="px-1 sm:px-4 py-3 whitespace-nowrap sticky left-0 bg-gray-100 z-10 min-w-[120px]">Name</th>
-                    <th class="px-2 py-3 sm:px-4 whitespace-nowrap">Phone</th>
-                    <th class="px-2 py-3 sm:px-4 whitespace-nowrap">Location</th>
-                    <th class="px-2 py-3 sm:px-4 whitespace-nowrap">Total</th>
-                    <th class="px-2 py-3 sm:px-4 whitespace-nowrap">Created At</th>
-                    <th class="px-2 py-3 sm:px-4 whitespace-nowrap">Status</th>
-                    <th class="px-2 py-3 sm:px-4 whitespace-nowrap">Actions</th>
-                    <th class="px-2 py-3 sm:px-4 whitespace-nowrap">Delete</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">#</th>
+                    <th scope="col" class="px-6 py-3 ">Name</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Phone</th>
+                    <th scope="col" class="px-6 py-3 ">Location</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Total</th>
+                    <th scope="col" class="px-6 py-3 ">Created At</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Status</th>
+                    <th scope="col" class="px-6 py-3 ">Actions</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Delete</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200 text-gray-800">
                 @foreach ($filteredOrders as $index => $order)
-                    <tr class="hover:bg-gray-50 cursor-pointer"
+                    <tr class="border-b border-gray-200 dark:border-gray-700"
                       onclick="toggleOrderDetails({{ $order->id }})">
-                        <td class="px-2 py-3 sm:px-4 font-semibold">{{ $index + 1 }}</td>
-                        <td class="px-1 sm:px-4 py-3 sticky left-0 bg-white z-0 min-w-[120px] truncate max-w-[150px]">{{ $order->name }}</td>
+                        <td class="px-6 py-4">{{ $index + 1 }}</td>
+                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->name }}</td>
                         <td class="px-2 py-3 sm:px-4">{{ $order->phone }}</td>
-                        <td class="px-2 py-3 sm:px-4 truncate max-w-[100px]">{{ $order->location }}</td>
+                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->location }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">KSh {{ number_format($order->total_price) }}</td>
-                        <td class="px-2 py-3 sm:px-4 whitespace-nowrap">{{ $order->created_at->format('d M Y') }}</td>
+                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->created_at->format('d M Y') }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">{{ $order->status ?? 'unpaid' }}</td>
-                        <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
+                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">
                             <form action="{{ route('expenses.toggleStatus', $order->id) }}" method="POST">
                                 @csrf
-                                <button class="{{ $order->status === 'paid' ? 'bg-black' : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
+                                <button class="{{ $order->status === 'paid' ? 'bg-red-600' : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
                                     {{ $order->status === 'paid' ? 'Mark Unpaid' : 'Mark Paid' }}
                                 </button>
                             </form>
@@ -144,7 +144,6 @@
                                                         alt="Portrait {{ $portrait->id }}"
                                                     >
                                                     <p class="text-xs sm:text-sm font-medium">#{{ $portrait->id }} x{{ $qty }}</p>
-                                                    <p class="text-xs text-gray-500">KSh {{ number_format($portrait->price) }}</p>
                                                 </div>
                                             @endif
                                         @endforeach
@@ -157,7 +156,6 @@
             </tbody>
         </table>
     </div>
-</div>
 
   
 
