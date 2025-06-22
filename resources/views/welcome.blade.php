@@ -236,7 +236,7 @@
        role="dialog" 
        aria-modal="true" 
        aria-labelledby="cart-heading"
-       class="absolute right-0 top-0 h-full w-full max-w-md bg-white flex flex-col">
+       class="absolute right-0 top-0 h-dvh w-full max-w-md bg-white flex flex-col">
 
       <header class="flex-shrink-0 relative border-b border-slate-200 px-5 py-4">
           <h2 id="cart-heading" class="text-lg font-semibold text-slate-800 text-center">Your Selected Portraits</h2>
@@ -259,14 +259,6 @@
                   </tr>
               </thead>
               <tbody id="checkout-summary-body" class="divide-y divide-slate-100">
-                   <tr class="h-20"><td>Item 1</td><td></td><td></td><td></td><td></td></tr>
-                   <tr class="h-20"><td>Item 2</td><td></td><td></td><td></td><td></td></tr>
-                   <tr class="h-20"><td>Item 3</td><td></td><td></td><td></td><td></td></tr>
-                   <tr class="h-20"><td>Item 4</td><td></td><td></td><td></td><td></td></tr>
-                   <tr class="h-20"><td>Item 5</td><td></td><td></td><td></td><td></td></tr>
-                   <tr class="h-20"><td>Item 6</td><td></td><td></td><td></td><td></td></tr>
-                   <tr class="h-20"><td>Item 7</td><td></td><td></td><td></td><td></td></tr>
-                   <tr class="h-20"><td>Item 8</td><td></td><td></td><td></td><td></td></tr>
                    <tr>
                       <td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td>
                   </tr>
