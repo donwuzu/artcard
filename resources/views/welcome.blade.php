@@ -278,9 +278,9 @@
             <span class="text-slate-600">Delivery Fee:</span>
             <span id="delivery-fee" class="font-medium text-slate-800">KSh 0</span>
         </div>
-    </div>
 
-    <div class="flex justify-between items-center font-semibold text-lg border-t border-slate-200 mt-4 pt-4">
+
+   <div class="flex justify-between items-center font-semibold text-lg border-t border-slate-200 mt-4 pt-4">
         <span class="text-slate-800">Grand Total:</span>
         <span id="total" class="text-green-600">KSh 0</span>
     </div>
@@ -289,6 +289,10 @@
             class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-sm hover:shadow-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
         Order Via WhatsApp
     </button>
+
+    </div>
+
+ 
 </footer>
   </div>
 </div>
