@@ -88,29 +88,29 @@
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
                 <tr>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">#</th>
-                    <th scope="col" class="px-6 py-3 ">Name</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Phone</th>
-                    <th scope="col" class="px-6 py-3 ">Location</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Total</th>
-                    <th scope="col" class="px-6 py-3 ">Created At</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Status</th>
-                    <th scope="col" class="px-6 py-3 ">Actions</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Delete</th>
+                    <th scope="col" class="px-6 py-3 ">#</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Name</th>
+                    <th scope="col" class="px-6 py-3 ">Phone</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Location</th>
+                    <th scope="col" class="px-6 py-3 ">Total</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Created At</th>
+                    <th scope="col" class="px-6 py-3 ">Status</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Actions</th>
+                    <th scope="col" class="px-6 py-3 ">Delete</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200 text-gray-800 cursor-pointer">
                 @foreach ($filteredOrders as $index => $order)
                     <tr class="border-b border-gray-200 dark:border-gray-700"
                       onclick="toggleOrderDetails({{ $order->id }})">
-                        <td class="px-6 py-4">{{ $index + 1 }}</td>
-                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->name }}</td>
+                        <td class="px-2 py-4">{{ $index + 1 }}</td>
+                        <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->name }}</td>
                         <td class="px-2 py-3 sm:px-4">{{ $order->phone }}</td>
-                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->location }}</td>
+                        <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->location }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">KSh {{ number_format($order->total_price) }}</td>
-                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->created_at->format('d M Y, h:i A') }}</td>
+                        <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->created_at->format('d M Y, h:i A') }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">{{ $order->status ?? 'unpaid' }}</td>
-                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                        <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">
                             <form action="{{ route('expenses.toggleStatus', $order->id) }}" method="POST">
                                 @csrf
                                 <button class="{{ $order->status === 'paid' ? 'bg-red-600' : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
@@ -134,7 +134,7 @@
                             <div id="items-{{ $order->id }}" class="transition-all duration-500 ease-in-out max-h-0 overflow-hidden bg-gray-50">
                                 <div class="p-4">
                                     <h4 class="font-semibold mb-2">Ordered Portraits:</h4>
-                                    <div class="flex flex-nowrap overflow-x-auto gap-4 pb-2 -mx-2 px-2">
+                                    <div class="flex flex-none overflow-x-auto gap-4 pb-2 -mx-2 px-2">
                                         @foreach ($order->items as $portraitId => $qty)
                                             @php $portrait = \App\Models\Portrait::find($portraitId); @endphp
                                             @if($portrait)

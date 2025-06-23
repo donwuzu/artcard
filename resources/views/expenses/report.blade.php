@@ -86,16 +86,16 @@
    <div class="relative overflow-x-auto shadow-md sm:rounded-lg"> <!-- Ensures table has minimum width on mobile -->
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">#</th>
-                    <th scope="col" class="px-6 py-3 ">Name</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Phone</th>
-                    <th scope="col" class="px-6 py-3 ">Location</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Total</th>
-                    <th scope="col" class="px-6 py-3 ">Created At</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Status</th>
-                    <th scope="col" class="px-6 py-3 ">Actions</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">Delete</th>
+                     <tr>
+                    <th scope="col" class="px-6 py-3 ">#</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Name</th>
+                    <th scope="col" class="px-6 py-3 ">Phone</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Location</th>
+                    <th scope="col" class="px-6 py-3 ">Total</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Created At</th>
+                    <th scope="col" class="px-6 py-3 ">Status</th>
+                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Actions</th>
+                    <th scope="col" class="px-6 py-3 ">Delete</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200 text-gray-800">
@@ -103,13 +103,13 @@
                     <tr class="border-b border-gray-200 dark:border-gray-700"
                       onclick="toggleOrderDetails({{ $order->id }})">
                         <td class="px-6 py-4">{{ $index + 1 }}</td>
-                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->name }}</td>
+                        <td class="px-6 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->name }}</td>
                         <td class="px-2 py-3 sm:px-4">{{ $order->phone }}</td>
-                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->location }}</td>
+                        <td class="px-6 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->location }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">KSh {{ number_format($order->total_price) }}</td>
-                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">{{ $order->created_at->format('d M Y') }}</td>
+                        <td class="px-6 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->created_at->format('d M Y') }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">{{ $order->status ?? 'unpaid' }}</td>
-                        <td class="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                        <td class="px-6 py-4 bg-gray-100 dark:bg-gray-800">
                             <form action="{{ route('expenses.toggleStatus', $order->id) }}" method="POST">
                                 @csrf
                                 <button class="{{ $order->status === 'paid' ? 'bg-red-600' : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
