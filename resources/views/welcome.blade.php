@@ -8,7 +8,7 @@
 <div class="relative mt-12">
     <div class="flex justify-between items-start p-4">
         <div class="flex-grow text-center md:text-left">
-            <h2 class="text-2xl font-semibold">ARTCARD COMPANY PORTRAITS</h2>
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">ARTCARD COMPANY PORTRAITS</h2>
             <p class="text-gray-600">Explore our gallery and order custom portraits directly via Whatsapp.</p>
         </div>
 
@@ -51,18 +51,10 @@
 
 <!-- View Toggle and Controls -->
 <div class="flex justify-between items-center px-4 mb-4">
-    <h2 class="text-xl font-bold text-gray-800">Portrait Gallery</h2>
-
-
     
-
-      <div class="
-    ml-4 p-2 sm:p-3 md:p-4
-    flex justify-center sm:justify-start
-">
-    <button type="button" id="cartButton" class="
+    <a href="{{ route('clocks.index') }}" class="
         inline-flex items-center justify-center
-        w-full sm:w-auto
+        w-auto
         px-4 py-2 text-sm
         sm:px-6 sm:py-3 sm:text-base
         font-medium text-center text-white
@@ -72,23 +64,41 @@
         shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
         cursor-pointer
     ">
-        <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Portraits </span>
+        Clock Gallery
+    </a>
 
-        <span id="selectedPortraitsCount" class="
-            inline-flex items-center justify-center flex-shrink-0
-            w-6 h-6 text-base font-bold text-blue-900 bg-blue-300 rounded-full
-            sm:w-7 sm:h-7 sm:text-lg
+
+    <div class="
+        ml-4 p-2 sm:p-3 md:p-4
+        flex justify-center sm:justify-start
+    ">
+        <button type="button" id="cartButton" class="
+            inline-flex items-center justify-center
+            w-full sm:w-auto
+            px-4 py-2 text-sm
+            sm:px-6 sm:py-3 sm:text-base
+            font-medium text-center text-white
+            bg-green-600 rounded-lg
+            hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300
+            dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
+            shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
+            cursor-pointer
         ">
-            0
-        </span>
+            <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Portraits </span>
 
-        <span class="block sm:inline ms-1 sm:ms-2 whitespace-nowrap px-4">Items</span>
-    </button>
+            <span id="selectedPortraitsCount" class="
+                inline-flex items-center justify-center flex-shrink-0
+                w-6 h-6 text-base font-bold text-blue-900 bg-blue-300 rounded-full
+                sm:w-7 sm:h-7 sm:text-lg
+            ">
+                0
+            </span>
+
+            <span class="block sm:inline ms-1 sm:ms-2 whitespace-nowrap px-4">Items</span>
+        </button>
+    </div>
+
 </div>
-
-
-</div>
-
 
 
 

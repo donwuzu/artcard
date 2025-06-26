@@ -54,7 +54,7 @@ class ClockOrderController extends Controller
 
         // 5. Compute cost.
         $totalUnits = array_sum($orderableQuantities);
-        $unitPrice  = $totalUnits >= 5 ? 1900 : 2500;
+        $unitPrice  = $totalUnits >= 5 ? 500 : 700;
         $subtotal   = $totalUnits * $unitPrice;
         $deliveryFee = 300;
         $totalPrice  = $subtotal + $deliveryFee;

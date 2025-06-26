@@ -8,7 +8,7 @@
 <div class="relative mt-12">
     <div class="flex justify-between items-start p-4">
         <div class="flex-grow text-center md:text-left">
-            <h2 class="text-2xl font-semibold">ARTCARD COMPANY CLOCK PORTRAITS</h2>
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">ARTCARD COMPANY CLOCK PORTRAITS</h2>
             <p class="text-gray-600">Explore our gallery and order custom clock portraits directly via Whatsapp.</p>
         </div>
 
@@ -31,7 +31,7 @@
         <div class="flex justify-between items-center">
             <div>
                 <p class="font-bold">Special Offer!</p>
-                <p>Select 10 or more portraits and get each @ 190!</p>
+                <p>Select 10 or more clock portraits and get each @ 500!</p>
             </div>
             <button onclick="document.getElementById('discountBanner').style.display='none'" 
                     class="text-blue-700 hover:text-blue-900">
@@ -51,18 +51,10 @@
 
 <!-- View Toggle and Controls -->
 <div class="flex justify-between items-center px-4 mb-4">
-    <h2 class="text-xl font-bold text-gray-800">Clock Gallery</h2>
-
-
     
-
-      <div class="
-    ml-4 p-2 sm:p-3 md:p-4
-    flex justify-center sm:justify-start
-">
-    <button type="button" id="cartButton" class="
+    <a href="{{ route('home') }}" class="
         inline-flex items-center justify-center
-        w-full sm:w-auto
+        w-auto
         px-4 py-2 text-sm
         sm:px-6 sm:py-3 sm:text-base
         font-medium text-center text-white
@@ -72,20 +64,39 @@
         shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
         cursor-pointer
     ">
-        <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Clocks </span>
+        Portraits Gallery
+    </a>
 
-        <span id="selectedCLocksCount" class="
-            inline-flex items-center justify-center flex-shrink-0
-            w-6 h-6 text-base font-bold text-blue-900 bg-blue-300 rounded-full
-            sm:w-7 sm:h-7 sm:text-lg
+
+    <div class="
+        ml-4 p-2 sm:p-3 md:p-4
+        flex justify-center sm:justify-start
+    ">
+        <button type="button" id="cartButton" class="
+            inline-flex items-center justify-center
+            w-full sm:w-auto
+            px-4 py-2 text-sm
+            sm:px-6 sm:py-3 sm:text-base
+            font-medium text-center text-white
+            bg-green-600 rounded-lg
+            hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300
+            dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
+            shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
+            cursor-pointer
         ">
-            0
-        </span>
+            <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Clocks </span>
 
-        <span class="block sm:inline ms-1 sm:ms-2 whitespace-nowrap px-4">Items</span>
-    </button>
-</div>
+            <span id="selectedCLocksCount" class="
+                inline-flex items-center justify-center flex-shrink-0
+                w-6 h-6 text-base font-bold text-blue-900 bg-blue-300 rounded-full
+                sm:w-7 sm:h-7 sm:text-lg
+            ">
+                0
+            </span>
 
+            <span class="block sm:inline ms-1 sm:ms-2 whitespace-nowrap px-4">Items</span>
+        </button>
+    </div>
 
 </div>
 
@@ -98,7 +109,7 @@
         <div class="portrait-card group flex flex-col bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1 h-full"
              data-id="{{ $clock->id }}"
              data-price="{{ $clock->price }}"  {{-- Assuming this is the raw price for JS calculations --}}
-             data-name="Portrait #{{ $clock->id }}">
+             data-name="Clock #{{ $clock->id }}">
 
             <div class="relative flex-shrink-0">
                 <img src="{{ Storage::url($clock->image_path) }}"
@@ -113,13 +124,13 @@
 
             <div class="p-4 flex flex-col flex-grow">
                 {{-- CLock Name/ID (Optional but good for context) --}}
-                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="CLock #{{ $clock->id }}">
-                    CLock #{{ $clock->id }}
+                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="Clock #{{ $clock->id }}">
+                    Clock #{{ $clock->id }}
                 </h3>
 
                 {{-- Price Display --}}
                 <p class="text-sm text-gray-700 mb-3">
-                    Price: <span class="unit-price-display font-bold text-indigo-600">KSh 250</span> {{-- Or use {{ $portrait->formatted_price }} if available --}}
+                    Price: <span class="unit-price-display font-bold text-indigo-600">KSh 700</span> {{-- Or use {{ $portrait->formatted_price }} if available --}}
                 </p>
 
                 {{-- Spacer to push subsequent content to bottom --}}
@@ -257,7 +268,7 @@
       <table class="w-full text-sm text-slate-600">
         <thead>
           <tr class="border-b border-slate-200">
-            <th class="w-2/5 text-left font-medium pb-3 pl-2">CLock</th>
+            <th class="w-2/5 text-left font-medium pb-3 pl-2">Clock</th>
             <th class="w-1/6 text-center font-medium pb-3">Qty</th>
             <th class="w-1/5 text-right font-medium pb-3">Price</th>
             <th class="w-1/5 text-right font-medium pb-3">Subtotal</th>
@@ -332,7 +343,7 @@
 
       <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-4 text-center">Enter Your Details</h2>
 
-      <form id="order-form" method="POST" action="{{ route('order.store') }}" class="space-y-5">
+      <form id="order-form" method="POST" action="{{ route('clock.order.store') }}" class="space-y-5">
           @csrf
           <div class="space-y-4">
               <div>
@@ -536,7 +547,7 @@ function saveCurrentSelections() {
 function updateSubtotal(card) {
     const quantityInput = card.querySelector('.quantity-input');
     const quantity = parseInt(quantityInput.value) || 0;
-    const price = parseFloat(card.dataset.price) || 250;
+    const price = parseFloat(card.dataset.price) || 0;
     const subtotal = quantity * price;
     card.querySelector('.subtotal').textContent = `KSh ${subtotal.toLocaleString()}`;
 }
@@ -589,8 +600,8 @@ function scrollCarousel(direction) {
         
         // Define pricing rules
         const deliveryFee = 300;
-        const tier1Price = 2500;
-        const tier2Price = 1900;
+        const tier1Price = 700;
+        const tier2Price = 500;
         const tierThreshold = 5;
 
         // Calculate total units to determine the correct unit price
@@ -697,12 +708,12 @@ function setupInitialViewToggle() {
             const quantity = parseInt(selections[id], 10);
                     totalSelectedItems += quantity; // Add quantity to total
             const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
-            const name = card ? card.dataset.name : `Portrait #${id}`; // Get real name from data-name attribute
+            const name = card ? card.dataset.name : ` #${id}`; // Get real name from data-name attribute
             const subtotal = quantity * unitPrice;
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td class="px-3 py-2 text-left">${name}</td>
+                <td class="px-3 py-2 text-left"> ${name}</td>
                 <td class="px-2 py-2 text-center">${quantity}</td>
                 <td class="px-2 py-2 text-right">KSh ${unitPrice.toLocaleString()}</td>
                 <td class="px-2 py-2 text-right">KSh ${subtotal.toLocaleString()}</td>

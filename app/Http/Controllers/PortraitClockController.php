@@ -63,7 +63,7 @@ class PortraitClockController extends Controller
         'price' => $request->price,
     ]);
 
-    return redirect()->route('clocksDashboard')->with('success', 'Clock uploaded!');
+    return redirect()->route('clocks.dashboard')->with('success', 'Clock uploaded!');
 }
 
 }
