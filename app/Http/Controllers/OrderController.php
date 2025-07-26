@@ -119,4 +119,11 @@ class OrderController extends Controller
 
         return "https://wa.me/{$adminPhone}?text=" . rawurlencode($message);
     }
+
+
+    public function showCart()
+{
+    return view('cart.index');
+}
+
 }

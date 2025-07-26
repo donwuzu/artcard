@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PortraitController;
 use App\Http\Controllers\PortraitClockController;
 use App\Http\Controllers\ClockExpenseController;
+use App\Http\Controllers\CartController;
+
 use App\Http\Controllers\ExpenseController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +31,8 @@ Route::post('/checkout', action: [OrderController::class, 'store'])->name('order
 
 
 
+Route::get('/cart', [CartController::class, 'show'])->name('cart.index');
+Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 
 
 

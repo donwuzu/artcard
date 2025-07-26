@@ -52,20 +52,7 @@
 <!-- View Toggle and Controls -->
 <div class="flex justify-between items-center px-4 mb-4">
     
-    <a href="{{ route('home') }}" class="
-        inline-flex items-center justify-center
-        w-auto
-        px-4 py-2 text-sm
-        sm:px-6 sm:py-3 sm:text-base
-        font-medium text-center text-white
-        bg-green-600 rounded-lg
-        hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300
-        dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
-        shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
-        cursor-pointer
-    ">
-        Portraits Gallery
-    </a>
+    
 
 
     <div class="
