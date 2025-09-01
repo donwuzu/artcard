@@ -17,65 +17,98 @@ class OrderController extends Controller
             'name'               => 'required|string|max:255',
             'phone'              => 'required|string|max:20',
             'location'           => 'required|string|max:255',
+            'currency'           => 'required|string|in:KES,UGX,TZS,RWF',
             'portraitSelections' => 'required|json', // This is now required and must be valid JSON
         ]);
 
-        // 2. Decode the selections and filter for positive quantities.
-        // This is now our SINGLE SOURCE OF TRUTH. No merging needed.
-        $selections = json_decode($validated['portraitSelections'], true);
-        
+        // 2) Decode selections and keep only positive integer quantities
+        try {
+            $selections = json_decode($validated['portraitSelections'], true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return back()->withInput()->withErrors(['portraitSelections' => 'Invalid cart data. Please try again.']);
+        }
+
+        if (!is_array($selections)) {
+            $selections = [];
+        }
+
         $finalQuantities = [];
+        $MAX_QTY_PER_ITEM = 1000; // adjust if you like
+
         foreach ($selections as $id => $qty) {
-            if ((int)$qty > 0) {
-                $finalQuantities[(int)$id] = (int)$qty;
+            $id  = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            $qty = filter_var($qty, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => $MAX_QTY_PER_ITEM]]);
+            if ($id && $qty) {
+                $finalQuantities[$id] = $qty;
             }
         }
 
-        // 3. Check for an empty order.
-        if (empty($finalQuantities)) {
-            // This might happen if the JSON was just '{}' or contained only zero quantities.
-            return back()->withInput()->withErrors(['quantities' => 'Please select at least one portrait.']);
-        }
 
-        // 4. Validate that all submitted portrait IDs exist in the database.
-        // This logic remains crucial for data integrity.
-        $submittedPortraitIds = array_keys($finalQuantities);
-        $portraits = Portrait::whereIn('id', $submittedPortraitIds)->get();
-
-        // If the number of portraits found in the DB doesn't match what was submitted,
-        // it means some IDs were invalid (e.g., from old localStorage data).
-        if ($portraits->count() !== count($finalQuantities)) {
-            // Gracefully filter the submitted items to only include what's valid.
-            $validPortraitIds = $portraits->pluck('id')->all();
-            $orderableQuantities = array_intersect_key($finalQuantities, array_flip($validPortraitIds));
-
-            // If, after filtering, the cart is empty, return an error.
-            if (empty($orderableQuantities)) {
-                return back()->withInput()->withErrors(['quantities' => 'The portraits you selected are no longer available. Please update your selection.']);
+        // 3) Ensure order is not empty
+            if (empty($finalQuantities)) {
+                return back()->withInput()->withErrors([
+                    'quantities' => 'Please select at least one portrait.'
+                ]);
             }
-            
-            // If some items were dropped, inform the user.
-            session()->flash('warning', 'Please note: One or more portraits in your cart were unavailable and have been removed from your order.');
-        } else {
-            // If all IDs were valid, the orderable list is the same as the final list.
-            $orderableQuantities = $finalQuantities;
-        }
 
-        // 5. Compute costs using ONLY THE VALID, ORDERABLE ITEMS.
-        $totalUnits = array_sum($orderableQuantities);
-        $unitPrice  = $totalUnits >= 5 ? 190 : 250;
-        $subtotal   = $totalUnits * $unitPrice;
-        $deliveryFee = 300;
-        $totalPrice  = $subtotal + $deliveryFee;
+            // 4) Validate submitted portrait IDs exist in the database
+            $submittedPortraitIds = array_keys($finalQuantities);
+            $portraits = Portrait::whereIn('id', $submittedPortraitIds)->get();
+
+            // If DB returned fewer items than submitted, some IDs were invalid
+            if ($portraits->count() !== count($finalQuantities)) {
+                $validPortraitIds   = $portraits->pluck('id')->all();
+                $orderableQuantities = array_intersect_key($finalQuantities, array_flip($validPortraitIds));
+
+                if (empty($orderableQuantities)) {
+                    return back()->withInput()->withErrors([
+                        'quantities' => 'The portraits you selected are no longer available. Please update your selection.'
+                    ]);
+                }
+
+                // Warn user that some invalid items were removed
+                session()->flash(
+                    'warning',
+                    'Please note: One or more portraits in your cart were unavailable and have been removed from your order.'
+                );
+            } else {
+                // All IDs valid
+                $orderableQuantities = $finalQuantities;
+            }
+
+      // 5. Compute costs using ONLY THE VALID, ORDERABLE ITEMS.
+            $totalUnits = array_sum($orderableQuantities);
+
+            // Get currency (already validated earlier)
+            $currency = $request->input('currency', 'KES');
+
+            // Pricing table per currency
+            $pricing = [
+                'KES' => ['tier1' => 250,   'tier2' => 190,   'delivery' => 300],
+                'UGX' => ['tier1' => 20000, 'tier2' => 15000, 'delivery' => 10000],
+                'TZS' => ['tier1' => 5000,  'tier2' => 4000,  'delivery' => 3000],
+                'RWF' => ['tier1' => 2500,  'tier2' => 2000,  'delivery' => 1500],
+            ];
+
+            // Select correct unit price and delivery fee
+            $unitPrice   = $totalUnits >= 5 
+                ? $pricing[$currency]['tier2'] 
+                : $pricing[$currency]['tier1'];
+
+            $deliveryFee = $pricing[$currency]['delivery'];
+            $subtotal    = $totalUnits * $unitPrice;
+            $totalPrice  = $subtotal + $deliveryFee;
+
 
         // 6. Save the order.
-        $order = Order::create([
+            $order = Order::create([
             'name'        => $validated['name'],
             'phone'       => $validated['phone'],
             'location'    => $validated['location'],
-            'items'       => $orderableQuantities, // Use the final, clean list
+            'items'       => $orderableQuantities,
             'total_price' => $totalPrice,
-        ]);
+            'currency'    => $currency, // now we store cleanly
+         ]);
 
         // 7. Generate WhatsApp URL and redirect.
         $whatsappUrl = $this->sendWhatsappNotification($order, $portraits, $totalUnits, $subtotal, $deliveryFee);
@@ -88,6 +121,11 @@ class OrderController extends Controller
     {
         $adminPhone = '254738269376';
 
+         // Consistent formatting helper
+    $format = function ($amount) use ($order) {
+        return $order->currency . ' ' . number_format($amount);
+    };
+    
         $message = " *NEW PORTRAIT ORDER* \n\n";
         $message .= " *Customer Details*\n";
         $message .= "• Name: {$order->name}\n";
@@ -108,12 +146,12 @@ class OrderController extends Controller
             }
         }
 
-        $message .= "\n";
-        $message .= " *Order Totals*\n";
-        $message .= "• Total Items: {$totalUnits}\n";
-        $message .= "• Subtotal: KSh {$subtotal}\n";
-        $message .= "• Delivery Fee: KSh {$deliveryFee}\n";
-        $message .= "• *TOTAL DUE: KSh {$order->total_price}*\n";
+         $message .= "\n";
+    $message .= " *Order Totals*\n";
+    $message .= "• Total Items: {$totalUnits}\n";
+    $message .= "• Subtotal: " . $format($subtotal) . "\n";
+    $message .= "• Delivery Fee: " . $format($deliveryFee) . "\n";
+    $message .= "• *TOTAL DUE: " . $format($order->total_price) . "*\n";
 
         $message .= "\nOrder Time: " . now('Africa/Nairobi')->format('Y-m-d h:i A');
 

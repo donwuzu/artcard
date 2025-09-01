@@ -17,6 +17,7 @@ class Order extends Model
             'location',
             'items',
             'total_price',
+             'currency',
     ];
 
     protected $casts = [

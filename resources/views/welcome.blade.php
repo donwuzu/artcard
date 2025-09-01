@@ -48,9 +48,50 @@
     </div>
 @endif
 
+
+
+
    <form id="order-form" method="POST" action="{{ route('order.store') }}">
 
         @csrf
+
+<input type="hidden" id="currency" name="currency" value="KES">
+
+<!-- Currency Selector -->
+<div class="flex justify-end px-4 mb-6">
+  <div class="relative">
+    <label for="currency-select" class="sr-only">Currency</label>
+    <div class="flex items-center border border-gray-300 rounded-lg bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+      <!-- Current Flag and Code -->
+      <div id="current-flag" class="flex items-center px-3 py-2 bg-gray-50 border-r border-gray-200">
+        <img id="currency-flag" src="https://flagcdn.com/w20/ke.png" 
+             srcset="https://flagcdn.com/w40/ke.png 2x"
+             width="20"
+             height="15"
+             alt="Kenya"
+             class="mr-2 rounded-sm">
+        <span id="currency-code" class="text-sm font-medium">KES</span>
+      </div>
+
+      <!-- Select Dropdown -->
+      <select id="currency-select" 
+              class="appearance-none pl-3 pr-8 py-2 text-sm font-medium bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        
+         <option value="KES" data-flag="ke" selected>Kenyan Shillings</option>
+        <option value="UGX" data-flag="ug">Ugandan Shillings</option>
+        <option value="TZS" data-flag="tz">Tanzanian Shillings</option>
+        <option value="RWF" data-flag="rw">Rwandan Francs</option>
+      </select>
+
+  
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Currency Selector -->
+
 
 
 
@@ -238,7 +279,7 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="cart-heading"
-    class="relative w-full max-w-md bg-white mx-auto my-0 min-h-screen flex flex-col"
+    class="relative w-full max-w-md bg-white mx-auto my-0  flex flex-col"
   >
     <!-- Header -->
     <header class="border-b border-slate-200 px-5 py-4">
@@ -255,7 +296,7 @@
     </header>
 
     <!-- Cart Content -->
-    <div class="px-5 py-4">
+    <div class="cart-content px-5 py-4">
       <table class="w-full text-sm text-slate-600">
         <thead>
           <tr class="border-b border-slate-200">
@@ -536,12 +577,20 @@ function saveCurrentSelections() {
 }
 
 function updateSubtotal(card) {
-    const quantityInput = card.querySelector('.quantity-input');
-    const quantity = parseInt(quantityInput.value) || 0;
-    const price = parseFloat(card.dataset.price) || 250;
-    const subtotal = quantity * price;
-    card.querySelector('.subtotal').textContent = `KSh ${subtotal.toLocaleString()}`;
+  const quantityInput = card.querySelector('.quantity-input');
+  const quantity = parseInt(quantityInput.value) || 0;
+  const price = parseFloat(card.dataset.price) || 250;
+
+  // Get current currency + rate
+  const currency = localStorage.getItem('preferredCurrency') || 'KES';
+  const rate = rates[currency]?.rate || 1;
+
+  const subtotal = quantity * (price * rate);
+
+  card.querySelector('.subtotal').textContent = formatPrice(subtotal, currency);
 }
+
+
 
 
 
@@ -587,43 +636,53 @@ function scrollCarousel(direction) {
 
 
   function calculateAndUpdateUI() {
-        const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-        
-        // Define pricing rules
-        const deliveryFee = 300;
-        const tier1Price = 250;
-        const tier2Price = 190;
-        const tierThreshold = 5;
+    const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
 
-        // Calculate total units to determine the correct unit price
-        const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
-        const unitPrice = totalUnits >= tierThreshold ? tier2Price : tier1Price;
-        
-        let overallSubtotal = 0;
+    // Pricing table (must match backend)
+    const pricing = {
+        KES: { tier1: 250,   tier2: 190,   delivery: 300 },
+        UGX: { tier1: 20000, tier2: 15000, delivery: 10000 },
+        TZS: { tier1: 5000,  tier2: 4000,  delivery: 3000 },
+        RWF: { tier1: 2500,  tier2: 2000,  delivery: 1500 },
+    };
 
-        // Update each portrait card on the main page
-        document.querySelectorAll('.portrait-card').forEach(card => {
-            const id = card.dataset.id;
-            const quantity = selections[id] ? parseInt(selections[id], 10) : 0;
-            const quantityInput = card.querySelector('.quantity-input');
+    const currency = localStorage.getItem('preferredCurrency') || 'KES';
 
-            if (quantityInput) quantityInput.value = quantity;
-            card.querySelector('.unit-price-display').textContent = `KSh ${unitPrice.toLocaleString()}`;
-            card.querySelector('.subtotal').textContent = `KSh ${(quantity * unitPrice).toLocaleString()}`;
-        });
+    // Count total items
+    const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
 
-        // Recalculate the overall subtotal with the correct unit price
-        overallSubtotal = totalUnits * unitPrice;
+    // Pick correct unit price (tier1 or tier2)
+    const unitPrice = totalUnits >= 5
+        ? pricing[currency].tier2
+        : pricing[currency].tier1;
 
-        // Update the cart footer totals
-        const finalDeliveryFee = totalUnits > 0 ? deliveryFee : 0;
-        document.getElementById('summary-portraits-total').textContent = `KSh ${overallSubtotal.toLocaleString()}`;
-        document.getElementById('delivery-fee').textContent = `KSh ${finalDeliveryFee.toLocaleString()}`;
-        document.getElementById('total').textContent = `KSh ${(overallSubtotal + finalDeliveryFee).toLocaleString()}`;
+    // Delivery fee (0 if no items)
+    const deliveryFee = totalUnits > 0 ? pricing[currency].delivery : 0;
 
-        // Update the detailed table inside the cart sidebar
-        renderSelectionTable(selections, unitPrice);
-    }
+    // Subtotal
+    const overallSubtotal = totalUnits * unitPrice;
+
+    // Update each portrait card
+    document.querySelectorAll('.portrait-card').forEach(card => {
+        const id = card.dataset.id;
+        const quantity = selections[id] ? parseInt(selections[id], 10) : 0;
+        const quantityInput = card.querySelector('.quantity-input');
+
+        if (quantityInput) quantityInput.value = quantity;
+        card.querySelector('.unit-price-display').textContent = formatPrice(unitPrice, currency);
+        card.querySelector('.subtotal').textContent = formatPrice(quantity * unitPrice, currency);
+    });
+
+    // Update summary
+    document.getElementById('summary-portraits-total').textContent = formatPrice(overallSubtotal, currency);
+    document.getElementById('delivery-fee').textContent = formatPrice(deliveryFee, currency);
+    document.getElementById('total').textContent = formatPrice(overallSubtotal + deliveryFee, currency);
+
+    // Pass currency (not unitPrice) into table renderer
+    renderSelectionTable(selections, currency);
+}
+
+
 
 
 function showSuccessBanner() {
@@ -681,52 +740,61 @@ function setupInitialViewToggle() {
 }
 
 
+function renderSelectionTable(selections, currency) {
+    const tbody = document.getElementById('checkout-summary-body');
+    const countSpan = document.getElementById('selectedPortraitsCount');
+    let totalSelectedItems = 0;
 
- function renderSelectionTable(selections, unitPrice) {
-        const tbody = document.getElementById('checkout-summary-body');
-         const countSpan = document.getElementById('selectedPortraitsCount'); // Get the span element
-        let totalSelectedItems = 0; // Initialize a counter for total items
+    tbody.innerHTML = '';
 
-        tbody.innerHTML = ''; // Clear previous entries
-
-        if (Object.keys(selections).length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td></tr>';
-            countSpan.textContent = '0'; // Update the span to 0 when empty
-            return;
-        }
-
-        for (const id in selections) {
-            const quantity = parseInt(selections[id], 10);
-                    totalSelectedItems += quantity; // Add quantity to total
-            const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
-            const name = card ? card.dataset.name : `Portrait #${id}`; // Get real name from data-name attribute
-            const subtotal = quantity * unitPrice;
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="px-3 py-2 text-left">${name}</td>
-                <td class="px-2 py-2 text-center">${quantity}</td>
-                <td class="px-2 py-2 text-right">KSh ${unitPrice.toLocaleString()}</td>
-                <td class="px-2 py-2 text-right">KSh ${subtotal.toLocaleString()}</td>
-                <td class="px-2 py-2 text-center">
-                   <button onclick="removePortrait('${id}')" title="Remove ${name}" class="
-    text-red-600 hover:text-red-800
-    text-xs sm:text-sm md:text-base
-    underline decoration-red-600 decoration-solid decoration-1
-    hover:decoration-red-800
-    transition-colors duration-200 ease-in-out
-    focus:outline-none focus:ring-1 focus:ring-red-400 focus:ring-offset-1
-    font-medium
-">
-    Remove 
-</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        }
-          // Update the count span with the total number of selected items
-    countSpan.textContent = totalSelectedItems.toString();
+    if (Object.keys(selections).length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td></tr>';
+        countSpan.textContent = '0';
+        return;
     }
+
+    // Pricing table (same as backend)
+    const pricing = {
+        KES: { tier1: 250,   tier2: 190,   delivery: 300 },
+        UGX: { tier1: 20000, tier2: 15000, delivery: 10000 },
+        TZS: { tier1: 5000,  tier2: 4000,  delivery: 3000 },
+        RWF: { tier1: 2500,  tier2: 2000,  delivery: 1500 },
+    };
+
+    // Count total units first (to decide tier)
+    for (const id in selections) {
+        totalSelectedItems += parseInt(selections[id], 10);
+    }
+
+    // Choose correct unit price based on total units
+    const unitPrice = totalSelectedItems >= 5 
+        ? pricing[currency].tier2 
+        : pricing[currency].tier1;
+
+    // Build table rows
+    for (const id in selections) {
+        const quantity = parseInt(selections[id], 10);
+        const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
+        const name = card ? card.dataset.name : `Portrait #${id}`;
+        const subtotal = quantity * unitPrice;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="px-3 py-2 text-left">${name}</td>
+            <td class="px-2 py-2 text-center">${quantity}</td>
+            <td class="px-2 py-2 text-right">${formatPrice(unitPrice, currency)}</td>
+            <td class="px-2 py-2 text-right">${formatPrice(subtotal, currency)}</td>
+            <td class="px-2 py-2 text-center">
+                <button onclick="removePortrait('${id}')" title="Remove ${name}" class="text-red-600 hover:text-red-800 underline">Remove</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    countSpan.textContent = totalSelectedItems.toString();
+}
+
+
 
 
 
@@ -736,8 +804,6 @@ function setupInitialViewToggle() {
         localStorage.setItem('portraitSelections', JSON.stringify(selections));
         calculateAndUpdateUI(); // Redraw everything
     }
-
-
 
 function updateQuantity(button, change) {
     // Find the parent '.portrait-card' for the button that was clicked.
@@ -839,8 +905,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-
  function showUserDetailsModal() {
   const inputs = document.querySelectorAll("input[name^='quantities']");
   let totalSelected = 0;
@@ -862,8 +926,75 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 }
 
+// Currency symbols (no conversion here anymore!)
+const rates = {
+  KES: { symbol: 'KSh' },
+  UGX: { symbol: 'UGX' },
+  TZS: { symbol: 'TSh' },
+  RWF: { symbol: 'FRw' },
+};
 
+const altNames = {
+  KES: 'Kenya',
+  UGX: 'Uganda',
+  TZS: 'Tanzania',
+  RWF: 'Rwanda'
+};
 
+// ✅ Use only symbols for formatting
+function formatPrice(amount, currency) {
+  if (!rates[currency]) return `${amount} ${currency}`;
+  const { symbol } = rates[currency];
+  return `${symbol} ${amount.toLocaleString()}`;
+}
+
+function updateCurrencyDisplay() {
+  calculateAndUpdateUI();
+}
+
+// Handle currency change
+function handleCurrencyChange() {
+  const select = document.getElementById('currency-select');
+  const selectedOption = select.options[select.selectedIndex];
+  const flagCode = selectedOption.getAttribute('data-flag');
+  const currencyCode = select.value;
+
+  // Save preference
+  localStorage.setItem('preferredCurrency', currencyCode);
+
+  // Update flag + code
+  document.getElementById('currency-flag').src = `https://flagcdn.com/w20/${flagCode}.png`;
+  document.getElementById('currency-flag').srcset = `https://flagcdn.com/w40/${flagCode}.png 2x`;
+  document.getElementById('currency-flag').alt = altNames[currencyCode] || currencyCode;
+  document.getElementById('currency-code').textContent = currencyCode;
+
+  // 🔑 Update hidden input (what Laravel gets)
+  document.getElementById('currency').value = currencyCode;
+
+  // Update prices
+  updateCurrencyDisplay();
+}
+
+// Init on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const savedCurrency = localStorage.getItem('preferredCurrency') || 'KES';
+  const select = document.getElementById('currency-select');
+
+  // Set dropdown and hidden input
+  select.value = savedCurrency;
+  document.getElementById('currency').value = savedCurrency;
+
+  // Update UI
+  handleCurrencyChange();
+});
+
+// Listener
+document.getElementById('currency-select').addEventListener('change', handleCurrencyChange);
+
+// Debug on submit
+document.querySelector('form').addEventListener('submit', function() {
+  console.log("Submitting with currency:", document.getElementById('currency').value);
+});
 
 
 </script>
@@ -871,56 +1002,92 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
 <style>
+/* --- Sidebar Styles --- */
 #cartSidebar {
-    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.2);
-    transform: translateX(110%);
-    transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
-    will-change: transform, box-shadow;
-    border-radius: 16px 0 0 16px;
-    overflow: hidden;
-    background: #ffffff;
-    border-left: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.95);
+  position: fixed;
+  top: 80px; /* leave space for fixed navbar */
+  right: 0;
+  width: 100%;
+  max-width: 380px;
+
+    /* ✅ Flexible height */
+  max-height: calc(100vh - 120px); /* leaves breathing room at bottom */
+  height: auto;                   /* grow with content */
+
+  display: flex;
+  flex-direction: column;
+
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px 0 0 16px;
+  overflow: hidden;
+
+  transform: translateX(110%);
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.55s cubic-bezier(0.33, 1, 0.68, 1),
+              box-shadow 0.4s ease;
+  will-change: transform, box-shadow;
+}
+
+/* ✅ Scroll only inside the cart content if needed */
+#cartSidebar .cart-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  min-height: 100px; /* prevents collapsing too much when empty */
+    max-height: calc(100vh - 280px); /* keeps footer visible, avoids bottom */
 }
 
 #cartSidebar.open {
-    transform: translateX(0);
-    box-shadow: -12px 0 50px rgba(0, 0, 0, 0.25);
+  transform: translateX(0);
+  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.25);
+  animation: subtleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 #cartSidebar.closing {
-    transform: translateX(110%);
-    transition-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+  transform: translateX(110%);
+  transition-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
 }
 
+/* --- Overlay Styles --- */
 .cart-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
-    z-index: 40;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1), 
-                backdrop-filter 0.5s ease;
-    backdrop-filter: blur(0px);
-    will-change: opacity, backdrop-filter;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 0, 0, 0.55)
+  );
+
+  opacity: 0;
+  pointer-events: none;
+
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+
+  transition: opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+              backdrop-filter 0.5s ease;
+  will-change: opacity, backdrop-filter;
 }
 
 .cart-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-    backdrop-filter: blur(5px);
+  opacity: 1;
+  pointer-events: auto;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
-/* Optional: Add these for extra polish */
-
-
-#cartSidebar.open {
-    animation: subtleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+/* --- Animations --- */
+@keyframes subtleBounce {
+  0%   { transform: translateX(110%); }
+  60%  { transform: translateX(-12px); }
+  80%  { transform: translateX(6px); }
+  100% { transform: translateX(0); }
 }
 
 /* Add smooth scaling effect for items inside */

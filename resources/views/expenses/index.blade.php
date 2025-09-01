@@ -107,7 +107,11 @@
                         <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->name }}</td>
                         <td class="px-2 py-3 sm:px-4">{{ $order->phone }}</td>
                         <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->location }}</td>
-                        <td class="px-2 py-3 sm:px-4 whitespace-nowrap">KSh {{ number_format($order->total_price) }}</td>
+                       
+                        <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
+                            {{ $order->currency }} {{ number_format($order->total_price) }}
+                        </td>      
+                                        
                         <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->created_at->format('d M Y, h:i A') }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">{{ $order->status ?? 'unpaid' }}</td>
                         <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">

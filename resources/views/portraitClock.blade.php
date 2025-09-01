@@ -47,6 +47,42 @@
 
         @csrf
 
+<input type="hidden" id="currency" name="currency" value="KES">
+
+<!-- Currency Selector -->
+<div class="flex justify-end px-4 mb-6">
+  <div class="relative">
+    <label for="currency-select" class="sr-only">Currency</label>
+    <div class="flex items-center border border-gray-300 rounded-lg bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+      <!-- Current Flag and Code -->
+      <div id="current-flag" class="flex items-center px-3 py-2 bg-gray-50 border-r border-gray-200">
+        <img id="currency-flag" src="https://flagcdn.com/w20/ke.png" 
+             srcset="https://flagcdn.com/w40/ke.png 2x"
+             width="20"
+             height="15"
+             alt="Kenya"
+             class="mr-2 rounded-sm">
+        <span id="currency-code" class="text-sm font-medium">KES</span>
+      </div>
+
+      <!-- Select Dropdown -->
+      <select id="currency-select" 
+              class="appearance-none pl-3 pr-8 py-2 text-sm font-medium bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        
+         <option value="KES" data-flag="ke" selected>Kenyan Shillings</option>
+        <option value="UGX" data-flag="ug">Ugandan Shillings</option>
+        <option value="TZS" data-flag="tz">Tanzanian Shillings</option>
+        <option value="RWF" data-flag="rw">Rwandan Francs</option>
+      </select>
+
+  
+
+    </div>
+  </div>
+</div>
+
+<!-- Currency Selector -->
+
 
 
 <!-- View Toggle and Controls -->
@@ -234,7 +270,7 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="cart-heading"
-    class="relative w-full max-w-md bg-white mx-auto my-0 min-h-screen flex flex-col"
+    class="relative w-full max-w-md bg-white mx-auto my-0  flex flex-col"
   >
     <!-- Header -->
     <header class="border-b border-slate-200 px-5 py-4">
@@ -251,7 +287,7 @@
     </header>
 
     <!-- Cart Content -->
-    <div class="px-5 py-4">
+    <div class="cart-content px-5 py-4">
       <table class="w-full text-sm text-slate-600">
         <thead>
           <tr class="border-b border-slate-200">
@@ -585,40 +621,51 @@ function scrollCarousel(direction) {
   function calculateAndUpdateUI() {
         const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
         
-        // Define pricing rules
-        const deliveryFee = 300;
-        const tier1Price = 700;
-        const tier2Price = 500;
-        const tierThreshold = 5;
+      // Pricing table (must match backend)
+    const pricing = {
+        KES: { tier1: 700,   tier2: 500,   delivery: 300 },
+        UGX: { tier1: 30000, tier2: 25000, delivery: 3000 },
+        TZS: { tier1: 10000,  tier2: 8000,  delivery: 2000 },
+        RWF: { tier1: 3200,  tier2: 2800,  delivery: 1200 },
+    };
+
+        const currency = localStorage.getItem('preferredCurrency') || 'KES';
+
 
         // Calculate total units to determine the correct unit price
         const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
-        const unitPrice = totalUnits >= tierThreshold ? tier2Price : tier1Price;
+         // Pick correct unit price (tier1 or tier2)
+        const unitPrice = totalUnits >= 5
+            ? pricing[currency].tier2
+            : pricing[currency].tier1;
+
+
+               // Delivery fee (0 if no items)
+         const deliveryFee = totalUnits > 0 ? pricing[currency].delivery : 0;
         
-        let overallSubtotal = 0;
+         // Subtotal
+    const overallSubtotal = totalUnits * unitPrice;
 
-        // Update each portrait card on the main page
-        document.querySelectorAll('.portrait-card').forEach(card => {
-            const id = card.dataset.id;
-            const quantity = selections[id] ? parseInt(selections[id], 10) : 0;
-            const quantityInput = card.querySelector('.quantity-input');
 
-            if (quantityInput) quantityInput.value = quantity;
-            card.querySelector('.unit-price-display').textContent = `KSh ${unitPrice.toLocaleString()}`;
-            card.querySelector('.subtotal').textContent = `KSh ${(quantity * unitPrice).toLocaleString()}`;
-        });
 
-        // Recalculate the overall subtotal with the correct unit price
-        overallSubtotal = totalUnits * unitPrice;
+       // Update each portrait card
+    document.querySelectorAll('.portrait-card').forEach(card => {
+        const id = card.dataset.id;
+        const quantity = selections[id] ? parseInt(selections[id], 10) : 0;
+        const quantityInput = card.querySelector('.quantity-input');
 
-        // Update the cart footer totals
-        const finalDeliveryFee = totalUnits > 0 ? deliveryFee : 0;
-        document.getElementById('summary-portraits-total').textContent = `KSh ${overallSubtotal.toLocaleString()}`;
-        document.getElementById('delivery-fee').textContent = `KSh ${finalDeliveryFee.toLocaleString()}`;
-        document.getElementById('total').textContent = `KSh ${(overallSubtotal + finalDeliveryFee).toLocaleString()}`;
+        if (quantityInput) quantityInput.value = quantity;
+        card.querySelector('.unit-price-display').textContent = formatPrice(unitPrice, currency);
+        card.querySelector('.subtotal').textContent = formatPrice(quantity * unitPrice, currency);
+    });
+
+       // Update summary
+    document.getElementById('summary-portraits-total').textContent = formatPrice(overallSubtotal, currency);
+    document.getElementById('delivery-fee').textContent = formatPrice(deliveryFee, currency);
+    document.getElementById('total').textContent = formatPrice(overallSubtotal + deliveryFee, currency);
 
         // Update the detailed table inside the cart sidebar
-        renderSelectionTable(selections, unitPrice);
+        renderSelectionTable(selections, currency);
     }
 
 
@@ -691,36 +738,45 @@ function setupInitialViewToggle() {
             return;
         }
 
-        for (const id in selections) {
-            const quantity = parseInt(selections[id], 10);
-                    totalSelectedItems += quantity; // Add quantity to total
-            const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
-            const name = card ? card.dataset.name : ` #${id}`; // Get real name from data-name attribute
-            const subtotal = quantity * unitPrice;
+           // Pricing table (same as backend)
+    const pricing = {
+        KES: { tier1: 250,   tier2: 190,   delivery: 300 },
+        UGX: { tier1: 20000, tier2: 15000, delivery: 10000 },
+        TZS: { tier1: 5000,  tier2: 4000,  delivery: 3000 },
+        RWF: { tier1: 2500,  tier2: 2000,  delivery: 1500 },
+    };
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="px-3 py-2 text-left"> ${name}</td>
-                <td class="px-2 py-2 text-center">${quantity}</td>
-                <td class="px-2 py-2 text-right">KSh ${unitPrice.toLocaleString()}</td>
-                <td class="px-2 py-2 text-right">KSh ${subtotal.toLocaleString()}</td>
-                <td class="px-2 py-2 text-center">
-                   <button onclick="removePortrait('${id}')" title="Remove ${name}" class="
-    text-red-600 hover:text-red-800
-    text-xs sm:text-sm md:text-base
-    underline decoration-red-600 decoration-solid decoration-1
-    hover:decoration-red-800
-    transition-colors duration-200 ease-in-out
-    focus:outline-none focus:ring-1 focus:ring-red-400 focus:ring-offset-1
-    font-medium
-">
-    Remove 
-</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        }
-          // Update the count span with the total number of selected items
+
+       // Count total units first (to decide tier)
+    for (const id in selections) {
+        totalSelectedItems += parseInt(selections[id], 10);
+    }
+
+    // Choose correct unit price based on total units
+    const unitPrice = totalSelectedItems >= 5 
+        ? pricing[currency].tier2 
+        : pricing[currency].tier1;
+
+    // Build table rows
+    for (const id in selections) {
+        const quantity = parseInt(selections[id], 10);
+        const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
+        const name = card ? card.dataset.name : ` #${id}`;
+        const subtotal = quantity * unitPrice;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="px-3 py-2 text-left">${name}</td>
+            <td class="px-2 py-2 text-center">${quantity}</td>
+            <td class="px-2 py-2 text-right">${formatPrice(unitPrice, currency)}</td>
+            <td class="px-2 py-2 text-right">${formatPrice(subtotal, currency)}</td>
+            <td class="px-2 py-2 text-center">
+                <button onclick="removePortrait('${id}')" title="Remove ${name}" class="text-red-600 hover:text-red-800 underline">Remove</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    }
+
     countSpan.textContent = totalSelectedItems.toString();
     }
 
@@ -859,7 +915,75 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
 
+// Currency symbols (no conversion here anymore!)
+const rates = {
+  KES: { symbol: 'KSh' },
+  UGX: { symbol: 'UGX' },
+  TZS: { symbol: 'TSh' },
+  RWF: { symbol: 'FRw' },
+};
 
+const altNames = {
+  KES: 'Kenya',
+  UGX: 'Uganda',
+  TZS: 'Tanzania',
+  RWF: 'Rwanda'
+};
+
+// ✅ Use only symbols for formatting
+function formatPrice(amount, currency) {
+  if (!rates[currency]) return `${amount} ${currency}`;
+  const { symbol } = rates[currency];
+  return `${symbol} ${amount.toLocaleString()}`;
+}
+
+function updateCurrencyDisplay() {
+  calculateAndUpdateUI();
+}
+
+// Handle currency change
+function handleCurrencyChange() {
+  const select = document.getElementById('currency-select');
+  const selectedOption = select.options[select.selectedIndex];
+  const flagCode = selectedOption.getAttribute('data-flag');
+  const currencyCode = select.value;
+
+  // Save preference
+  localStorage.setItem('preferredCurrency', currencyCode);
+
+  // Update flag + code
+  document.getElementById('currency-flag').src = `https://flagcdn.com/w20/${flagCode}.png`;
+  document.getElementById('currency-flag').srcset = `https://flagcdn.com/w40/${flagCode}.png 2x`;
+  document.getElementById('currency-flag').alt = altNames[currencyCode] || currencyCode;
+  document.getElementById('currency-code').textContent = currencyCode;
+
+  // 🔑 Update hidden input (what Laravel gets)
+  document.getElementById('currency').value = currencyCode;
+
+  // Update prices
+  updateCurrencyDisplay();
+}
+
+// Init on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const savedCurrency = localStorage.getItem('preferredCurrency') || 'KES';
+  const select = document.getElementById('currency-select');
+
+  // Set dropdown and hidden input
+  select.value = savedCurrency;
+  document.getElementById('currency').value = savedCurrency;
+
+  // Update UI
+  handleCurrencyChange();
+});
+
+// Listener
+document.getElementById('currency-select').addEventListener('change', handleCurrencyChange);
+
+// Debug on submit
+document.querySelector('form').addEventListener('submit', function() {
+  console.log("Submitting with currency:", document.getElementById('currency').value);
+});
 
 
 </script>
@@ -868,56 +992,93 @@ document.addEventListener('DOMContentLoaded', () => {
     
 <style>
 #cartSidebar {
-    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.2);
-    transform: translateX(110%);
-    transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
-    will-change: transform, box-shadow;
-    border-radius: 16px 0 0 16px;
-    overflow: hidden;
-    background: #ffffff;
-    border-left: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.95);
+  position: fixed;
+  top: 80px; /* leave space for fixed navbar */
+  right: 0;
+  width: 100%;
+  max-width: 380px;
+
+    /* ✅ Flexible height */
+  max-height: calc(100vh - 120px); /* leaves breathing room at bottom */
+  height: auto;                   /* grow with content */
+
+  display: flex;
+  flex-direction: column;
+
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px 0 0 16px;
+  overflow: hidden;
+
+  transform: translateX(110%);
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.55s cubic-bezier(0.33, 1, 0.68, 1),
+              box-shadow 0.4s ease;
+  will-change: transform, box-shadow;
+}
+
+#cartSidebar .cart-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  min-height: 100px; /* prevents collapsing too much when empty */
+    max-height: calc(100vh - 280px); /* keeps footer visible, avoids bottom */
 }
 
 #cartSidebar.open {
-    transform: translateX(0);
-    box-shadow: -12px 0 50px rgba(0, 0, 0, 0.25);
+  transform: translateX(0);
+  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.25);
+  animation: subtleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 #cartSidebar.closing {
-    transform: translateX(110%);
-    transition-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+  transform: translateX(110%);
+  transition-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
 }
-
 .cart-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
-    z-index: 40;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1), 
-                backdrop-filter 0.5s ease;
-    backdrop-filter: blur(0px);
-    will-change: opacity, backdrop-filter;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 0, 0, 0.55)
+  );
+
+  opacity: 0;
+  pointer-events: none;
+
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+
+  transition: opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+              backdrop-filter 0.5s ease;
+  will-change: opacity, backdrop-filter;
 }
 
 .cart-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-    backdrop-filter: blur(5px);
+  opacity: 1;
+  pointer-events: auto;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* --- Animations --- */
+@keyframes subtleBounce {
+  0%   { transform: translateX(110%); }
+  60%  { transform: translateX(-12px); }
+  80%  { transform: translateX(6px); }
+  100% { transform: translateX(0); }
 }
 
 /* Optional: Add these for extra polish */
 
 
-#cartSidebar.open {
-    animation: subtleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
+
 
 /* Add smooth scaling effect for items inside */
 .cart-item {
