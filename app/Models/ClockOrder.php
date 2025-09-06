@@ -17,6 +17,8 @@ class ClockOrder extends Model
         'items',
         'total_price',
         'status',
+         'currency',
+
     ];
 
     protected $casts = [

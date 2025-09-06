@@ -28,6 +28,9 @@
 
     <form id="cart-order-form" method="POST" action="{{ route('cart.store') }}" class="space-y-6">
       @csrf
+
+      <input type="hidden" name="currency" id="currencyInput">
+
   <div class=" space-y-6">
     <!-- Portraits Card - Improved -->
 <div class="w-full bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
@@ -209,7 +212,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const subtotalEl = document.getElementById('summary-portraits-total');
   const deliveryFeeEl = document.getElementById('delivery-fee');
   const totalEl = document.getElementById('total');
-const clocksSubtotalEl = document.getElementById('summary-clocks-total'); // ADD THIS
+  const clocksSubtotalEl = document.getElementById('summary-clocks-total');
+
+  // ✅ 1. Get current currency + config
+  const currency = localStorage.getItem('preferredCurrency') || 'KES';
+  document.getElementById('currencyInput').value = currency; // hidden input for Laravel
+
+  const pricing = {
+    KES: { symbol: "KSh", portraits: { tier1: 250, tier2: 190 }, clocks: { tier1: 700, tier2: 500 }, delivery: 300 },
+    UGX: { symbol: "UGX", portraits: { tier1: 20000, tier2: 15000 }, clocks: { tier1: 50000, tier2: 38000 }, delivery: 10000 },
+    TZS: { symbol: "TSh", portraits: { tier1: 5000, tier2: 4000 }, clocks: { tier1: 45000, tier2: 32000 }, delivery: 3000 },
+    RWF: { symbol: "FRw", portraits: { tier1: 2500, tier2: 2000 }, clocks: { tier1: 20000, tier2: 12000 }, delivery: 1500 }
+  };
+  const cfg = pricing[currency];
 
   // Reset tables
   portraitBody.innerHTML = '';
@@ -217,7 +232,7 @@ const clocksSubtotalEl = document.getElementById('summary-clocks-total'); // ADD
 
   /** ---------------- PORTRAITS ---------------- */
   const portraitTotalUnits = Object.values(portraitSelections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
-  const portraitUnitPrice = portraitTotalUnits >= 5 ? 190 : 250;
+  const portraitUnitPrice = portraitTotalUnits >= 5 ? cfg.portraits.tier2 : cfg.portraits.tier1;
 
   let portraitSubtotal = 0;
   for (const [id, qtyStr] of Object.entries(portraitSelections)) {
@@ -227,63 +242,62 @@ const clocksSubtotalEl = document.getElementById('summary-clocks-total'); // ADD
       portraitSubtotal += rowSub;
 
       const row = `
-   <tr class="hover:bg-green-50 transition-colors border-b border-green-100">
-  <!-- Portrait Name - More compact with line clamping -->
+     <tr class="hover:bg-green-50 transition-colors border-b border-green-100">
+  <!-- Portrait Name -->
   <td class="px-3 py-2 sm:px-4 sm:py-3 text-left">
     <div class="text-gray-800 font-medium line-clamp-1 text-sm sm:text-base">
-       #${id}
+      Portrait #${id}
     </div>
   </td>
 
-  <!-- Quantity - Smaller badge on mobile -->
+  <!-- Quantity -->
   <td class="px-1 py-2 text-center">
     <span class="inline-block bg-gray-100 text-gray-700 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold min-w-[2rem]">
       ${qty}
     </span>
   </td>
 
-  <!-- Unit Price - Right aligned with less padding -->
+  <!-- Unit Price -->
   <td class="px-2 py-2 sm:px-3 sm:py-3 text-right">
     <span class="text-gray-700 font-medium whitespace-nowrap text-sm sm:text-base">
-      KSh ${portraitUnitPrice.toLocaleString()}
+      ${cfg.symbol} ${portraitUnitPrice.toLocaleString()}
     </span>
   </td>
 
-  <!-- Subtotal - Right aligned with emphasis -->
+  <!-- Subtotal -->
   <td class="px-2 py-2 sm:px-3 sm:py-3 text-right">
     <span class="text-gray-900 font-semibold whitespace-nowrap text-sm sm:text-base">
-      KSh ${rowSub.toLocaleString()}
+      ${cfg.symbol} ${rowSub.toLocaleString()}
     </span>
   </td>
 
-  <!-- Remove Button - More compact with icon-only on mobile -->
- <td class="px-2 py-2 sm:px-3 sm:py-3">
-  <div class="flex justify-center sm:justify-end">
-    <button
-      type="button"
-      onclick="removePortrait('${id}')"
-      class="text-red-600 hover:text-red-800 font-medium px-2 py-1 rounded-md hover:bg-red-50 transition text-xs sm:text-sm inline-flex items-center"
-      aria-label="Remove Portrait #${id}"
-      title="Remove portrait"
-    >
-      <i class="fas fa-times"></i>
-      <span class="ml-1 hidden sm:inline">Remove</span>
-    </button>
-  </div>
-</td>
+  <!-- Remove Button -->
+  <td class="px-2 py-2 sm:px-3 sm:py-3">
+    <div class="flex justify-center sm:justify-end">
+      <button
+        type="button"
+        onclick="removePortrait('${id}')"
+        class="text-red-600 hover:text-red-800 font-medium px-2 py-1 rounded-md hover:bg-red-50 transition text-xs sm:text-sm inline-flex items-center"
+        aria-label="Remove Portrait #${id}"
+        title="Remove portrait"
+      >
+        <i class="fas fa-times"></i>
+        <span class="ml-1 hidden sm:inline">Remove</span>
+      </button>
+    </div>
+  </td>
 </tr>
 `;
       portraitBody.insertAdjacentHTML('beforeend', row);
     }
   }
-
   if (portraitSubtotal === 0) {
-    portraitBody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your portrait cart is currently empty.</td></tr>';
+    portraitBody.innerHTML = '<tr><td colspan="5">Your portrait cart is empty.</td></tr>';
   }
 
   /** ---------------- CLOCKS ---------------- */
   const clockTotalUnits = Object.values(clockSelections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
-  const clockUnitPrice = clockTotalUnits >= 5 ? 500 : 700;
+  const clockUnitPrice = clockTotalUnits >= 5 ? cfg.clocks.tier2 : cfg.clocks.tier1;
 
   let clockSubtotal = 0;
   for (const [id, qtyStr] of Object.entries(clockSelections)) {
@@ -294,75 +308,74 @@ const clocksSubtotalEl = document.getElementById('summary-clocks-total'); // ADD
 
       const row = `
      <tr class="hover:bg-green-50 transition-colors border-b border-green-100">
-  <!-- Clock Name - More compact with line clamping -->
+  <!-- Clock Name -->
   <td class="px-3 py-2 sm:px-4 sm:py-3 text-left">
     <div class="text-gray-800 font-medium line-clamp-1 text-sm sm:text-base">
       Clock #${id}
     </div>
   </td>
 
-  <!-- Quantity - Smaller badge on mobile -->
+  <!-- Quantity -->
   <td class="px-1 py-2 text-center">
     <span class="inline-block bg-gray-100 text-gray-700 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold min-w-[2rem]">
       ${qty}
     </span>
   </td>
 
-  <!-- Unit Price - Right aligned with less padding -->
+  <!-- Unit Price -->
   <td class="px-2 py-2 sm:px-3 sm:py-3 text-right">
     <span class="text-gray-700 font-medium whitespace-nowrap text-sm sm:text-base">
-      KSh ${clockUnitPrice.toLocaleString()}
+      ${cfg.symbol} ${clockUnitPrice.toLocaleString()}
     </span>
   </td>
 
-  <!-- Subtotal - Right aligned with emphasis -->
+  <!-- Subtotal -->
   <td class="px-2 py-2 sm:px-3 sm:py-3 text-right">
     <span class="text-gray-900 font-semibold whitespace-nowrap text-sm sm:text-base">
-      KSh ${rowSub.toLocaleString()}
+      ${cfg.symbol} ${rowSub.toLocaleString()}
     </span>
   </td>
 
-  <!-- Remove Button - More compact with icon-only on mobile -->
-<td class="px-2 py-2 sm:px-3 sm:py-3">
-  <div class="flex justify-center sm:justify-end">
-    <button
-      type="button"
-      onclick="removeClock('${id}')"
-      class="text-red-600 hover:text-red-800 font-medium px-2 py-1 rounded-md hover:bg-red-50 transition text-xs sm:text-sm inline-flex items-center"
-      aria-label="Remove Clock #${id}"
-      title="Remove clock"
-    >
-      <i class="fas fa-times"></i>
-      <span class="ml-1 hidden sm:inline">Remove</span>
-    </button>
-  </div>
-</td>
+  <!-- Remove Button -->
+  <td class="px-2 py-2 sm:px-3 sm:py-3">
+    <div class="flex justify-center sm:justify-end">
+      <button
+        type="button"
+        onclick="removeClock('${id}')"
+        class="text-red-600 hover:text-red-800 font-medium px-2 py-1 rounded-md hover:bg-red-50 transition text-xs sm:text-sm inline-flex items-center"
+        aria-label="Remove Clock #${id}"
+        title="Remove clock"
+      >
+        <i class="fas fa-times"></i>
+        <span class="ml-1 hidden sm:inline">Remove</span>
+      </button>
+    </div>
+  </td>
 </tr>
-
-        `;
+`;
       clockBody.insertAdjacentHTML('beforeend', row);
     }
   }
-
   if (clockSubtotal === 0) {
-    clockBody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your clock cart is currently empty.</td></tr>';
+    clockBody.innerHTML = '<tr><td colspan="5">Your clock cart is empty.</td></tr>';
   }
 
   /** ---------------- TOTALS ---------------- */
   const totalUnits = portraitTotalUnits + clockTotalUnits;
-  const deliveryFee = totalUnits > 0 ? 300 : 0;
+  const deliveryFee = totalUnits > 0 ? cfg.delivery : 0;
   const fullSubtotal = portraitSubtotal + clockSubtotal;
   const finalTotal = fullSubtotal + deliveryFee;
 
-subtotalEl.textContent = `KSh ${portraitSubtotal.toLocaleString()}`;         // ✅ Portraits
-clocksSubtotalEl.textContent = `KSh ${clockSubtotal.toLocaleString()}`;     // ✅ Clocks
-deliveryFeeEl.textContent = `KSh ${deliveryFee.toLocaleString()}`;
-totalEl.textContent = `KSh ${finalTotal.toLocaleString()}`;
+  subtotalEl.textContent = `${cfg.symbol} ${portraitSubtotal.toLocaleString()}`;
+  clocksSubtotalEl.textContent = `${cfg.symbol} ${clockSubtotal.toLocaleString()}`;
+  deliveryFeeEl.textContent = `${cfg.symbol} ${deliveryFee.toLocaleString()}`;
+  totalEl.textContent = `${cfg.symbol} ${finalTotal.toLocaleString()}`;
 
-  // Set input values for form submission
+  // ✅ Pass data to backend
   portraitInput.value = JSON.stringify(portraitSelections);
   clockInput.value = JSON.stringify(clockSelections);
 });
+
 
 function removePortrait(id) {
   const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');

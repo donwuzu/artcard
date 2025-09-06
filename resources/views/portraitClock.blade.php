@@ -622,12 +622,12 @@ function scrollCarousel(direction) {
         const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
         
       // Pricing table (must match backend)
-    const pricing = {
-        KES: { tier1: 700,   tier2: 500,   delivery: 300 },
-        UGX: { tier1: 30000, tier2: 25000, delivery: 3000 },
-        TZS: { tier1: 10000,  tier2: 8000,  delivery: 2000 },
-        RWF: { tier1: 3200,  tier2: 2800,  delivery: 1200 },
-    };
+          const pricing = {
+          KES: { tier1: 700,   tier2: 500,   delivery: 300 },
+          UGX: { tier1: 50000, tier2: 38000, delivery: 10000 },
+          TZS: { tier1: 45000, tier2: 32000, delivery: 3000 },
+          RWF: { tier1: 20000, tier2: 12000, delivery: 1500 },
+        };
 
         const currency = localStorage.getItem('preferredCurrency') || 'KES';
 
@@ -725,7 +725,7 @@ function setupInitialViewToggle() {
 
 
 
- function renderSelectionTable(selections, unitPrice) {
+ function renderSelectionTable(selections, currency) {
         const tbody = document.getElementById('checkout-summary-body');
          const countSpan = document.getElementById('selectedCLocksCount'); // Get the span element
         let totalSelectedItems = 0; // Initialize a counter for total items
@@ -739,18 +739,17 @@ function setupInitialViewToggle() {
         }
 
            // Pricing table (same as backend)
-    const pricing = {
-        KES: { tier1: 250,   tier2: 190,   delivery: 300 },
-        UGX: { tier1: 20000, tier2: 15000, delivery: 10000 },
-        TZS: { tier1: 5000,  tier2: 4000,  delivery: 3000 },
-        RWF: { tier1: 2500,  tier2: 2000,  delivery: 1500 },
-    };
+     const pricing = {
+        KES: { tier1: 700,   tier2: 500,   delivery: 300 },
+        UGX: { tier1: 50000, tier2: 38000, delivery: 10000 },
+        TZS: { tier1: 45000, tier2: 32000, delivery: 3000 },
+        RWF: { tier1: 20000, tier2: 12000, delivery: 1500 },
+      };
 
 
        // Count total units first (to decide tier)
-    for (const id in selections) {
-        totalSelectedItems += parseInt(selections[id], 10);
-    }
+      for (const id in selections) totalSelectedItems += parseInt(selections[id], 10);
+
 
     // Choose correct unit price based on total units
     const unitPrice = totalSelectedItems >= 5 
