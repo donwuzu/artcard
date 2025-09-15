@@ -13,12 +13,12 @@
 
         <div>
             <label for="email" class="block text-sm font-medium">Email</label>
-            <input id="email" type="email" name="email" required class="w-full mt-1 border-gray-300 rounded p-2">
+            <input id="email" type="email" name="email" required class="w-full mt-1 p-2 rounded-md border border-gray-400 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
         </div>
 
         <div>
             <label for="password" class="block text-sm font-medium">Password</label>
-            <input id="password" type="password" name="password" required class="w-full mt-1 border-gray-300 rounded p-2">
+            <input id="password" type="password" name="password" required class="w-full mt-1 p-2 rounded-md border border-gray-400 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
         </div>
 
         <div class="flex items-center justify-between">

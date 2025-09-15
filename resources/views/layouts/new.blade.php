@@ -17,7 +17,7 @@
             <div class="flex flex-col justify-center h-full">
                 <h2 class="text-4xl font-bold mb-4">ArtCard Portraits</h2>
              
-                <p class="text-lg">ADMIN</p>
+              
 
                <img src="https://img.icons8.com/ios-filled/100/ffffff/picture.png" class="w-24 mt-10" alt="Picture Icon">
           

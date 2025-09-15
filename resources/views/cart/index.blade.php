@@ -134,17 +134,17 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2" for="name">Full Name *</label>
                     <input class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition" 
-                           required name="name" id="name" type="text" placeholder="John Doe">
+                           required name="name" id="name" type="text" >
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2" for="phone">Phone Number *</label>
                     <input class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition" 
-                           required name="phone" id="phone" type="tel" placeholder="0712 345 678">
+                           required name="phone" id="phone" type="tel" >
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2" for="location">Delivery Location *</label>
                     <input class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition" 
-                           required name="location" id="location" type="text" placeholder="Nairobi, Westlands">
+                           required name="location" id="location" type="text" >
                 </div>
             </div>
         </div>

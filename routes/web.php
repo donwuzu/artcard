@@ -5,6 +5,7 @@ use App\Http\Controllers\PortraitController;
 use App\Http\Controllers\PortraitClockController;
 use App\Http\Controllers\ClockExpenseController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 
 use App\Http\Controllers\ExpenseController;
 use Illuminate\Support\Facades\Route;
@@ -18,14 +19,21 @@ use App\Http\Controllers\OrderController;
 
 use App\Http\Controllers\ClockOrderController;
 
+use App\Http\Controllers\Auth\AdminLoginController;
+
 
 Route::get('/', function () {
-    $portraits = Portrait::latest()->paginate(50); // Show 50 items per page
-    return view('welcome', [
-        'portraits' => $portraits,
-        'showDiscountBanner' => true
-    ]);
-})->name('home');
+    return redirect()->route('login');
+});
+
+Route::middleware(['auth', 'role:client'])->group(function () {
+   Route::get('/home', function () {
+        $portraits = Portrait::latest()->paginate(50);
+        return view('welcome', [
+            'portraits' => $portraits,
+            'showDiscountBanner' => true
+        ]);
+    })->name('home');
 
 Route::post('/checkout', action: [OrderController::class, 'store'])->name('order.store');
 
@@ -41,16 +49,25 @@ Route::get('/clocks', [PortraitClockController::class, 'index'])->name('clocks.i
 
 Route::post('/clock-order', [ClockOrderController::class, 'store'])->name('clock.order.store');
 
+});
 
+
+// ✅ Admin login routes
+Route::middleware('guest')->group(function () {
+    Route::get('admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('admin/login', [AdminLoginController::class, 'login'])->name('admin.login.submit');
+});
+Route::post('admin/logout', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
 
 // Dashboard route with portrait list/upload
-Route::get('/dashboard', [PortraitController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
-// Authenticated routes
-Route::middleware('auth')->group(function () {
+
+// Admin Authenticated routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+   
+
+    Route::get('/dashboard', [PortraitController::class, 'index'])->name('admin.dashboard');
     // Portrait upload POST route
   Route::resource('portraits', PortraitController::class);
 

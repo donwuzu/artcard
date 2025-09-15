@@ -27,7 +27,7 @@
                             </x-slot>
 
                             <x-slot name="content">
-                                <x-dropdown-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                                <x-dropdown-link :href="route('admin.dashboard')" :active="request()->routeIs('dashboard')">
                                     {{ __('Portrait Dashboard') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('expenses.index')" :active="request()->routeIs('expenses.index')">
@@ -120,7 +120,7 @@
                 <div class="font-medium text-base text-gray-800 dark:text-gray-200">Portraits</div>
             </div>
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Portrait Dashboard') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.index')">

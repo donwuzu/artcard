@@ -31,7 +31,7 @@
         <div class="flex justify-between items-center">
             <div>
                 <p class="font-bold">Special Offer!</p>
-                <p>Select 10 or more clock portraits and get each @ 500!</p>
+                <p>Select 10 or more clock portraits and get a DISCOUNT!</p>
             </div>
             <button onclick="document.getElementById('discountBanner').style.display='none'" 
                     class="text-blue-700 hover:text-blue-900">
