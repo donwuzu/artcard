@@ -24,9 +24,52 @@
 
 
 
+@if(Auth::check())
+<div class="flex flex-wrap items-center p-4 bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-shadow duration-300 hover:shadow-lg max-w-md mx-auto sm:max-w-full">
+  <!-- User avatar -->
+  <div class="flex-shrink-0">
+    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-xl select-none">
+      {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+    </div>
+  </div>
+  <!-- User info -->
+  <div class="ml-0 sm:ml-4 mt-3 sm:mt-0 flex-1 min-w-0">
+    <p class="text-gray-900 dark:text-white font-semibold text-base sm:text-lg truncate">
+      Welcome {{ Auth::user()->name }}
+    </p>
+    <div class="flex items-center space-x-2 mt-1 flex-wrap">
+      {{-- <span class="text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-300 rounded-full px-2 py-0.5 capitalize select-none whitespace-nowrap">
+        {{ Auth::user()->user_type }}
+      </span> --}}
+      <span class="text-xs text-gray-500 dark:text-gray-400 select-none whitespace-nowrap">
+        {{ now()->format('M j, Y') }}
+      </span>
+    </div>
+  </div>
+</div>
+@endif
 
 
-  @if($showDiscountBanner ?? false)
+
+<div class="w-full flex justify-end p-4">
+  <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit"
+      class="px-4 py-2 rounded-lg text-sm sm:text-base font-bold transition-transform duration-300
+             border border-green-700
+             text-white bg-green-600 shadow-md
+             hover:bg-green-700 hover:text-green-100 hover:border-green-800
+             hover:scale-105 hover:shadow-lg
+             focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-offset-1">
+      Sign Out
+    </button>
+  </form>
+</div>
+
+
+
+
+  {{-- @if($showDiscountBanner ?? false)
     <div id="discountBanner" class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6">
         <div class="flex justify-between items-center">
             <div>
@@ -41,7 +84,7 @@
             </button>
         </div>
     </div>
-@endif
+@endif --}}
 
    <form id="order-form" method="POST" action="{{ route('clock.order.store') }}">
 

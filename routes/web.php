@@ -54,10 +54,6 @@ Route::post('/clock-order', [ClockOrderController::class, 'store'])->name('clock
 
 
 
- Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-
 
 });
 
@@ -107,6 +103,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::delete('/clock-expenses/{clockOrder}', [ClockExpenseController::class, 'destroy'])->name('clockExpenses.destroy');
 
    
+ Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
 
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

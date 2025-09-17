@@ -1,7 +1,7 @@
 @extends('layouts.new')
 
 @section('form')
-    <h2 class="text-2xl font-semibold mb-6">Login to Your Account</h2>
+    <h2 class="text-2xl font-semibold mb-6">Login to ArtCard</h2>
     @if(session('status'))
         <div class="mb-4 text-green-600">
             {{ session('status') }}

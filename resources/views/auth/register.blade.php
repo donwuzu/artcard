@@ -1,7 +1,7 @@
 @extends('layouts.new')
 
 @section('form')
-    <h2 class="text-2xl font-semibold mb-6">Create Your Account</h2>
+    <h2 class="text-2xl font-semibold mb-6">Create Your ArtCard account</h2>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-6">
         @csrf
