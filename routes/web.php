@@ -14,6 +14,8 @@ use App\Models\Portrait;
 
 use App\Models\PortraitClock;
 
+use App\Http\Controllers\UserController;
+
 
 use App\Http\Controllers\OrderController;
 
@@ -48,6 +50,14 @@ Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::get('/clocks', [PortraitClockController::class, 'index'])->name('clocks.index');
 
 Route::post('/clock-order', [ClockOrderController::class, 'store'])->name('clock.order.store');
+
+
+
+
+ Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
 
 });
 
@@ -96,6 +106,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     Route::delete('/clock-expenses/{clockOrder}', [ClockExpenseController::class, 'destroy'])->name('clockExpenses.destroy');
 
+   
 
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
