@@ -64,7 +64,7 @@ class PortraitController extends Controller
         'price' => $request->price,
     ]);
 
-    return redirect()->route('dashboard')->with('success', 'Portrait uploaded!');
+    return redirect()->route('admin.dashboard')->with('success', 'Portrait uploaded!');
 }
 
 
@@ -78,7 +78,7 @@ class PortraitController extends Controller
             'price' => $request->price,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Portrait updated!');
+        return redirect()->route('admin.dashboard')->with('success', 'Portrait updated!');
     }
 
     public function destroy(Portrait $portrait)
@@ -86,6 +86,6 @@ class PortraitController extends Controller
         Storage::disk('public')->delete($portrait->image_path);
         $portrait->delete();
 
-        return redirect()->route('dashboard')->with('success', 'Portrait deleted!');
+        return redirect()->route('admin.dashboard')->with('success', 'Portrait deleted!');
     }
 }

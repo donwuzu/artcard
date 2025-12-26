@@ -27,7 +27,7 @@
             <div class="bg-white p-6 rounded-xl shadow">
                 <h1 class="text-2xl font-bold mb-6">Expense Manager</h1>
 
-           <form method="GET" action="{{ route('expenses.index') }}" class="mb-6 flex flex-col sm:flex-row sm:flex-wrap gap-4 items-start sm:items-center">
+           <form method="GET" action="{{ route('admin.expenses.index') }}" class="mb-6 flex flex-col sm:flex-row sm:flex-wrap gap-4 items-start sm:items-center">
    
       <div class="flex flex-col sm:flex-row sm:justify-between gap-6">
     <div class="flex flex-col gap-4 w-full sm:w-1/2">
@@ -50,16 +50,16 @@
 
 
    <div class="flex gap-2 flex-wrap w-full sm:w-auto sm:flex-nowrap">
-     <a href="{{ route('expenses.index') }}"
+     <a href="{{ route('admin.expenses.index') }}"
        class="px-4 py-2 rounded text-center {{ !request('status') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
         ALL
     </a>
    
-    <a href="{{ route('expenses.index', ['status' => 'paid', 'search' => request('search')]) }}"
+    <a href="{{ route('admin.expenses.index', ['status' => 'paid', 'search' => request('search')]) }}"
        class="px-4 py-2 rounded text-center {{ request('status') === 'paid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
         Paid
     </a>
-    <a href="{{ route('expenses.index', ['status' => 'unpaid', 'search' => request('search')]) }}"
+    <a href="{{ route('admin.expenses.index', ['status' => 'unpaid', 'search' => request('search')]) }}"
        class="px-4 py-2 rounded text-center {{ request('status') === 'unpaid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
         Unpaid
     </a>
@@ -115,7 +115,7 @@
                         <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->created_at->format('d M Y, h:i A') }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">{{ $order->status ?? 'unpaid' }}</td>
                         <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">
-                            <form action="{{ route('expenses.toggleStatus', $order->id) }}" method="POST">
+                            <form action="{{ route('admin.expenses.toggleStatus', $order->id) }}" method="POST">
                                 @csrf
                                 <button class="{{ $order->status === 'paid' ? 'bg-red-600' : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
                                     {{ $order->status === 'paid' ? 'Mark Unpaid' : 'Mark Paid' }}
@@ -123,7 +123,7 @@
                             </form>
                         </td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
-                            <form action="{{ route('expenses.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this order?');">
+                            <form action="{{ route('admin.expenses.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this order?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="bg-red-600 hover:bg-red-800 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">

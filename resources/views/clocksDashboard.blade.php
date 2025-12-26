@@ -33,7 +33,7 @@
                 </div>
             @endif
 
-         <form method="POST" action="{{ route('clocks.store') }}" enctype="multipart/form-data" class="bg-white shadow p-6 rounded-xl space-y-6">
+         <form method="POST" action="{{ route('admin.clocks.store') }}" enctype="multipart/form-data" class="bg-white shadow p-6 rounded-xl space-y-6">
     @csrf
 
     <div x-data="{ previewUrl: null }" class="space-y-2">

@@ -27,33 +27,78 @@
     </div>
 </div>
 
+@auth
+<div
+    style="
+        width: 160px;
+        margin: auto;
+        padding: 14px 12px;
+        background: linear-gradient(135deg, #0d9488, #14b8a6);
+        color: #ffffff;
+        border-radius: 10px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+        transition:
+            transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow 0.35s ease,
+            background 0.35s ease;
+        cursor: default;
+    "
+    onmouseover="
+        this.style.transform='translateY(-6px) scale(1.08)';
+        this.style.boxShadow='0 18px 35px rgba(0,0,0,0.35)';
+    "
+    onmouseout="
+        this.style.transform='translateY(0) scale(1)';
+        this.style.boxShadow='0 6px 14px rgba(0,0,0,0.15)';
+    "
+>
 
-@if(Auth::check())
-<div class="flex flex-wrap items-center p-4 bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-shadow duration-300 hover:shadow-lg max-w-md mx-auto sm:max-w-full">
-  <!-- User avatar -->
-  <div class="flex-shrink-0">
-    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-xl select-none">
-      {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+    <!-- Avatar -->
+    <div style="
+        width: 30px;
+        height: 26px;
+        margin: auto;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35);
+    ">
+        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
     </div>
-  </div>
-  <!-- User info -->
-  <div class="ml-0 sm:ml-4 mt-3 sm:mt-0 flex-1 min-w-0">
-    <p class="text-gray-900 dark:text-white font-semibold text-base sm:text-lg truncate">
-      Welcome {{ Auth::user()->name }}
+
+    <!-- Name -->
+    <p style="
+        margin-top: 8px;
+        font-size: 13px;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    ">
+        {{ auth()->user()->name }}
     </p>
-    <div class="flex items-center space-x-2 mt-1 flex-wrap">
-      {{-- <span class="text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-300 rounded-full px-2 py-0.5 capitalize select-none whitespace-nowrap">
-        {{ Auth::user()->user_type }}
-      </span> --}}
-      <span class="text-xs text-gray-500 dark:text-gray-400 select-none whitespace-nowrap">
-        {{ now()->format('M j, Y') }}
-      </span>
-    </div>
-  </div>
+
+    <!-- Role -->
+    <p style="
+        margin-top: 2px;
+        font-size: 10px;
+        opacity: 0.9;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    ">
+        {{ auth()->user()->getRoleNames()->first() ?? 'User' }}
+    </p>
+
+   
+
 </div>
-@endif
-
-
+@endauth
 
 
 
@@ -95,7 +140,7 @@
 
 
 
-   <form id="order-form" method="POST" action="{{ route('order.store') }}">
+   <form id="order-form" method="POST" action="{{ route('client.order.store') }}">
 
         @csrf
 
@@ -419,7 +464,7 @@
 
       <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-4 text-center">Enter Your Details</h2>
 
-      <form id="order-form" method="POST" action="{{ route('order.store') }}" class="space-y-5">
+      <form id="order-form" method="POST" action="{{ route('client.order.store') }}" class="space-y-5">
           @csrf
           <div class="space-y-4">
               <div>
@@ -490,10 +535,22 @@
 
 
 
-    
-    <div style="background-color: #f1f1f1; padding: 20px; text-align: center; font-size: 14px; color: #555;">
-            &copy; <script>document.write(new Date().getFullYear())</script> ATCARD Company. All rights reserved.
-    </div>
+<div style="
+    background: linear-gradient(135deg, #f8fafc, #eef2f7);
+    padding: 24px 16px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+">
+    <span style="display: inline-block; letter-spacing: 0.3px;">
+        &copy;
+        <script>document.write(new Date().getFullYear())</script>
+        <strong style="color:#374151;">ARTCARD Company</strong>.
+        All rights reserved.
+    </span>
+</div>
 
 
 <script>

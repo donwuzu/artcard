@@ -27,39 +27,77 @@
     </head>
     <body class="font-sans antialiased">
 
-<nav class="fixed top-0 left-0 right-0 z-[999999] backdrop-blur bg-white shadow-sm transition-all"
-     style="z-index: 999999;">
+<nav class="fixed top-0 left-0 right-0 z-[999999] backdrop-blur bg-white shadow-sm">
   <div class="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
 
-<!-- Center Navigation Links - Button-style with light green borders -->
-<div class="flex-1 flex justify-center">
-  <div class="flex items-center space-x-2 sm:space-x-4">
-    <a href="{{ route('home') }}"
-       class="px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 
-              border border-green-300
-              {{ request()->routeIs('home') 
-                ? 'text-white bg-green-600 shadow-md hover:bg-green-700 border-green-600' 
-                : 'text-slate-700 bg-white shadow-sm hover:bg-green-50 hover:text-green-600 hover:border-green-300' }}">
-      Portraits
-    </a>
-    <a href="{{ route('clocks.index') }}"
-       class="px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 
-              border border-green-300
-              {{ request()->routeIs('clocks.index') 
-                ? 'text-white bg-green-600 shadow-md hover:bg-green-700 border-green-600' 
-                : 'text-slate-700 bg-white shadow-sm hover:bg-green-50 hover:text-green-600 hover:border-green-300' }}">
-      Clocks
-    </a>
-  </div>
-</div>
+    <!-- Center Navigation -->
+    <div class="flex-1 flex justify-center">
+      <div class="flex items-center space-x-2 sm:space-x-4">
 
-    <!-- Right Cart Button -->
+
+
+            
+        @guest
+            <a href="{{ route('sample-images.index') }}"
+              class="px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all
+                      border border-green-300
+                      {{ request()->routeIs('sample-images.*')
+                        ? 'text-white bg-green-600 border-green-600'
+                        : 'text-slate-700 bg-white hover:bg-green-50 hover:text-green-600' }}">
+                Sample Images
+            </a>
+
+            <a href="{{ route('sample-clocks.index') }}"
+              class="px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all
+                      border border-green-300
+                      {{ request()->routeIs('sample-clocks.*')
+                        ? 'text-white bg-green-600 border-green-600'
+                        : 'text-slate-700 bg-white hover:bg-green-50 hover:text-green-600' }}">
+                Sample Clocks
+            </a>
+        @endguest
+
+
+        @auth
+            <!-- Portraits -->
+            <a href="{{ auth()->user()->hasRole('admin') 
+                ? route('admin.home') 
+                : route('client.home') }}"
+               class="px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all
+                      border border-green-300
+                      {{ request()->routeIs('admin.home', 'client.home')
+                        ? 'text-white bg-green-600 border-green-600'
+                        : 'text-slate-700 bg-white hover:bg-green-50 hover:text-green-600' }}">
+                Portraits
+            </a>
+
+            <!-- Clocks -->
+            <a href="{{ auth()->user()->hasRole('admin') 
+                ? route('admin.clocks.index') 
+                : route('client.clocks.index') }}"
+               class="px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all
+                      border border-green-300
+                      {{ request()->routeIs('admin.clocks.*', 'client.clocks.*')
+                        ? 'text-white bg-green-600 border-green-600'
+                        : 'text-slate-700 bg-white hover:bg-green-50 hover:text-green-600' }}">
+                Clocks
+            </a>
+        @endauth
+
+      </div>
+    </div>
+
+    <!-- Right Side -->
     <div class="flex items-center">
-      <a href="{{ route('cart.index') }}"
-         class="relative flex items-center text-green-600 hover:text-green-800 transition">
-        <i class="fas fa-shopping-cart text-xl"></i>
-        <span class="ml-1 text-sm hidden sm:inline">Cart</span>
-      </a>
+      @auth
+        @if(auth()->user()->hasRole('client'))
+          <a href="{{ route('client.cart.index') }}"
+             class="relative flex items-center text-green-600 hover:text-green-800 transition">
+            <i class="fas fa-shopping-cart text-xl"></i>
+            <span class="ml-1 text-sm hidden sm:inline">Cart</span>
+          </a>
+        @endif
+      @endauth
     </div>
 
   </div>
@@ -69,10 +107,10 @@
         
 
             <!-- Page Content -->
-            <main>
+      <main>
              @yield('content')
 
-  </main>
+      </main>
 
 
 
@@ -82,17 +120,7 @@
                      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 
-                     
-                    <script>
-                        @if (session('success'))
-                            toastr.success("{{ session('success') }}");
-                        @endif
-
-                        @if (session('error'))
-                            toastr.error("{{ session('error') }}");
-                        @endif
-                    </script>
-          
+                
       
   
 
