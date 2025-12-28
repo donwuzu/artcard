@@ -99,19 +99,27 @@
 
 
 <div class="w-full flex justify-end p-4">
-  <form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button type="submit"
-      class="px-4 py-2 rounded-lg text-sm sm:text-base font-bold transition-transform duration-300
-             border border-green-700
-             text-white bg-green-600 shadow-md
-             hover:bg-green-700 hover:text-green-100 hover:border-green-800
-             hover:scale-105 hover:shadow-lg
-             focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-offset-1">
-      Sign Out
-    </button>
-  </form>
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit"
+            class="inline-flex items-center gap-2
+                   px-4 py-2 rounded-xl
+                   text-sm sm:text-base font-semibold
+                   border border-red-700
+                   text-white bg-red-600
+                   shadow-md
+                   transition-all duration-300 ease-out
+                   hover:bg-red-700 hover:border-red-800
+                   hover:scale-105 hover:shadow-lg
+                   active:scale-95
+                   focus:outline-none focus:ring-4 focus:ring-red-400 focus:ring-offset-1">
+            
+            <i class="fas fa-sign-out-alt text-sm"></i>
+            <span>Sign Out</span>
+        </button>
+    </form>
 </div>
+
 
 
 

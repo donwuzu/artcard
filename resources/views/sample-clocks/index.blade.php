@@ -73,31 +73,44 @@
     </div>
 @endauth
 
-
-@guest
 <div class="w-full flex justify-end p-4">
-    <a href="{{ route('login') }}"
-       class="inline-flex items-center
-              px-4 py-2 rounded-lg
-              text-sm sm:text-base font-bold
-              border border-green-700
-              text-white bg-green-600 shadow-md
-              transition-all duration-300 ease-out
-              hover:bg-green-700 hover:text-green-100 hover:border-green-800
-              hover:scale-105 hover:shadow-lg
-              active:scale-95
-              focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-offset-1">
-        Log In
-    </a>
+    @guest
+        <a href="{{ route('login') }}"
+           class="inline-flex items-center
+                  px-4 py-2 rounded-lg
+                  text-sm sm:text-base font-bold
+                  border border-green-700
+                  text-white bg-green-600 shadow-md
+                  transition-all duration-300 ease-out
+                  hover:bg-green-700 hover:text-green-100 hover:border-green-800
+                  hover:scale-105 hover:shadow-lg
+                  active:scale-95
+                  focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-offset-1">
+            Log In
+        </a>
+    @else
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                class="inline-flex items-center
+                       px-4 py-2 rounded-lg
+                       text-sm sm:text-base font-bold
+                       border border-red-700
+                       text-white bg-red-600 shadow-md
+                       transition-all duration-300 ease-out
+                       hover:bg-red-700 hover:text-red-100 hover:border-red-800
+                       hover:scale-105 hover:shadow-lg
+                       active:scale-95
+                       focus:outline-none focus:ring-4 focus:ring-red-400 focus:ring-offset-1">
+                Log Out
+            </button>
+        </form>
+    @endguest
 </div>
-@endguest
 
 
 
 
-   <form id="order-form" method="POST" action="">
-
-        @csrf
 
 <input type="hidden" id="currency" name="currency" value="KES">
 
@@ -159,14 +172,7 @@
                                 group-hover:opacity-100 transition pointer-events-none"></div>
                 </div>
 
-                <div class="p-3 text-center">
-                    <p class="text-sm text-gray-600">Price</p>
-
-                    <p class="price text-lg font-bold text-indigo-600"
-                       data-base-price="{{ $clock->price }}">
-                        <!-- JS will populate currency-formatted price -->
-                    </p>
-                </div>
+                
             </div>
         @endforeach
     </div>
@@ -184,13 +190,10 @@
 
 
 
-
 <!-- Pagination -->
 <div class="mt-8 mb-8 px-4 flex justify-center">
     {{ $sampleClocks->links() }}
 </div>
-
-
 
 
 
@@ -220,16 +223,6 @@
          class="w-full max-h-[90vh] object-contain rounded-xl shadow-lg">
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-    </form> 
 
 
 
