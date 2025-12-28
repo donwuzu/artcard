@@ -35,7 +35,7 @@ class SampleClockController extends Controller
     {
         $request->validate([
             'image' => 'required|image|max:30720',
-            'price' => 'required|numeric|min:0',
+            // 'price' => 'required|numeric|min:0',
         ]);
 
         $file = $request->file('image');
@@ -76,7 +76,7 @@ class SampleClockController extends Controller
         // Save relative path
         SampleClock::create([
             'image_path' => 'sample_clocks/' . $filename,
-            'price' => $request->price,
+            // 'price' => $request->price,
         ]);
 
         return redirect()

@@ -27,7 +27,7 @@ class SampleImageController extends Controller
 {
     $request->validate([
         'image' => 'required|image|max:30720',
-        'price' => 'required|numeric|min:0',
+        // 'price' => 'required|numeric|min:0',
     ]);
 
     $file = $request->file('image');
@@ -68,7 +68,7 @@ class SampleImageController extends Controller
     // Save relative path in DB
     SampleImage::create([
         'image_path' => 'sample_images/' . $filename,
-        'price' => $request->price,
+        // 'price' => $request->price,
     ]);
 
     return redirect()

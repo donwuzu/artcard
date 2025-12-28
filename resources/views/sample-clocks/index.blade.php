@@ -112,40 +112,6 @@
 
 
 
-<input type="hidden" id="currency" name="currency" value="KES">
-
-<!-- Currency Selector -->
-<div class="flex justify-end px-4 mb-6">
-  <div class="relative">
-    <label for="currency-select" class="sr-only">Currency</label>
-    <div class="flex items-center border border-gray-300 rounded-lg bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
-      <!-- Current Flag and Code -->
-      <div id="current-flag" class="flex items-center px-3 py-2 bg-gray-50 border-r border-gray-200">
-        <img id="currency-flag" src="https://flagcdn.com/w20/ug.png" 
-             srcset="https://flagcdn.com/w40/ug.png 2x"
-             width="20"
-             height="15"
-             alt="Uganda"
-             class="mr-2 rounded-sm">
-        <span id="currency-code" class="text-sm font-medium">UGX</span>
-      </div>
-
-      <!-- Select Dropdown -->
-      <select id="currency-select" 
-              class="appearance-none pl-3 pr-8 py-2 text-sm font-medium bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        
-          <option value="UGX" data-flag="ug" selected>Ugandan Shillings</option>
-          <option value="KES" data-flag="ke" >Kenyan Shillings</option>
-           <option value="TZS" data-flag="tz">Tanzanian Shillings</option>
-           <option value="RWF" data-flag="rw">Rwandan Francs</option>
-      </select>
-
-  
-
-    </div>
-  </div>
-</div>
-
 
 
 <!-- Updated Carousel View -->
