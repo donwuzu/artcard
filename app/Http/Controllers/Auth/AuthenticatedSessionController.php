@@ -30,20 +30,23 @@ class AuthenticatedSessionController extends Controller
 
     $user = $request->user();
 
-    // Redirect based on role
-    switch ($user->user_type) {
-        case 'client':
-            return redirect()->intended(route('home'));
-
-        case 'admin':
+    // WHY: Role-based redirects via Spatie (no columns)
+        if ($user->hasRole('admin')) {
             return redirect()->intended(route('admin.dashboard'));
+        }
 
-        default:
-            Auth::logout();
-            return redirect()->route('login')->withErrors([
-                'email' => 'Your account does not have a valid role assigned.',
-            ]);
-    }
+        if ($user->hasRole('client')) {
+            return redirect()->intended(route('home'));
+        }
+
+        Auth::logout();
+
+        return redirect()->route('login')->withErrors([
+            'email' => 'Your account does not have a valid role assigned.',
+        ]);
+
+
+
 }
 
 

@@ -10,8 +10,7 @@ class AdminLoginController extends Controller
 {
     public function __construct()
     {
-        // Guests only, except logout
-      
+        $this->middleware('guest')->except('logout');
     }
 
     /**
@@ -28,28 +27,30 @@ class AdminLoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
+        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ]);
+        }
 
-            // ✅ Check usertype before granting access
-            if (Auth::user()->usertype === 'admin') {
-                return redirect()->intended('/admin/dashboard');
-            }
+        $request->session()->regenerate();
 
-            // ❌ If not admin, logout immediately
+        $user = Auth::user();
+
+        // WHY: Role-based authorization via Spatie (no columns, no enums)
+        if (!$user || !$user->hasRole('admin')) {
             Auth::logout();
+
             return back()->withErrors([
                 'email' => 'You are not authorized to access the admin panel.',
             ]);
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     /**

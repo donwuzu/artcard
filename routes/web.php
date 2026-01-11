@@ -62,18 +62,20 @@ Route::get('/home', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('guest')->group(function () {
-    Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])
-        ->name('admin.login');
+Route::prefix('admin')->group(function () {
 
-    Route::post('/admin/login', [AdminLoginController::class, 'login'])
-        ->name('admin.login.submit');
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
+            ->name('admin.login');
+
+        Route::post('/login', [AdminLoginController::class, 'login'])
+            ->name('admin.login.submit');
+    });
+
+    Route::post('/logout', [AdminLoginController::class, 'logout'])
+        ->middleware('auth')
+        ->name('admin.logout');
 });
-
-Route::post('/admin/logout', [AdminLoginController::class, 'logout'])
-    ->middleware('auth')
-    ->name('admin.logout');
-
 /*
 |--------------------------------------------------------------------------
 | Client Routes (Clients + Admins)
@@ -183,6 +185,10 @@ Route::middleware(['auth', 'role:admin'])
         /* Users */
         Route::resource('users', UserController::class)
             ->only(['index', 'update', 'destroy']);
+
+              // Custom route for updating user role (separate from general update)
+         Route::patch('users/{user}/role', [UserController::class, 'updateRole'])
+        ->name('users.update-role');
 
         /* Profile */
         Route::get('/profile', [ProfileController::class, 'edit'])

@@ -27,78 +27,7 @@
     </div>
 </div>
 
-@auth
-<div
-    style="
-        width: 160px;
-        margin: auto;
-        padding: 14px 12px;
-        background: linear-gradient(135deg, #0d9488, #14b8a6);
-        color: #ffffff;
-        border-radius: 10px;
-        text-align: center;
-        font-family: Arial, sans-serif;
-        box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-        transition:
-            transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-            box-shadow 0.35s ease,
-            background 0.35s ease;
-        cursor: default;
-    "
-    onmouseover="
-        this.style.transform='translateY(-6px) scale(1.08)';
-        this.style.boxShadow='0 18px 35px rgba(0,0,0,0.35)';
-    "
-    onmouseout="
-        this.style.transform='translateY(0) scale(1)';
-        this.style.boxShadow='0 6px 14px rgba(0,0,0,0.15)';
-    "
->
 
-    <!-- Avatar -->
-    <div style="
-        width: 30px;
-        height: 26px;
-        margin: auto;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
-        box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35);
-    ">
-        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-    </div>
-
-    <!-- Name -->
-    <p style="
-        margin-top: 8px;
-        font-size: 13px;
-        font-weight: bold;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    ">
-        {{ auth()->user()->name }}
-    </p>
-
-    <!-- Role -->
-    <p style="
-        margin-top: 2px;
-        font-size: 10px;
-        opacity: 0.9;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-    ">
-        {{ auth()->user()->getRoleNames()->first() ?? 'User' }}
-    </p>
-
-   
-
-</div>
-@endauth
 
 
 
