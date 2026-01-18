@@ -119,7 +119,7 @@ class OrderController extends Controller
     
     protected function sendWhatsappNotification($order, $portraits, $totalUnits, $subtotal, $deliveryFee)
     {
-        $adminPhone = '254784857383';
+        $adminPhone = '254758922923';
 
          // Consistent formatting helper
     $format = function ($amount) use ($order) {
