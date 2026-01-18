@@ -26,7 +26,7 @@
   <!-- Cart Items - Left Column -->
   <div class="w-full bg-gray-50 rounded-lg shadow-sm">
 
-    <form id="cart-order-form" method="POST" action="{{ route('client.cart.store') }}" class="space-y-6">
+    <form id="cart-order-form" method="POST" action="{{ route('cart.store') }}" class="space-y-6">
       @csrf
 
       <input type="hidden" name="currency" id="currencyInput">

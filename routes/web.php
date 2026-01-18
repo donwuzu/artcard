@@ -35,26 +35,58 @@ use App\Models\Portrait;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [SampleImageController::class, 'index'])
+        Route::get('/', function () {
+        return view('welcome', [
+            'portraits' => Portrait::latest()->paginate(50),
+            'showDiscountBanner' => true,
+        ]);
+    })->name('home');
+
+
+
+    Route::get('/clocks', [PortraitClockController::class, 'index'])
+            ->name('clocks.index');
+
+
+    Route::get('/sample-portraits', [SampleImageController::class, 'index'])
     ->name('sample-images.index');
 
     Route::get('/sample-clocks', [SampleClockController::class, 'index'])
-    ->name('sample-clocks.index');
+    ->name('sample-clocks.index');       
+    
+    
+     Route::get('/cart', [CartController::class, 'show'])
+            ->name('cart.index');
+
+    Route::post('/cart', [CartController::class, 'store'])
+            ->name('cart.store');
+
+    Route::post('/checkout', [OrderController::class, 'store'])
+            ->name('order.store');
+
+
+     Route::post('/clock-order', [ClockOrderController::class, 'store'])
+            ->name('clocks.order.store');
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Auth Redirect (single entry point)
 |--------------------------------------------------------------------------
 */
-
 Route::get('/home', function () {
-    if (!Auth::check()) {
-        return redirect()->route('sample-images.index');
+    if (Auth::check() && Auth::user()->hasRole('admin')) {
+        return redirect()->route('admin.home');
     }
 
-    return Auth::user()->hasRole('admin')
-        ? redirect()->route('admin.home')
-        : redirect()->route('client.home');
-})->name('home');
+    if (Auth::check()) {
+        return redirect()->route('client.home');
+    }
+
+    return redirect()->route('home'); // /
+});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -83,8 +115,7 @@ Route::prefix('admin')->group(function () {
 | Admins MUST have full access — included intentionally
 */
 
-Route::middleware(['auth', 'role:client|admin'])
-    ->prefix('client')
+Route::prefix('client')
     ->name('client.')
     ->group(function () {
 
@@ -110,6 +141,7 @@ Route::middleware(['auth', 'role:client|admin'])
         Route::post('/clock-order', [ClockOrderController::class, 'store'])
             ->name('clocks.order.store');
     });
+
 
 /*
 |--------------------------------------------------------------------------

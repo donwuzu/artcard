@@ -37,25 +37,27 @@
 
 
             
-        @guest
-            <a href="{{ route('sample-images.index') }}"
+          @guest
+            <!-- Portraits (guest) -->
+            <a href="{{ route('home') }}"
               class="px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all
                       border border-green-300
-                      {{ request()->routeIs('sample-images.*')
+                      {{ request()->routeIs('home')
                         ? 'text-white bg-green-600 border-green-600'
                         : 'text-slate-700 bg-white hover:bg-green-50 hover:text-green-600' }}">
-                Sample Images
+                Portraits
             </a>
 
-            <a href="{{ route('sample-clocks.index') }}"
+            <!-- Clocks (guest) -->
+            <a href="{{ route('clocks.index') }}"
               class="px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all
                       border border-green-300
-                      {{ request()->routeIs('sample-clocks.*')
+                      {{ request()->routeIs('clocks.*')
                         ? 'text-white bg-green-600 border-green-600'
                         : 'text-slate-700 bg-white hover:bg-green-50 hover:text-green-600' }}">
-                Sample Clocks
+                Clocks
             </a>
-        @endguest
+       @endguest
 
 
         @auth
@@ -89,16 +91,15 @@
 
     <!-- Right Side -->
     <div class="flex items-center">
-      @auth
-        @if(auth()->user()->hasRole('client'))
-          <a href="{{ route('client.cart.index') }}"
-             class="relative flex items-center text-green-600 hover:text-green-800 transition">
+    @if(!auth()->check() || auth()->user()->hasRole('client'))
+        <a href="{{ auth()->check() ? route('client.cart.index') : route('cart.index') }}"
+           class="relative flex items-center text-green-600 hover:text-green-800 transition">
             <i class="fas fa-shopping-cart text-xl"></i>
             <span class="ml-1 text-sm hidden sm:inline">Cart</span>
-          </a>
-        @endif
-      @endauth
-    </div>
+        </a>
+    @endif
+</div>
+
 
   </div>
 </nav>

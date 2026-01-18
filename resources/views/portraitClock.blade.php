@@ -24,80 +24,8 @@
 
 
 
+
 @auth
-<div
-    style="
-        width: 160px;
-        margin: auto;
-        padding: 14px 12px;
-        background: linear-gradient(135deg, #0d9488, #14b8a6);
-        color: #ffffff;
-        border-radius: 10px;
-        text-align: center;
-        font-family: Arial, sans-serif;
-        box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-        transition:
-            transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-            box-shadow 0.35s ease,
-            background 0.35s ease;
-        cursor: default;
-    "
-    onmouseover="
-        this.style.transform='translateY(-6px) scale(1.08)';
-        this.style.boxShadow='0 18px 35px rgba(0,0,0,0.35)';
-    "
-    onmouseout="
-        this.style.transform='translateY(0) scale(1)';
-        this.style.boxShadow='0 6px 14px rgba(0,0,0,0.15)';
-    "
->
-
-    <!-- Avatar -->
-    <div style="
-        width: 30px;
-        height: 26px;
-        margin: auto;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
-        box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35);
-    ">
-        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-    </div>
-
-    <!-- Name -->
-    <p style="
-        margin-top: 8px;
-        font-size: 13px;
-        font-weight: bold;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    ">
-        {{ auth()->user()->name }}
-    </p>
-
-    <!-- Role -->
-    <p style="
-        margin-top: 2px;
-        font-size: 10px;
-        opacity: 0.9;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-    ">
-        {{ auth()->user()->getRoleNames()->first() ?? 'User' }}
-    </p>
-
-    
-
-</div>
-@endauth
-
-
 <div class="w-full flex justify-end p-4">
     <form method="POST" action="{{ route('logout') }}">
         @csrf
@@ -113,12 +41,13 @@
                    hover:scale-105 hover:shadow-lg
                    active:scale-95
                    focus:outline-none focus:ring-4 focus:ring-red-400 focus:ring-offset-1">
-            
             <i class="fas fa-sign-out-alt text-sm"></i>
             <span>Sign Out</span>
         </button>
     </form>
 </div>
+@endauth
+
 
 
 
@@ -141,7 +70,7 @@
     </div>
 @endif --}}
 
-   <form id="order-form" method="POST" action="{{ route('client.clocks.order.store') }}">
+   <form id="order-form" method="POST" action="{{ route('clocks.order.store') }}">
 
         @csrf
 
@@ -464,7 +393,7 @@
 
       <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-4 text-center">Enter Your Details</h2>
 
-      <form id="order-form" method="POST" action="{{ route('client.clocks.order.store') }}" class="space-y-5">
+      <form id="order-form" method="POST" action="{{ route('clocks.order.store') }}" class="space-y-5">
           @csrf
           <div class="space-y-4">
               <div>

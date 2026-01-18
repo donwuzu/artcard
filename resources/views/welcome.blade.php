@@ -30,7 +30,7 @@
 
 
 
-
+@auth
 <div class="w-full flex justify-end p-4">
     <form method="POST" action="{{ route('logout') }}">
         @csrf
@@ -46,12 +46,13 @@
                    hover:scale-105 hover:shadow-lg
                    active:scale-95
                    focus:outline-none focus:ring-4 focus:ring-red-400 focus:ring-offset-1">
-            
             <i class="fas fa-sign-out-alt text-sm"></i>
             <span>Sign Out</span>
         </button>
     </form>
 </div>
+@endauth
+
 
 
 
@@ -77,10 +78,8 @@
 
 
 
-   <form id="order-form" method="POST" action="{{ route('client.order.store') }}">
-
-        @csrf
-
+  <form id="order-form" method="POST" action="{{ route('order.store') }}" class="space-y-5">
+    @csrf
 <input type="hidden" id="currency" name="currency" value="KES">
 
 <!-- Currency Selector -->
@@ -401,9 +400,9 @@
 
       <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-4 text-center">Enter Your Details</h2>
 
-      <form id="order-form" method="POST" action="{{ route('client.order.store') }}" class="space-y-5">
-          @csrf
-          <div class="space-y-4">
+     <form id="order-form" method="POST" action="{{ route('order.store') }}" class="space-y-5">
+         @csrf
+         <div class="space-y-4">
               <div>
                   <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
                   <input type="text" id="name" name="name" 
