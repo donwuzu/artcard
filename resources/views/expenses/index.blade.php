@@ -115,22 +115,31 @@
                         <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">{{ $order->created_at->format('d M Y, h:i A') }}</td>
                         <td class="px-2 py-3 sm:px-4 whitespace-nowrap">{{ $order->status ?? 'unpaid' }}</td>
                         <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">
-                            <form action="{{ route('admin.expenses.toggleStatus', $order->id) }}" method="POST">
+                            <form action="{{ route('admin.expenses.toggle', $order->id) }}" method="POST">
                                 @csrf
-                                <button class="{{ $order->status === 'paid' ? 'bg-red-600' : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
+                                <button
+                                    class="{{ $order->status === 'paid'
+                                        ? 'bg-red-600'
+                                        : 'bg-green-600' }} text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
                                     {{ $order->status === 'paid' ? 'Mark Unpaid' : 'Mark Paid' }}
                                 </button>
                             </form>
+
                         </td>
-                        <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
-                            <form action="{{ route('admin.expenses.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this order?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-600 hover:bg-red-800 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
-                                    Delete
-                                </button>
-                            </form>
-                        </td>
+                       <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
+    <form action="{{ route('admin.expenses.destroy', $expense->id) }}"
+          method="POST"
+          onsubmit="return confirm('Are you sure you want to delete this expense?');">
+        @csrf
+        @method('DELETE')
+
+        <button type="submit"
+            class="bg-red-600 hover:bg-red-800 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
+            Delete
+        </button>
+    </form>
+</td>
+
                     </tr>
 
                     <tr>
