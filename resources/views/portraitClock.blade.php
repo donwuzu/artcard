@@ -8,7 +8,7 @@
 <div class="relative mt-12">
     <div class="flex justify-between items-start p-4">
         <div class="flex-grow text-center md:text-left">
-            <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">ARTCARD COMPANY CLOCK PORTRAITS</h2>
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> 3 PIECES PORTRAITS</h2>
             <p class="text-gray-600">Explore our gallery and order custom clock portraits directly via Whatsapp.</p>
         </div>
 

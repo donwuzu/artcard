@@ -119,7 +119,7 @@ class ClockOrderController extends Controller
 
     protected function sendWhatsappNotification($order, $clocks, $totalUnits, $subtotal, $deliveryFee)
     {
-        $adminPhone = '254738269376';
+        $adminPhone = '256781716748';
 
 
             // Consistent formatting helper

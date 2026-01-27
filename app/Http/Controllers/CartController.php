@@ -116,7 +116,7 @@ class CartController extends Controller
     $message .= "*Total: {$symbol} " . number_format($finalTotal) . "*\n";
     $message .= "Time: " . now('Africa/Nairobi')->format('Y-m-d h:i A');
 
-    $adminPhone  = '254738269376';
+    $adminPhone  = '256781716748';
     $whatsappUrl = "https://wa.me/{$adminPhone}?text=" . rawurlencode($message);
 
     session()->flash('success', 'Order placed! Redirecting to WhatsApp.');
