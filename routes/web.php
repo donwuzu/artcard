@@ -165,14 +165,14 @@ Route::middleware(['auth', 'role:admin'])
         /* Decor (formerly Clocks) */
         // Manual index route
         Route::get('/decor', [PortraitClockController::class, 'index'])
-            ->name('decor.index');
+            ->name('clocks.index');
 
         // Resource for store/update/destroy (generates admin.decor.store, etc.)
         Route::resource('decor', PortraitClockController::class)
             ->except('index');
 
         Route::get('/decor-dashboard', [PortraitClockController::class, 'dashboard'])
-            ->name('decor.dashboard');
+            ->name('clocks.dashboard');
 
         /* Sample Images */
         Route::resource('sample-images', SampleImageController::class)
@@ -207,13 +207,13 @@ Route::middleware(['auth', 'role:admin'])
         /* Decor Expenses (formerly Clock Expenses) */
         // Updated names to be consistent
         Route::get('/decor-expenses', [ClockExpenseController::class, 'index'])
-            ->name('clock-expenses.index');
+            ->name('clockExpenses.index');
 
         Route::delete('/decor-expenses/{clockOrder}', [ClockExpenseController::class, 'destroy'])
-            ->name('clock-expenses.destroy');
+            ->name('clockExpenses.destroy');
 
         Route::get('/decor-reports', [ClockExpenseController::class, 'report'])
-            ->name('clock-expenses.report');   
+            ->name('clockExpenses.report');   
 
         /* Users */
         Route::resource('users', UserController::class)
