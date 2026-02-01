@@ -101,7 +101,7 @@
                     <td class="px-2 py-4 bg-gray-100">{{ $order->created_at->format('d M Y, h:i A') }}</td>
                     <td class="px-2 py-3 whitespace-nowrap">{{ $order->status ?? 'unpaid' }}</td>
                     <td class="px-2 py-4 bg-gray-100">
-                        <form action="{{ route('clockExpenses.toggleStatus', $order->id) }}" method="POST">
+                        <form action="{{ route('admin.clockExpenses.toggle', $order->id) }}" method="POST">
                             @csrf
                             <button class="{{ $order->status === 'paid' ? 'bg-red-600' : 'bg-green-600' }} text-white px-3 py-1 rounded text-sm">
                                 {{ $order->status === 'paid' ? 'Mark Unpaid' : 'Mark Paid' }}
@@ -109,7 +109,7 @@
                         </form>
                     </td>
                     <td class="px-2 py-3 whitespace-nowrap">
-                        <form action="{{ route('clockExpenses.destroy', $order->id) }}"
+                        <form action="{{ route('admin.clockExpenses.destroy', $order->id) }}"
                           method="POST"
                           onclick="event.stopPropagation();"
                           onsubmit="return confirm('Are you sure you want to delete this order?');">
