@@ -59,7 +59,7 @@ class ExpenseController extends Controller
         $order->delete();
 
        return redirect()
-    ->route('expenses.index')
+    ->route('admin.expenses.index')
     ->with('success', 'Order deleted successfully.');
 
     }
