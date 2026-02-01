@@ -194,9 +194,13 @@ Route::middleware(['auth', 'role:admin'])
              ->name('sample-clocks.dashboard');
 
 
-        /* Expenses */
-        Route::resource('expenses', ExpenseController::class)
-            ->only(['index', 'destroy']);
+        
+            /* Expenses */
+        Route::get('/expenses', [ExpenseController::class, 'index'])
+            ->name('expenses.index');
+
+        Route::delete('/expenses/{order}', [ExpenseController::class, 'destroy'])
+            ->name('expenses.destroy');
 
         Route::post('/expenses/{order}/toggle', [ExpenseController::class, 'toggleStatus'])
             ->name('expenses.toggle');
@@ -204,16 +208,25 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/reports', [ExpenseController::class, 'report'])
             ->name('expenses.report');
 
-        /* Decor Expenses (formerly Clock Expenses) */
-        // Updated names to be consistent
+
+       
+
+            /* Decor Expenses */
         Route::get('/decor-expenses', [ClockExpenseController::class, 'index'])
             ->name('clockExpenses.index');
 
         Route::delete('/decor-expenses/{clockOrder}', [ClockExpenseController::class, 'destroy'])
             ->name('clockExpenses.destroy');
 
+        Route::post('/decor-expenses/{clockOrder}/toggle', [ClockExpenseController::class, 'toggleStatus'])
+            ->name('clockExpenses.toggle');
+
         Route::get('/decor-reports', [ClockExpenseController::class, 'report'])
-            ->name('clockExpenses.report');   
+            ->name('clockExpenses.report');
+
+        Route::post('/decor-reports/{clockOrder}/toggle', [ClockExpenseController::class, 'toggleStatusFromReport'])
+            ->name('clockExpenses.toggleFromReport');
+
 
         /* Users */
         Route::resource('users', UserController::class)

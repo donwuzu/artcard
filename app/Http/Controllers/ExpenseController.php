@@ -58,6 +58,9 @@ class ExpenseController extends Controller
     {
         $order->delete();
 
-        return back()->with('success', 'Order deleted successfully.');
+       return redirect()
+    ->route('expenses.index')
+    ->with('success', 'Order deleted successfully.');
+
     }
 }

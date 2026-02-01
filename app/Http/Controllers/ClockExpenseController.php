@@ -62,9 +62,13 @@ class ClockExpenseController extends Controller
         return redirect()->route('clockExpenses.report')->with('success', 'Clock order status updated from report.');
     }
 
-    public function destroy(ClockOrder $clockOrder)
-    {
-        $clockOrder->delete();
-        return redirect()->back()->with('success', 'Clock order deleted successfully.');
-    }
+  public function destroy(ClockOrder $clockOrder)
+{
+    $clockOrder->delete();
+
+    return redirect()
+        ->route('clockExpenses.index')
+        ->with('success', 'Clock order deleted successfully.');
+}
+
 }
