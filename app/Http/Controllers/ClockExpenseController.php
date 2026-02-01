@@ -24,7 +24,7 @@ class ClockExpenseController extends Controller
 
         $clockOrders = $query->latest()->get();
 
-        return view('clockExpenses.index', compact('clockOrders'));
+        return view('admin.clockExpenses.index', compact('clockOrders'));
     }
 
     public function toggleStatus(ClockOrder $clockOrder)
@@ -51,7 +51,7 @@ class ClockExpenseController extends Controller
 
         $clockOrders = $query->latest()->get();
 
-        return view('clockExpenses.report', compact('clockOrders'));
+        return view('admin.clockExpenses.report', compact('clockOrders'));
     }
 
     public function toggleStatusFromReport(ClockOrder $clockOrder)
@@ -59,7 +59,7 @@ class ClockExpenseController extends Controller
         $clockOrder->status = $clockOrder->status === 'paid' ? 'unpaid' : 'paid';
         $clockOrder->save();
 
-        return redirect()->route('clockExpenses.report')->with('success', 'Clock order status updated from report.');
+        return redirect()->route('admin.clockExpenses.report')->with('success', 'Clock order status updated from report.');
     }
 
   public function destroy(ClockOrder $clockOrder)
@@ -67,7 +67,7 @@ class ClockExpenseController extends Controller
     $clockOrder->delete();
 
     return redirect()
-        ->route('clockExpenses.index')
+        ->route('admin.clockExpenses.index')
         ->with('success', 'Clock order deleted successfully.');
 }
 
