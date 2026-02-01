@@ -86,6 +86,8 @@
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
                 <tr>
+                    <th class="px-3 py-3 text-center">Details</th>
+
                     <th scope="col" class="px-6 py-3 ">#</th>
                     <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Name</th>
                     <th scope="col" class="px-6 py-3 ">Phone</th>
@@ -99,13 +101,19 @@
             </thead>
 
 
-            <tbody class="bg-white divide-y divide-gray-200 text-gray-800 cursor-pointer">
+            <tbody class="bg-white divide-y divide-gray-200 text-gray-800 ">
 
 
                @foreach ($filteredOrders as $index => $order)
-<tr class="border-b border-gray-200 dark:border-gray-700"
-    onclick="toggleOrderDetails({{ $order->id }})">
+<tr class="border-b border-gray-200 dark:border-gray-700">
 
+<td class="px-2 py-4 text-center">
+    <button
+        onclick="toggleOrderDetails({{ $order->id }}); event.stopPropagation();"
+        class="text-gray-600 hover:text-black">
+        ▼
+    </button>
+</td>
     <td class="px-2 py-4">{{ $index + 1 }}</td>
 
     <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">
