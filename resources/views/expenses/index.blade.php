@@ -150,6 +150,7 @@
     <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
         <form action="{{ route('admin.expenses.destroy', $order) }}"
               method="POST"
+              onclick="event.stopPropagation();"
               onsubmit="return confirm('Are you sure you want to delete this expense?');">
             @csrf
             @method('DELETE')

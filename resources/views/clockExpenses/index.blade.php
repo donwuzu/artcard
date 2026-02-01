@@ -109,7 +109,10 @@
                         </form>
                     </td>
                     <td class="px-2 py-3 whitespace-nowrap">
-                        <form action="{{ route('clockExpenses.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this order?');">
+                        <form action="{{ route('clockExpenses.destroy', $order->id) }}"
+                          method="POST"
+                          onclick="event.stopPropagation();"
+                          onsubmit="return confirm('Are you sure you want to delete this order?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="bg-red-600 hover:bg-red-800 text-white px-3 py-1 rounded text-sm">
