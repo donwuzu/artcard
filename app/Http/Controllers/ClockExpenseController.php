@@ -59,7 +59,7 @@ class ClockExpenseController extends Controller
         $clockOrder->status = $clockOrder->status === 'paid' ? 'unpaid' : 'paid';
         $clockOrder->save();
 
-        return redirect()->route('admin.clockExpenses.report')->with('success', 'Clock order status updated from report.');
+        return redirect()->route('clockExpenses.report')->with('success', 'Clock order status updated from report.');
     }
 
   public function destroy(ClockOrder $clockOrder)
