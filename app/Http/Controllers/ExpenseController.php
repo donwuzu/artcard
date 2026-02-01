@@ -23,7 +23,7 @@ class ExpenseController extends Controller
             ->latest()
             ->get();
 
-        return view('admin.expenses.index', compact('orders'));
+        return view('expenses.index', compact('orders'));
     }
 
     public function toggleStatus(Order $order)
@@ -51,7 +51,7 @@ class ExpenseController extends Controller
             ->latest()
             ->get();
 
-        return view('admin.expenses.report', compact('orders'));
+        return view('expenses.report', compact('orders'));
     }
 
     public function destroy(Order $order)

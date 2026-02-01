@@ -24,7 +24,7 @@ class ClockExpenseController extends Controller
 
         $clockOrders = $query->latest()->get();
 
-        return view('admin.clockExpenses.index', compact('clockOrders'));
+        return view('clockExpenses.index', compact('clockOrders'));
     }
 
     public function toggleStatus(ClockOrder $clockOrder)
@@ -51,7 +51,7 @@ class ClockExpenseController extends Controller
 
         $clockOrders = $query->latest()->get();
 
-        return view('admin.clockExpenses.report', compact('clockOrders'));
+        return view('clockExpenses.report', compact('clockOrders'));
     }
 
     public function toggleStatusFromReport(ClockOrder $clockOrder)
