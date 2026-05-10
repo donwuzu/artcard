@@ -16,191 +16,257 @@
 @endphp
 
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Expenses') }}
-        </h2>
-    </x-slot>
+  <x-slot name="header">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">
+                Expenses
+            </h2>
+            <p class="text-sm text-gray-500">
+                Track and manage all expense records
+            </p>
+        </div>
+
+    </div>
+</x-slot>
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white p-6 rounded-xl shadow">
                 <h1 class="text-2xl font-bold mb-6">Expense Manager</h1>
 
-           <form method="GET" action="{{ route('admin.expenses.index') }}" class="mb-6 flex flex-col sm:flex-row sm:flex-wrap gap-4 items-start sm:items-center">
-   
-      <div class="flex flex-col sm:flex-row sm:justify-between gap-6">
-    <div class="flex flex-col gap-4 w-full sm:w-1/2">
-            <label for="search" class="text-sm font-medium">Search by name/phone</label>
-            <input id="search" type="text" name="search" value="{{ request('search') }}" placeholder="Search by name/phone" class="px-4 py-2 rounded border w-full">
+        <form method="GET"
+      action="{{ route('admin.expenses.index') }}"
+      class="mb-6 bg-white p-4 rounded-xl shadow-sm border flex flex-col gap-4">
 
-            <div class="flex gap-4">
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full">
-                    Search
-                </button>
-            </div>
-        </div>
+    {{-- SEARCH --}}
+    <div class="flex flex-col gap-2 w-full">
+        <label for="search" class="text-sm font-medium text-gray-600">
+            Search
+        </label>
 
+        <input
+            id="search"
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Name or phone..."
+            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+        >
 
+        <button type="submit"
+            class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
+            Search
+        </button>
+    </div>
 
-      </div>
+    {{-- STATUS FILTER (SCROLLABLE ON MOBILE) --}}
+    <div class="flex gap-2 overflow-x-auto pb-2">
 
-   
+        @php $status = request('status'); @endphp
 
+        <a href="{{ route('admin.expenses.index') }}"
+           class="flex-shrink-0 px-4 py-2 rounded-full text-sm whitespace-nowrap transition
+           {{ !$status ? 'bg-green-600 text-white' : 'bg-gray-100 hover:bg-gray-200' }}">
+            All
+        </a>
 
+        <a href="{{ route('admin.expenses.index', ['status' => 'paid', 'search' => request('search')]) }}"
+           class="flex-shrink-0 px-4 py-2 rounded-full text-sm whitespace-nowrap transition
+           {{ $status === 'paid' ? 'bg-green-600 text-white' : 'bg-gray-100 hover:bg-gray-200' }}">
+            Paid
+        </a>
 
-   <div class="flex gap-2 flex-wrap w-full sm:w-auto sm:flex-nowrap">
-     <a href="{{ route('admin.expenses.index') }}"
-       class="px-4 py-2 rounded text-center {{ !request('status') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
-        ALL
-    </a>
-   
-    <a href="{{ route('admin.expenses.index', ['status' => 'paid', 'search' => request('search')]) }}"
-       class="px-4 py-2 rounded text-center {{ request('status') === 'paid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
-        Paid
-    </a>
-    <a href="{{ route('admin.expenses.index', ['status' => 'unpaid', 'search' => request('search')]) }}"
-       class="px-4 py-2 rounded text-center {{ request('status') === 'unpaid' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
-        Unpaid
-    </a>
-   
-</div>
+        <a href="{{ route('admin.expenses.index', ['status' => 'unpaid', 'search' => request('search')]) }}"
+           class="flex-shrink-0 px-4 py-2 rounded-full text-sm whitespace-nowrap transition
+           {{ $status === 'unpaid' ? 'bg-green-600 text-white' : 'bg-gray-100 hover:bg-gray-200' }}">
+            Unpaid
+        </a>
 
-
-
-
+    </div>
 
 </form>
 
 
-             <div class="flex flex-col sm:flex-row justify-end gap-4 mb-4 text-right">
-    <div class="text-red-600 font-semibold">
-        Total Unpaid: KSh {{ number_format($unpaidTotal) }}
+     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+    {{-- UNPAID --}}
+    <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+        <p class="text-sm text-red-500">
+            Total Unpaid
+        </p>
+
+        <h3 class="text-2xl font-bold text-red-600 mt-1">
+            KSh {{ number_format($unpaidTotal) }}
+        </h3>
     </div>
-    <div class="text-green-700 font-semibold">
-        Total Paid: KSh {{ number_format($paidTotal) }}
+
+    {{-- PAID --}}
+    <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+        <p class="text-sm text-green-600">
+            Total Paid
+        </p>
+
+        <h3 class="text-2xl font-bold text-green-700 mt-1">
+            KSh {{ number_format($paidTotal) }}
+        </h3>
     </div>
+
 </div>
 
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg"> <!-- Ensures table has minimum width on mobile -->
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
-                <tr>
-                    <th class="px-3 py-3 text-center">Details</th>
+   <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
 
-                    <th scope="col" class="px-6 py-3 ">#</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Name</th>
-                    <th scope="col" class="px-6 py-3 ">Phone</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Location</th>
-                    <th scope="col" class="px-6 py-3 ">Total</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Created At</th>
-                    <th scope="col" class="px-6 py-3 ">Status</th>
-                    <th scope="col" class="px-6 py-3 bg-gray-200 dark:bg-gray-800">Actions</th>
-                    <th scope="col" class="px-6 py-3 ">Delete</th>
-                </tr>
-            </thead>
+<table class="w-full text-sm text-left text-gray-600">
 
+    {{-- HEADER --}}
+    <thead class="text-xs uppercase bg-gray-100 text-gray-700 sticky top-0 z-10">
+        <tr>
+            <th class="px-4 py-3 text-center">Details</th>
+            <th class="px-4 py-3">#</th>
+            <th class="px-4 py-3">Name</th>
+            <th class="px-4 py-3">Phone</th>
+            <th class="px-4 py-3">Location</th>
+            <th class="px-4 py-3">Total</th>
+            <th class="px-4 py-3">Created</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Actions</th>
+            <th class="px-4 py-3">Delete</th>
+        </tr>
+    </thead>
 
-            <tbody class="bg-white divide-y divide-gray-200 text-gray-800 ">
+    {{-- BODY --}}
+    <tbody class="divide-y">
 
+    @foreach ($filteredOrders as $index => $order)
 
-               @foreach ($filteredOrders as $index => $order)
-<tr class="border-b border-gray-200 dark:border-gray-700">
+        {{-- MAIN ROW --}}
+        <tr class="hover:bg-gray-50 transition">
 
-<td class="px-2 py-4 text-center">
-    <button
-        onclick="toggleOrderDetails({{ $order->id }}); event.stopPropagation();"
-        class="text-gray-600 hover:text-black">
-        ▼
-    </button>
-</td>
-    <td class="px-2 py-4">{{ $index + 1 }}</td>
+            {{-- DETAILS TOGGLE --}}
+            <td class="px-4 py-3 text-center">
+                <button
+                    type="button"
+                    onclick="toggleOrderDetails({{ $order->id }}); event.stopPropagation();"
+                    class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200">
 
-    <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">
-        {{ $order->name }}
-    </td>
+                    <svg class="w-4 h-4 transition-transform duration-200"
+                         fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 9l-7 7-7-7"/>
+                    </svg>
 
-    <td class="px-2 py-3 sm:px-4">
-        {{ $order->phone }}
-    </td>
+                </button>
+            </td>
 
-    <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">
-        {{ $order->location }}
-    </td>
+            <td class="px-4 py-3">{{ $index + 1 }}</td>
 
-    <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
-        {{ $order->currency }} {{ number_format($order->total_price) }}
-    </td>
+            <td class="px-4 py-3 font-medium text-gray-800">{{ $order->name }}</td>
 
-    <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">
-        {{ $order->created_at->format('d M Y, h:i A') }}
-    </td>
+            <td class="px-4 py-3">{{ $order->phone }}</td>
 
-    <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
-        {{ $order->status ?? 'unpaid' }}
-    </td>
+            <td class="px-4 py-3">{{ $order->location }}</td>
 
-    {{-- TOGGLE PAID / UNPAID --}}
-    <td class="px-2 py-4 bg-gray-100 dark:bg-gray-800">
-        <form action="{{ route('admin.expenses.toggle', $order) }}" method="POST">
-            @csrf
-            <button
-                class="{{ $order->status === 'paid'
-                    ? 'bg-red-600'
-                    : 'bg-green-600' }}
-                    text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
-                {{ $order->status === 'paid' ? 'Mark Unpaid' : 'Mark Paid' }}
-            </button>
-        </form>
-    </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+                {{ $order->currency }} {{ number_format($order->total_price) }}
+            </td>
 
-    {{-- DELETE --}}
-    <td class="px-2 py-3 sm:px-4 whitespace-nowrap">
-        <form action="{{ route('admin.expenses.destroy', $order) }}"
-              method="POST"
-              onclick="event.stopPropagation();"
-              onsubmit="return confirm('Are you sure you want to delete this expense?');">
-            @csrf
-            @method('DELETE')
+            <td class="px-4 py-3 whitespace-nowrap">
+                {{ $order->created_at->format('d M Y, h:i A') }}
+            </td>
 
-            <button type="submit"
-                class="bg-red-600 hover:bg-red-800 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
-                Delete
-            </button>
-        </form>
-    </td>
-</tr>
+            {{-- STATUS BADGE --}}
+            <td class="px-4 py-3">
+                <span class="px-2 py-1 text-xs rounded-full
+                    {{ $order->status === 'paid'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-600' }}">
+                    {{ $order->status ?? 'unpaid' }}
+                </span>
+            </td>
 
+            {{-- TOGGLE PAID/UNPAID --}}
+            <td class="px-4 py-3">
+                <form action="{{ route('admin.expenses.toggle', $order) }}" method="POST">
+                    @csrf
 
-                    <tr>
-                        <td colspan="9" class="p-0">
-                            <div id="items-{{ $order->id }}" class="transition-all duration-500 ease-in-out max-h-0 overflow-hidden bg-gray-50">
-                                <div class="p-4">
-                                    <h4 class="font-semibold mb-2">Ordered Portraits:</h4>
-                                    <div class="flex flex-none overflow-x-auto gap-4 pb-2 -mx-2 px-2">
-                                        @foreach ($order->items as $portraitId => $qty)
-                                            @php $portrait = \App\Models\Portrait::find($portraitId); @endphp
-                                            @if($portrait)
-                                                <div class="flex-shrink-0 w-20 sm:w-24">
-                                                    <img 
-                                                        src="{{ Storage::url($portrait->image_path) }}" 
-                                                        class="rounded-xl w-14 h-14 sm:w-16 sm:h-16 object-cover mb-2"
-                                                        alt="Portrait {{ $portrait->id }}"
-                                                    >
-                                                    <p class="text-xs sm:text-sm font-medium">#{{ $portrait->id }} x{{ $qty }}</p>
-                                                </div>
-                                            @endif
-                                        @endforeach
+                    <button class="px-3 py-1 rounded text-xs text-white
+                        {{ $order->status === 'paid' ? 'bg-red-600' : 'bg-green-600' }}">
+                        {{ $order->status === 'paid' ? 'Unpay' : 'Pay' }}
+                    </button>
+                </form>
+            </td>
+
+            {{-- DELETE --}}
+            <td class="px-4 py-3">
+                <form action="{{ route('admin.expenses.destroy', $order) }}"
+                      method="POST"
+                      onsubmit="return confirm('Delete this expense?');">
+                    @csrf
+                    @method('DELETE')
+
+                    <button class="px-3 py-1 rounded text-xs bg-red-600 text-white hover:bg-red-700">
+                        Delete
+                    </button>
+                </form>
+            </td>
+
+        </tr>
+
+        {{-- EXPAND ROW --}}
+        <tr>
+            <td colspan="10" class="p-0">
+
+                <div id="items-{{ $order->id }}"
+                     class="max-h-0 overflow-hidden transition-all duration-500 bg-gray-50">
+
+                    <div class="p-4">
+                        <h4 class="font-semibold mb-3 text-gray-700">
+                            Ordered Portraits
+                        </h4>
+
+                        <div class="flex gap-4 overflow-x-auto pb-2">
+
+                            @foreach ($order->items as $portraitId => $qty)
+
+                                @php
+                                    $portrait = \App\Models\Portrait::find($portraitId);
+                                @endphp
+
+                                @if($portrait)
+                                    <div class="flex-shrink-0 w-24 text-center">
+
+                                        <img
+                                            src="{{ Storage::url($portrait->image_path) }}"
+                                            class="w-16 h-16 rounded-lg object-cover mx-auto"
+                                        >
+
+                                        <p class="text-xs mt-1">
+                                            #{{ $portrait->id }} × {{ $qty }}
+                                        </p>
+
                                     </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+                                @endif
 
+                            @endforeach
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </td>
+        </tr>
+
+    @endforeach
+
+    </tbody>
+</table>
+
+</div>
 
   
 

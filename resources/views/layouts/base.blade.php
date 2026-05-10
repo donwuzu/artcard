@@ -15,6 +15,10 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <script>
+    window.APP_PRICING = @json(config('pricing'));
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 

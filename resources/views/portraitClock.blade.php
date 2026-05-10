@@ -74,7 +74,7 @@
 
         @csrf
 
-<input type="hidden" id="currency" name="currency" value="KES">
+<input type="hidden" id="currency" name="currency" value="UGX">
 
 <!-- Currency Selector -->
 <div class="flex justify-end px-4 mb-6">
@@ -96,8 +96,8 @@
       <select id="currency-select" 
               class="appearance-none pl-3 pr-8 py-2 text-sm font-medium bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         
-         <option value="KES" data-flag="ke" selected>Kenyan Shillings</option>
-        <option value="UGX" data-flag="ug">Ugandan Shillings</option>
+         <option value="KES" data-flag="ke">Kenyan Shillings</option>
+        <option value="UGX" data-flag="ug" selected>Ugandan Shillings</option>
         <option value="TZS" data-flag="tz">Tanzanian Shillings</option>
         <option value="RWF" data-flag="rw">Rwandan Francs</option>
       </select>
@@ -136,7 +136,7 @@
         ">
             <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Clocks </span>
 
-            <span id="selectedCLocksCount" class="
+            <span id="selectedClocksCount" class="
                 inline-flex items-center justify-center flex-shrink-0
                 w-6 h-6 text-base font-bold text-blue-900 bg-blue-300 rounded-full
                 sm:w-7 sm:h-7 sm:text-lg
@@ -178,9 +178,10 @@
                     Clock #{{ $clock->id }}
                 </h3>
 
-                {{-- Price Display --}}
+                 {{-- Price Display --}}
                 <p class="text-sm text-gray-700 mb-3">
-                    Price: <span class="unit-price-display font-bold text-indigo-600">KSh 700</span> {{-- Or use {{ $portrait->formatted_price }} if available --}}
+                    Price: <span class="unit-price-display font-bold text-indigo-600"></span>
+                             {{-- Or use {{ $portrait->formatted_price }} if available --}}
                 </p>
 
                 {{-- Spacer to push subsequent content to bottom --}}
@@ -484,7 +485,18 @@
 
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
+    window.APP_PRICING = @json(config('pricing'));
+</script>
+
+<script>
+
+// Pricing config
+const PRICING_CONFIG = window.APP_PRICING.currencies;
+const BULK_THRESHOLD = window.APP_PRICING.bulk_threshold;
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
     const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
 
     document.querySelectorAll('.quantity-input').forEach(input => {
@@ -495,16 +507,20 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('change', function(event) {
+
         if (event.target.classList.contains('quantity-input')) {
+
             const input = event.target;
             const card = input.closest('.portrait-card');
             const id = card?.dataset.id;
+
             if (!id) return;
 
             const value = Math.max(0, parseInt(input.value) || 0);
             input.value = value;
 
             let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+
             if (value > 0) {
                 selections[id] = value;
             } else {
@@ -512,16 +528,20 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             localStorage.setItem('clockSelections', JSON.stringify(selections));
+
             calculateAndUpdateUI();
         }
     });
 
     calculateAndUpdateUI();
 
-    document.querySelector('form#order-form')?.addEventListener('submit', function(e) {
+
+    document.querySelector('form#order-form')?.addEventListener('submit', function() {
+
         const selectionsJSON = localStorage.getItem('clockSelections') || '{}';
 
         let hiddenInput = this.querySelector('input[name="clockSelections"]');
+
         if (!hiddenInput) {
             hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
@@ -531,98 +551,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
         hiddenInput.value = selectionsJSON;
 
-        // Optional, since quantities aren't being submitted anymore
         this.querySelectorAll('input[name^="quantities["]').forEach(el => el.remove());
-
-        document.getElementById('notification-banner')?.classList.remove('hidden');
     });
 
-    // Only keep this if you’re doing AJAX pagination
-     setupAjaxPagination();
 });
 
 
-function setupAjaxPagination() {
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetchPortraits(this.href);
-        });
-    });
-}
-
-function setupAjaxPagination() {
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetchPortraits(this.href);
-        });
-    });
-}
-
-function fetchPortraits(url) {
-    saveCurrentSelections();
-
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            // Replace grid view with newly fetched HTML
-            const newGridView = doc.getElementById('gridView');
-            if (newGridView) {
-                document.getElementById('gridView').outerHTML = newGridView.outerHTML;
-            }
-
-            // Replace pagination controls
-            const newPagination = doc.querySelector('.pagination');
-            if (newPagination) {
-                document.querySelector('.pagination').outerHTML = newPagination.outerHTML;
-            }
-
-            // Restore selected quantities from localStorage
-            const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
-            document.querySelectorAll('.quantity-input').forEach(input => {
-                const id = input.name.match(/\[(\d+)\]/)[1];
-                if (selections[id]) {
-                    input.value = selections[id];
-                }
-            });
-
-            calculateAndUpdateUI();
-            setupAjaxPagination(); // Re-bind pagination links
-        });
-}
-
-function saveCurrentSelections() {
-    const selections = {};
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        const id = input.name.match(/\[(\d+)\]/)[1];
-        const value = parseInt(input.value, 10);
-        if (value > 0) {
-            selections[id] = value;
-        }
-    });
-    localStorage.setItem('clockSelections', JSON.stringify(selections));
-}
-
-function updateSubtotal(card) {
-    const quantityInput = card.querySelector('.quantity-input');
-    const quantity = parseInt(quantityInput.value) || 0;
-    const price = parseFloat(card.dataset.price) || 0;
-    const subtotal = quantity * price;
-    card.querySelector('.subtotal').textContent = `KSh ${subtotal.toLocaleString()}`;
-}
-
-
-
-
-function scrollCarousel(direction) {
-    const carousel = document.getElementById('portraitCarousel');
-    const scrollAmount = carousel.clientWidth * 0.8 * direction;
-    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-}
 
 //fullscreenImage
  function openModal(src) {
@@ -658,37 +592,30 @@ function scrollCarousel(direction) {
   });
 
 
-  function calculateAndUpdateUI() {
-        const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
-        
-      // Pricing table (must match backend)
-          const pricing = {
-          KES: { tier1: 700,   tier2: 500,   delivery: 300 },
-          UGX: { tier1: 50000, tier2: 38000, delivery: 10000 },
-          TZS: { tier1: 45000, tier2: 32000, delivery: 3000 },
-          RWF: { tier1: 20000, tier2: 12000, delivery: 1500 },
-        };
 
-        const currency = localStorage.getItem('preferredCurrency') || 'KES';
+function calculateAndUpdateUI() {
 
+    const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
 
-        // Calculate total units to determine the correct unit price
-        const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
-         // Pick correct unit price (tier1 or tier2)
-        const unitPrice = totalUnits >= 5
-            ? pricing[currency].tier2
-            : pricing[currency].tier1;
+    const currency = localStorage.getItem('preferredCurrency') || 'UGX';
+
+     // Count total items
+    const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
+
+    const unitPrice = totalUnits >= BULK_THRESHOLD
+        ? PRICING_CONFIG[currency].clocks.tier2
+        : PRICING_CONFIG[currency].clocks.tier1;
+
+    const deliveryFee = totalUnits > 0
+        ? PRICING_CONFIG[currency].delivery
+        : 0;
 
 
-               // Delivery fee (0 if no items)
-         const deliveryFee = totalUnits > 0 ? pricing[currency].delivery : 0;
-        
-         // Subtotal
+     // Subtotal
     const overallSubtotal = totalUnits * unitPrice;
 
 
-
-       // Update each portrait card
+// Update each portrait card
     document.querySelectorAll('.portrait-card').forEach(card => {
         const id = card.dataset.id;
         const quantity = selections[id] ? parseInt(selections[id], 10) : 0;
@@ -699,15 +626,16 @@ function scrollCarousel(direction) {
         card.querySelector('.subtotal').textContent = formatPrice(quantity * unitPrice, currency);
     });
 
-       // Update summary
+
+     // Update summary
     document.getElementById('summary-portraits-total').textContent = formatPrice(overallSubtotal, currency);
     document.getElementById('delivery-fee').textContent = formatPrice(deliveryFee, currency);
     document.getElementById('total').textContent = formatPrice(overallSubtotal + deliveryFee, currency);
 
-        // Update the detailed table inside the cart sidebar
-        renderSelectionTable(selections, currency);
-    }
+     // Pass currency (not unitPrice) into table renderer
+    renderSelectionTable(selections, currency);
 
+}
 
 function showSuccessBanner() {
     const banner = document.getElementById('notification-banner');
@@ -722,111 +650,82 @@ function showSuccessBanner() {
     }, 5000);
 }
 
-function setupInitialViewToggle() {
-    const gridView = document.getElementById('gridView');
-    const carouselView = document.getElementById('carouselView');
-    const carouselBtn = document.getElementById('carouselViewBtn');
-    const gridBtn = document.getElementById('gridViewBtn');
-
-    if (!gridView || !carouselView || !carouselBtn || !gridBtn) return;
-
-    // --- MODIFIED SECTION: Set Grid View as the default ---
-
-    // 1. Show the grid view and hide the carousel view
-    gridView.classList.remove('hidden');
-    carouselView.classList.add('hidden');
-
-    // 2. Set the grid button to the "active" state
-    gridBtn.classList.add('bg-green-600', 'text-white');
-    gridBtn.classList.remove('bg-green-100', 'text-green-700');
-
-    // 3. Set the carousel button to the "inactive" state
-    carouselBtn.classList.add('bg-green-100', 'text-green-700');
-    carouselBtn.classList.remove('bg-green-600', 'text-white');
-
-    gridBtn.addEventListener('click', () => {
-        gridView.classList.remove('hidden');
-        carouselView.classList.add('hidden');
-        gridBtn.classList.add('bg-green-600', 'text-white');
-        gridBtn.classList.remove('bg-green-100', 'text-green-700');
-        carouselBtn.classList.add('bg-green-100', 'text-green-700');
-        carouselBtn.classList.remove('bg-green-600', 'text-white');
-    });
-
-    carouselBtn.addEventListener('click', () => {
-        carouselView.classList.remove('hidden');
-        gridView.classList.add('hidden');
-        carouselBtn.classList.add('bg-green-600', 'text-white');
-        carouselBtn.classList.remove('bg-green-100', 'text-green-700');
-        gridBtn.classList.add('bg-green-100', 'text-green-700');
-        gridBtn.classList.remove('bg-green-600', 'text-white');
-    });
-}
 
 
 
- function renderSelectionTable(selections, currency) {
-        const tbody = document.getElementById('checkout-summary-body');
-         const countSpan = document.getElementById('selectedCLocksCount'); // Get the span element
-        let totalSelectedItems = 0; // Initialize a counter for total items
 
-        tbody.innerHTML = ''; // Clear previous entries
+function renderSelectionTable(selections, currency) {
 
-        if (Object.keys(selections).length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td></tr>';
-            countSpan.textContent = '0'; // Update the span to 0 when empty
-            return;
-        }
+    const tbody = document.getElementById('checkout-summary-body');
+    const countSpan = document.getElementById('selectedClocksCount');
 
-           // Pricing table (same as backend)
-     const pricing = {
-        KES: { tier1: 700,   tier2: 500,   delivery: 300 },
-        UGX: { tier1: 50000, tier2: 38000, delivery: 10000 },
-        TZS: { tier1: 45000, tier2: 32000, delivery: 3000 },
-        RWF: { tier1: 20000, tier2: 12000, delivery: 1500 },
-      };
+    let totalSelectedItems = 0;
 
+    tbody.innerHTML = '';
 
-       // Count total units first (to decide tier)
-      for (const id in selections) totalSelectedItems += parseInt(selections[id], 10);
+    if (Object.keys(selections).length === 0) {
 
+        tbody.innerHTML =
+        '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td></tr>';
 
-    // Choose correct unit price based on total units
-    const unitPrice = totalSelectedItems >= 5 
-        ? pricing[currency].tier2 
-        : pricing[currency].tier1;
+        countSpan.textContent = '0';
 
-    // Build table rows
+        return;
+    }
+
+     // Count total units first (to decide tier)
     for (const id in selections) {
+        totalSelectedItems += parseInt(selections[id], 10);
+    }
+
+ // Choose correct unit price based on total units
+    const unitPrice = totalSelectedItems >= BULK_THRESHOLD
+        ? PRICING_CONFIG[currency].clocks.tier2
+        : PRICING_CONFIG[currency].clocks.tier1;
+
+
+    for (const id in selections) {
+
         const quantity = parseInt(selections[id], 10);
+
         const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
-        const name = card ? card.dataset.name : ` #${id}`;
+
+        const name = card ? card.dataset.name : `Clock #${id}`;
+
         const subtotal = quantity * unitPrice;
 
         const row = document.createElement('tr');
+
         row.innerHTML = `
             <td class="px-3 py-2 text-left">${name}</td>
             <td class="px-2 py-2 text-center">${quantity}</td>
             <td class="px-2 py-2 text-right">${formatPrice(unitPrice, currency)}</td>
             <td class="px-2 py-2 text-right">${formatPrice(subtotal, currency)}</td>
             <td class="px-2 py-2 text-center">
-                <button onclick="removePortrait('${id}')" title="Remove ${name}" class="text-red-600 hover:text-red-800 underline">Remove</button>
+                <button onclick="removeClock('${id}')" title="Remove ${name}" class="text-red-600 hover:text-red-800 underline">Remove</button>
             </td>
         `;
+
         tbody.appendChild(row);
+
     }
 
     countSpan.textContent = totalSelectedItems.toString();
-    }
+
+}
 
 
 
- window.removePortrait = function(id) {
-        let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
-        delete selections[id];
-        localStorage.setItem('clockSelections', JSON.stringify(selections));
-        calculateAndUpdateUI(); // Redraw everything
-    }
+window.removeClock = function(id) {
+
+    let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+
+    delete selections[id];
+
+    localStorage.setItem('clockSelections', JSON.stringify(selections));
+
+    calculateAndUpdateUI();
+}
 
 
 
@@ -859,6 +758,10 @@ function updateQuantity(button, change) {
     // Call the main UI function to redraw everything consistently based on the new state.
     calculateAndUpdateUI();
 }
+
+// HERE
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -930,15 +833,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-
  function showUserDetailsModal() {
   const inputs = document.querySelectorAll("input[name^='quantities']");
   let totalSelected = 0;
   inputs.forEach(input => totalSelected += parseInt(input.value) || 0);
 
   if (totalSelected === 0) {
-    alert("Please select at least one Clock before proceeding.");
+    alert("Please select at least one portrait before proceeding.");
     return;
   }
 
@@ -955,6 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Currency symbols (no conversion here anymore!)
+
 const rates = {
   KES: { symbol: 'KSh' },
   UGX: { symbol: 'UGX' },
@@ -1004,12 +906,13 @@ function handleCurrencyChange() {
 }
 
 // Init on page load
-window.addEventListener('DOMContentLoaded', () => {
-  const savedCurrency = localStorage.getItem('preferredCurrency') || 'KES';
+document.addEventListener('DOMContentLoaded', () => {
+  const savedCurrency = localStorage.getItem('preferredCurrency') || 'UGX';
   const select = document.getElementById('currency-select');
 
   // Set dropdown and hidden input
   select.value = savedCurrency;
+  localStorage.setItem('preferredCurrency', savedCurrency);
   document.getElementById('currency').value = savedCurrency;
 
   // Update UI
@@ -1026,7 +929,6 @@ document.querySelector('form').addEventListener('submit', function() {
 
 
 </script>
-
     
     
 <style>
