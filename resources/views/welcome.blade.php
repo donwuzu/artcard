@@ -80,35 +80,35 @@
 
   <form id="order-form" method="POST" action="{{ route('order.store') }}" class="space-y-5">
     @csrf
-<input type="hidden" id="currency" name="currency" value="KES">
+<input type="hidden" id="currency" name="currency" value="UGX">
 
 <!-- Currency Selector -->
 <div class="flex justify-end px-4 mb-6">
   <div class="relative">
     <label for="currency-select" class="sr-only">Currency</label>
     <div class="flex items-center border border-gray-300 rounded-lg bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+      
       <!-- Current Flag and Code -->
       <div id="current-flag" class="flex items-center px-3 py-2 bg-gray-50 border-r border-gray-200">
-        <img id="currency-flag" src="https://flagcdn.com/w20/ke.png" 
-             srcset="https://flagcdn.com/w40/ke.png 2x"
+        <img id="currency-flag" 
+             src="https://flagcdn.com/w20/ug.png"
+             srcset="https://flagcdn.com/w40/ug.png 2x"
              width="20"
              height="15"
-             alt="Kenya"
+             alt="Uganda"
              class="mr-2 rounded-sm">
-        <span id="currency-code" class="text-sm font-medium">KES</span>
+        <span id="currency-code" class="text-sm font-medium">UGX</span>
       </div>
 
       <!-- Select Dropdown -->
       <select id="currency-select" 
               class="appearance-none pl-3 pr-8 py-2 text-sm font-medium bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         
-         <option value="KES" data-flag="ke" selected>Kenyan Shillings</option>
-        <option value="UGX" data-flag="ug">Ugandan Shillings</option>
+        <option value="KES" data-flag="ke">Kenyan Shillings</option>
+        <option value="UGX" data-flag="ug" selected>Ugandan Shillings</option>
         <option value="TZS" data-flag="tz">Tanzanian Shillings</option>
         <option value="RWF" data-flag="rw">Rwandan Francs</option>
       </select>
-
-  
 
     </div>
   </div>
@@ -187,7 +187,8 @@
 
                 {{-- Price Display --}}
                 <p class="text-sm text-gray-700 mb-3">
-                    Price: <span class="unit-price-display font-bold text-indigo-600">KSh 250</span> {{-- Or use {{ $portrait->formatted_price }} if available --}}
+                    Price: <span class="unit-price-display font-bold text-indigo-600"></span>
+                             {{-- Or use {{ $portrait->formatted_price }} if available --}}
                 </p>
 
                 {{-- Spacer to push subsequent content to bottom --}}
@@ -241,7 +242,7 @@
 
 
 
-<!-- Updated Carousel View -->
+
 
 
 <!-- Shared Styles -->
@@ -272,9 +273,9 @@
 <button onclick="closeModal()" 
         class="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-full bg-black/30 hover:bg-black/50 transition-all duration-200 z-50 cursor-pointer">
   <!-- Visible X icon with reliable sizing -->
-  <div class="relative h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center">
+<div class="relative h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center bg-red-500 hover:bg-red-300 transition-colors duration-200">
     <svg xmlns="http://www.w3.org/2000/svg" 
-         class="absolute h-full w-full text-white hover:text-red-300 transition-colors duration-200" 
+         class="absolute h-full w-full text-white" 
          viewBox="0 0 24 24" 
          fill="none" 
          stroke="currentColor" 
@@ -284,7 +285,7 @@
       <line x1="18" y1="6" x2="6" y2="18"></line>
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
-  </div>
+</div>
   <span class="sr-only">Close modal</span>
 </button>
     <img id="fullscreenImage" src="" 
@@ -457,7 +458,7 @@
 
 
 <!-- Notification Banner -->
-<div id="notification-banner" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-white px-6 py-4 rounded-lg shadow-lg z-50 border border-green-900/20">
+<div id="notification-banner" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-300 px-8 py-6 rounded-lg shadow-sm z-50 border border-green-900/20 transition-opacity duration-500">
     <div class="flex items-center space-x-3">
         <svg class="h-20 w-20 text-green-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -465,6 +466,7 @@
         <span class="font-medium text-green-900">Portraits Submitted Successfully</span>
     </div>
 </div>
+
 
     </form> 
 
@@ -488,9 +490,17 @@
     </span>
 </div>
 
+<script>
+    window.APP_PRICING = @json(config('pricing'));
+</script>
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
+
+// ✅ Pricing Must be FIRST inside main JS
+    const PRICING_CONFIG = window.APP_PRICING.currencies;
+    const BULK_THRESHOLD = window.APP_PRICING.bulk_threshold;
+
+document.addEventListener('DOMContentLoaded', () => {
     const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
 
     document.querySelectorAll('.quantity-input').forEach(input => {
@@ -543,100 +553,11 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('notification-banner')?.classList.remove('hidden');
     });
 
-    // Only keep this if you’re doing AJAX pagination
-     setupAjaxPagination();
+  
 });
 
 
-function setupAjaxPagination() {
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetchPortraits(this.href);
-        });
-    });
-}
 
-function setupAjaxPagination() {
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetchPortraits(this.href);
-        });
-    });
-}
-
-function fetchPortraits(url) {
-    saveCurrentSelections();
-
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            // Replace grid view with newly fetched HTML
-            const newGridView = doc.getElementById('gridView');
-            if (newGridView) {
-                document.getElementById('gridView').outerHTML = newGridView.outerHTML;
-            }
-
-            // Replace pagination controls
-            const newPagination = doc.querySelector('.pagination');
-            if (newPagination) {
-                document.querySelector('.pagination').outerHTML = newPagination.outerHTML;
-            }
-
-            // Restore selected quantities from localStorage
-            const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-            document.querySelectorAll('.quantity-input').forEach(input => {
-                const id = input.name.match(/\[(\d+)\]/)[1];
-                if (selections[id]) {
-                    input.value = selections[id];
-                }
-            });
-
-            calculateAndUpdateUI();
-            setupAjaxPagination(); // Re-bind pagination links
-        });
-}
-
-function saveCurrentSelections() {
-    const selections = {};
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        const id = input.name.match(/\[(\d+)\]/)[1];
-        const value = parseInt(input.value, 10);
-        if (value > 0) {
-            selections[id] = value;
-        }
-    });
-    localStorage.setItem('portraitSelections', JSON.stringify(selections));
-}
-
-function updateSubtotal(card) {
-  const quantityInput = card.querySelector('.quantity-input');
-  const quantity = parseInt(quantityInput.value) || 0;
-  const price = parseFloat(card.dataset.price) || 250;
-
-  // Get current currency + rate
-  const currency = localStorage.getItem('preferredCurrency') || 'KES';
-  const rate = rates[currency]?.rate || 1;
-
-  const subtotal = quantity * (price * rate);
-
-  card.querySelector('.subtotal').textContent = formatPrice(subtotal, currency);
-}
-
-
-
-
-
-
-function scrollCarousel(direction) {
-    const carousel = document.getElementById('portraitCarousel');
-    const scrollAmount = carousel.clientWidth * 0.8 * direction;
-    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-}
 
 //fullscreenImage
  function openModal(src) {
@@ -675,26 +596,22 @@ function scrollCarousel(direction) {
   function calculateAndUpdateUI() {
     const selections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
 
-    // Pricing table (must match backend)
-    const pricing = {
-        KES: { tier1: 250,   tier2: 190,   delivery: 300 },
-        UGX: { tier1: 20000, tier2: 15000, delivery: 10000 },
-        TZS: { tier1: 5000,  tier2: 4000,  delivery: 3000 },
-        RWF: { tier1: 2500,  tier2: 2000,  delivery: 1500 },
-    };
+   
 
-    const currency = localStorage.getItem('preferredCurrency') || 'KES';
+    const currency = localStorage.getItem('preferredCurrency') || 'UGX';
+
 
     // Count total items
     const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
 
-    // Pick correct unit price (tier1 or tier2)
-    const unitPrice = totalUnits >= 5
-        ? pricing[currency].tier2
-        : pricing[currency].tier1;
+    const unitPrice = totalUnits >= BULK_THRESHOLD
+        ? PRICING_CONFIG[currency].portraits.tier2
+        : PRICING_CONFIG[currency].portraits.tier1;
 
-    // Delivery fee (0 if no items)
-    const deliveryFee = totalUnits > 0 ? pricing[currency].delivery : 0;
+    const deliveryFee = totalUnits > 0
+        ? PRICING_CONFIG[currency].delivery
+        : 0;
+
 
     // Subtotal
     const overallSubtotal = totalUnits * unitPrice;
@@ -735,46 +652,7 @@ function showSuccessBanner() {
     }, 5000);
 }
 
-function setupInitialViewToggle() {
-    const gridView = document.getElementById('gridView');
-    const carouselView = document.getElementById('carouselView');
-    const carouselBtn = document.getElementById('carouselViewBtn');
-    const gridBtn = document.getElementById('gridViewBtn');
 
-    if (!gridView || !carouselView || !carouselBtn || !gridBtn) return;
-
-    // --- MODIFIED SECTION: Set Grid View as the default ---
-
-    // 1. Show the grid view and hide the carousel view
-    gridView.classList.remove('hidden');
-    carouselView.classList.add('hidden');
-
-    // 2. Set the grid button to the "active" state
-    gridBtn.classList.add('bg-green-600', 'text-white');
-    gridBtn.classList.remove('bg-green-100', 'text-green-700');
-
-    // 3. Set the carousel button to the "inactive" state
-    carouselBtn.classList.add('bg-green-100', 'text-green-700');
-    carouselBtn.classList.remove('bg-green-600', 'text-white');
-
-    gridBtn.addEventListener('click', () => {
-        gridView.classList.remove('hidden');
-        carouselView.classList.add('hidden');
-        gridBtn.classList.add('bg-green-600', 'text-white');
-        gridBtn.classList.remove('bg-green-100', 'text-green-700');
-        carouselBtn.classList.add('bg-green-100', 'text-green-700');
-        carouselBtn.classList.remove('bg-green-600', 'text-white');
-    });
-
-    carouselBtn.addEventListener('click', () => {
-        carouselView.classList.remove('hidden');
-        gridView.classList.add('hidden');
-        carouselBtn.classList.add('bg-green-600', 'text-white');
-        carouselBtn.classList.remove('bg-green-100', 'text-green-700');
-        gridBtn.classList.add('bg-green-100', 'text-green-700');
-        gridBtn.classList.remove('bg-green-600', 'text-white');
-    });
-}
 
 
 function renderSelectionTable(selections, currency) {
@@ -790,23 +668,17 @@ function renderSelectionTable(selections, currency) {
         return;
     }
 
-    // Pricing table (same as backend)
-    const pricing = {
-        KES: { tier1: 250,   tier2: 190,   delivery: 300 },
-        UGX: { tier1: 20000, tier2: 15000, delivery: 10000 },
-        TZS: { tier1: 5000,  tier2: 4000,  delivery: 3000 },
-        RWF: { tier1: 2500,  tier2: 2000,  delivery: 1500 },
-    };
-
+  
     // Count total units first (to decide tier)
     for (const id in selections) {
         totalSelectedItems += parseInt(selections[id], 10);
     }
 
     // Choose correct unit price based on total units
-    const unitPrice = totalSelectedItems >= 5 
-        ? pricing[currency].tier2 
-        : pricing[currency].tier1;
+    const unitPrice = totalSelectedItems >= BULK_THRESHOLD
+        ? PRICING_CONFIG[currency].portraits.tier2
+        : PRICING_CONFIG[currency].portraits.tier1;
+
 
     // Build table rows
     for (const id in selections) {
@@ -871,6 +743,9 @@ function updateQuantity(button, change) {
     // Call the main UI function to redraw everything consistently based on the new state.
     calculateAndUpdateUI();
 }
+
+// HERE
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -1013,12 +888,13 @@ function handleCurrencyChange() {
 }
 
 // Init on page load
-window.addEventListener('DOMContentLoaded', () => {
-  const savedCurrency = localStorage.getItem('preferredCurrency') || 'KES';
+document.addEventListener('DOMContentLoaded', () => {
+  const savedCurrency = localStorage.getItem('preferredCurrency') || 'UGX';
   const select = document.getElementById('currency-select');
 
   // Set dropdown and hidden input
   select.value = savedCurrency;
+  localStorage.setItem('preferredCurrency', savedCurrency);
   document.getElementById('currency').value = savedCurrency;
 
   // Update UI
