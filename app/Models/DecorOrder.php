@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-
-class ClockOrder extends Model
+class DecorOrder extends Model
 {
-     use HasFactory;
+    use HasFactory;
+
+    protected $table = 'clock_orders';
 
     protected $fillable = [
         'name',
@@ -17,11 +18,13 @@ class ClockOrder extends Model
         'items',
         'total_price',
         'status',
-         'currency',
-
+        'currency',
+        'is_paid',
     ];
 
     protected $casts = [
         'items' => 'array',
+        'total_price' => 'decimal:2',
+        'is_paid' => 'boolean',
     ];
 }

@@ -9,7 +9,7 @@
     <div class="flex justify-between items-start p-4">
         <div class="flex-grow text-center md:text-left">
             <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> 3 PIECES PORTRAITS</h2>
-            <p class="text-gray-600">Explore our gallery and order custom clock portraits directly via Whatsapp.</p>
+            <p class="text-gray-600">Explore our gallery and order custom Decor portraits directly via Whatsapp.</p>
         </div>
 
 
@@ -58,7 +58,7 @@
         <div class="flex justify-between items-center">
             <div>
                 <p class="font-bold">Special Offer!</p>
-                <p>Select 10 or more clock portraits and get a DISCOUNT!</p>
+                <p>Select 10 or more decor portraits and get a DISCOUNT!</p>
             </div>
             <button onclick="document.getElementById('discountBanner').style.display='none'" 
                     class="text-blue-700 hover:text-blue-900">
@@ -70,11 +70,11 @@
     </div>
 @endif --}}
 
-   <form id="order-form" method="POST" action="{{ route('clocks.order.store') }}">
+   <form id="order-form" method="POST" action="{{ route('cart.store') }}">
 
         @csrf
 
-<input type="hidden" id="currency" name="currency" value="KES">
+<input type="hidden" id="currency" name="currency" value="UGX">
 
 <!-- Currency Selector -->
 <div class="flex justify-end px-4 mb-6">
@@ -96,8 +96,8 @@
       <select id="currency-select" 
               class="appearance-none pl-3 pr-8 py-2 text-sm font-medium bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         
-         <option value="KES" data-flag="ke" selected>Kenyan Shillings</option>
-        <option value="UGX" data-flag="ug">Ugandan Shillings</option>
+         <option value="KES" data-flag="ke">Kenyan Shillings</option>
+        <option value="UGX" data-flag="ug" selected>Ugandan Shillings</option>
         <option value="TZS" data-flag="tz">Tanzanian Shillings</option>
         <option value="RWF" data-flag="rw">Rwandan Francs</option>
       </select>
@@ -134,9 +134,9 @@
             shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
             cursor-pointer
         ">
-            <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Clocks </span>
+            <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Decor </span>
 
-            <span id="selectedCLocksCount" class="
+            <span id="selectedDecorsCount" class="
                 inline-flex items-center justify-center flex-shrink-0
                 w-6 h-6 text-base font-bold text-blue-900 bg-blue-300 rounded-full
                 sm:w-7 sm:h-7 sm:text-lg
@@ -155,15 +155,15 @@
 
 <div id="gridView" class=" px-4 py-6">
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        @foreach ($clocks as $clock)
+        @foreach ($decors as $decor)
         <div class="portrait-card group flex flex-col bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1 h-full"
-             data-id="{{ $clock->id }}"
-             data-price="{{ $clock->price }}"  {{-- Assuming this is the raw price for JS calculations --}}
-             data-name="Clock #{{ $clock->id }}">
+             data-id="{{ $decor->id }}"
+             data-price="{{ $decor->price }}"  {{-- Assuming this is the raw price for JS calculations --}}
+             data-name="Decor #{{ $decor->id }}">
 
             <div class="relative flex-shrink-0">
-                <img src="{{ Storage::url($clock->image_path) }}"
-                     alt="Clock #{{ $clock->id }}"
+                <img src="{{ Storage::url($decor->image_path) }}"
+                     alt="Decor #{{ $decor->id }}"
                      onclick="openModal(this.src)"
                      class="cursor-pointer w-full h-56 sm:h-64 object-cover transition-transform duration-300 group-hover:scale-105">
                 {{-- Optional: Add an overlay on hover if desired --}}
@@ -173,14 +173,15 @@
             </div>
 
             <div class="p-4 flex flex-col flex-grow">
-                {{-- CLock Name/ID (Optional but good for context) --}}
-                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="Clock #{{ $clock->id }}">
-                    Clock #{{ $clock->id }}
+                {{-- Decor Name/ID (Optional but good for context) --}}
+                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="Decor #{{ $decor->id }}">
+                    Decor #{{ $decor->id }}
                 </h3>
 
-                {{-- Price Display --}}
+                 {{-- Price Display --}}
                 <p class="text-sm text-gray-700 mb-3">
-                    Price: <span class="unit-price-display font-bold text-indigo-600">KSh 700</span> {{-- Or use {{ $portrait->formatted_price }} if available --}}
+                    Price: <span class="unit-price-display font-bold text-indigo-600"></span>
+                             {{-- Or use {{ $portrait->formatted_price }} if available --}}
                 </p>
 
                 {{-- Spacer to push subsequent content to bottom --}}
@@ -190,7 +191,7 @@
               <div class="flex items-center justify-between mb-3">
     <button
         onclick="updateQuantity(this, -1)"
-        aria-label="Decrease quantity for Clock #{{ $clock->id }}"
+        aria-label="Decrease quantity for Decor #{{ $decor->id }}"
         class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
@@ -198,15 +199,15 @@
     </button>
     <input
         type="number"
-        name="quantities[{{ $clock->id }}]"
+        name="quantities[{{ $decor->id }}]"
         min="0"
         value="0"
-        aria-label="Quantity for Clock #{{ $clock->id }}"
+        aria-label="Quantity for Decor #{{ $decor->id }}"
         class="quantity-input text-center w-16 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-1.5 text-sm mx-2"
     >
     <button
         onclick="updateQuantity(this, 1)"
-        aria-label="Increase quantity for Clock #{{ $clock->id }}"
+        aria-label="Increase quantity for Decor #{{ $decor->id }}"
         class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
@@ -251,7 +252,7 @@
 
 <!-- Pagination Section -->
 <div class="mt-8 mb-8 px-4 flex justify-center">
-    {{ $clocks->links() }}
+    {{ $decors->links() }}
 </div>
 
 
@@ -302,7 +303,7 @@
     <!-- Header -->
     <header class="border-b border-slate-200 px-5 py-4">
       <h2 id="cart-heading" class="text-lg font-semibold text-slate-800 text-center">
-        Your Selected Clocks
+        Your Selected Decor
       </h2>
       <button
         id="closeCart"
@@ -318,7 +319,7 @@
       <table class="w-full text-sm text-slate-600">
         <thead>
           <tr class="border-b border-slate-200">
-            <th class="w-2/5 text-left font-medium pb-3 pl-2">Clock</th>
+            <th class="w-2/5 text-left font-medium pb-3 pl-2">Decor</th>
             <th class="w-1/6 text-center font-medium pb-3">Qty</th>
             <th class="w-1/5 text-right font-medium pb-3">Price</th>
             <th class="w-1/5 text-right font-medium pb-3">Subtotal</th>
@@ -393,7 +394,7 @@
 
       <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-4 text-center">Enter Your Details</h2>
 
-      <form id="order-form" method="POST" action="{{ route('clocks.order.store') }}" class="space-y-5">
+      <form id="order-form" method="POST" action="{{ route('cart.store') }}" class="space-y-5">
           @csrf
           <div class="space-y-4">
               <div>
@@ -455,7 +456,7 @@
         <svg class="h-20 w-20 text-green-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
-        <span class="font-medium text-green-900">Clocks Submitted Successfully</span>
+        <span class="font-medium text-green-900">Decors Submitted Successfully</span>
     </div>
 </div>
 
@@ -484,8 +485,19 @@
 
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-    const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+    window.APP_PRICING = @json(config('pricing'));
+</script>
+
+<script>
+
+// Pricing config
+const PRICING_CONFIG = window.APP_PRICING.currencies;
+const BULK_THRESHOLD = window.APP_PRICING.bulk_threshold;
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
     document.querySelectorAll('.quantity-input').forEach(input => {
         const id = input.name.match(/\[(\d+)\]/)[1];
@@ -495,134 +507,56 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('change', function(event) {
+
         if (event.target.classList.contains('quantity-input')) {
+
             const input = event.target;
             const card = input.closest('.portrait-card');
             const id = card?.dataset.id;
+
             if (!id) return;
 
             const value = Math.max(0, parseInt(input.value) || 0);
             input.value = value;
 
-            let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+            let selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
+
             if (value > 0) {
                 selections[id] = value;
             } else {
                 delete selections[id];
             }
 
-            localStorage.setItem('clockSelections', JSON.stringify(selections));
+            localStorage.setItem('decorSelections', JSON.stringify(selections));
+
             calculateAndUpdateUI();
         }
     });
 
     calculateAndUpdateUI();
 
-    document.querySelector('form#order-form')?.addEventListener('submit', function(e) {
-        const selectionsJSON = localStorage.getItem('clockSelections') || '{}';
 
-        let hiddenInput = this.querySelector('input[name="clockSelections"]');
+    document.querySelector('form#order-form')?.addEventListener('submit', function() {
+
+        const selectionsJSON = localStorage.getItem('decorSelections') || '{}';
+
+        let hiddenInput = this.querySelector('input[name="decorSelections"]');
+
         if (!hiddenInput) {
             hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
-            hiddenInput.name = 'clockSelections';
+            hiddenInput.name = 'decorSelections';
             this.appendChild(hiddenInput);
         }
 
         hiddenInput.value = selectionsJSON;
 
-        // Optional, since quantities aren't being submitted anymore
         this.querySelectorAll('input[name^="quantities["]').forEach(el => el.remove());
-
-        document.getElementById('notification-banner')?.classList.remove('hidden');
     });
 
-    // Only keep this if you’re doing AJAX pagination
-     setupAjaxPagination();
 });
 
 
-function setupAjaxPagination() {
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetchPortraits(this.href);
-        });
-    });
-}
-
-function setupAjaxPagination() {
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetchPortraits(this.href);
-        });
-    });
-}
-
-function fetchPortraits(url) {
-    saveCurrentSelections();
-
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            // Replace grid view with newly fetched HTML
-            const newGridView = doc.getElementById('gridView');
-            if (newGridView) {
-                document.getElementById('gridView').outerHTML = newGridView.outerHTML;
-            }
-
-            // Replace pagination controls
-            const newPagination = doc.querySelector('.pagination');
-            if (newPagination) {
-                document.querySelector('.pagination').outerHTML = newPagination.outerHTML;
-            }
-
-            // Restore selected quantities from localStorage
-            const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
-            document.querySelectorAll('.quantity-input').forEach(input => {
-                const id = input.name.match(/\[(\d+)\]/)[1];
-                if (selections[id]) {
-                    input.value = selections[id];
-                }
-            });
-
-            calculateAndUpdateUI();
-            setupAjaxPagination(); // Re-bind pagination links
-        });
-}
-
-function saveCurrentSelections() {
-    const selections = {};
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        const id = input.name.match(/\[(\d+)\]/)[1];
-        const value = parseInt(input.value, 10);
-        if (value > 0) {
-            selections[id] = value;
-        }
-    });
-    localStorage.setItem('clockSelections', JSON.stringify(selections));
-}
-
-function updateSubtotal(card) {
-    const quantityInput = card.querySelector('.quantity-input');
-    const quantity = parseInt(quantityInput.value) || 0;
-    const price = parseFloat(card.dataset.price) || 0;
-    const subtotal = quantity * price;
-    card.querySelector('.subtotal').textContent = `KSh ${subtotal.toLocaleString()}`;
-}
-
-
-
-
-function scrollCarousel(direction) {
-    const carousel = document.getElementById('portraitCarousel');
-    const scrollAmount = carousel.clientWidth * 0.8 * direction;
-    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-}
 
 //fullscreenImage
  function openModal(src) {
@@ -658,37 +592,30 @@ function scrollCarousel(direction) {
   });
 
 
-  function calculateAndUpdateUI() {
-        const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
-        
-      // Pricing table (must match backend)
-          const pricing = {
-          KES: { tier1: 700,   tier2: 500,   delivery: 300 },
-          UGX: { tier1: 50000, tier2: 38000, delivery: 10000 },
-          TZS: { tier1: 45000, tier2: 32000, delivery: 3000 },
-          RWF: { tier1: 20000, tier2: 12000, delivery: 1500 },
-        };
 
-        const currency = localStorage.getItem('preferredCurrency') || 'KES';
+function calculateAndUpdateUI() {
 
+    const selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
-        // Calculate total units to determine the correct unit price
-        const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
-         // Pick correct unit price (tier1 or tier2)
-        const unitPrice = totalUnits >= 5
-            ? pricing[currency].tier2
-            : pricing[currency].tier1;
+    const currency = localStorage.getItem('preferredCurrency') || 'UGX';
+
+     // Count total items
+    const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
+
+    const unitPrice = totalUnits >= BULK_THRESHOLD
+        ? PRICING_CONFIG[currency].decors.tier2
+        : PRICING_CONFIG[currency].decors.tier1;
+
+    const deliveryFee = totalUnits > 0
+        ? PRICING_CONFIG[currency].delivery
+        : 0;
 
 
-               // Delivery fee (0 if no items)
-         const deliveryFee = totalUnits > 0 ? pricing[currency].delivery : 0;
-        
-         // Subtotal
+     // Subtotal
     const overallSubtotal = totalUnits * unitPrice;
 
 
-
-       // Update each portrait card
+// Update each portrait card
     document.querySelectorAll('.portrait-card').forEach(card => {
         const id = card.dataset.id;
         const quantity = selections[id] ? parseInt(selections[id], 10) : 0;
@@ -699,15 +626,16 @@ function scrollCarousel(direction) {
         card.querySelector('.subtotal').textContent = formatPrice(quantity * unitPrice, currency);
     });
 
-       // Update summary
+
+     // Update summary
     document.getElementById('summary-portraits-total').textContent = formatPrice(overallSubtotal, currency);
     document.getElementById('delivery-fee').textContent = formatPrice(deliveryFee, currency);
     document.getElementById('total').textContent = formatPrice(overallSubtotal + deliveryFee, currency);
 
-        // Update the detailed table inside the cart sidebar
-        renderSelectionTable(selections, currency);
-    }
+     // Pass currency (not unitPrice) into table renderer
+    renderSelectionTable(selections, currency);
 
+}
 
 function showSuccessBanner() {
     const banner = document.getElementById('notification-banner');
@@ -722,111 +650,82 @@ function showSuccessBanner() {
     }, 5000);
 }
 
-function setupInitialViewToggle() {
-    const gridView = document.getElementById('gridView');
-    const carouselView = document.getElementById('carouselView');
-    const carouselBtn = document.getElementById('carouselViewBtn');
-    const gridBtn = document.getElementById('gridViewBtn');
-
-    if (!gridView || !carouselView || !carouselBtn || !gridBtn) return;
-
-    // --- MODIFIED SECTION: Set Grid View as the default ---
-
-    // 1. Show the grid view and hide the carousel view
-    gridView.classList.remove('hidden');
-    carouselView.classList.add('hidden');
-
-    // 2. Set the grid button to the "active" state
-    gridBtn.classList.add('bg-green-600', 'text-white');
-    gridBtn.classList.remove('bg-green-100', 'text-green-700');
-
-    // 3. Set the carousel button to the "inactive" state
-    carouselBtn.classList.add('bg-green-100', 'text-green-700');
-    carouselBtn.classList.remove('bg-green-600', 'text-white');
-
-    gridBtn.addEventListener('click', () => {
-        gridView.classList.remove('hidden');
-        carouselView.classList.add('hidden');
-        gridBtn.classList.add('bg-green-600', 'text-white');
-        gridBtn.classList.remove('bg-green-100', 'text-green-700');
-        carouselBtn.classList.add('bg-green-100', 'text-green-700');
-        carouselBtn.classList.remove('bg-green-600', 'text-white');
-    });
-
-    carouselBtn.addEventListener('click', () => {
-        carouselView.classList.remove('hidden');
-        gridView.classList.add('hidden');
-        carouselBtn.classList.add('bg-green-600', 'text-white');
-        carouselBtn.classList.remove('bg-green-100', 'text-green-700');
-        gridBtn.classList.add('bg-green-100', 'text-green-700');
-        gridBtn.classList.remove('bg-green-600', 'text-white');
-    });
-}
 
 
 
- function renderSelectionTable(selections, currency) {
-        const tbody = document.getElementById('checkout-summary-body');
-         const countSpan = document.getElementById('selectedCLocksCount'); // Get the span element
-        let totalSelectedItems = 0; // Initialize a counter for total items
 
-        tbody.innerHTML = ''; // Clear previous entries
+function renderSelectionTable(selections, currency) {
 
-        if (Object.keys(selections).length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td></tr>';
-            countSpan.textContent = '0'; // Update the span to 0 when empty
-            return;
-        }
+    const tbody = document.getElementById('checkout-summary-body');
+    const countSpan = document.getElementById('selectedDecorsCount');
 
-           // Pricing table (same as backend)
-     const pricing = {
-        KES: { tier1: 700,   tier2: 500,   delivery: 300 },
-        UGX: { tier1: 50000, tier2: 38000, delivery: 10000 },
-        TZS: { tier1: 45000, tier2: 32000, delivery: 3000 },
-        RWF: { tier1: 20000, tier2: 12000, delivery: 1500 },
-      };
+    let totalSelectedItems = 0;
 
+    tbody.innerHTML = '';
 
-       // Count total units first (to decide tier)
-      for (const id in selections) totalSelectedItems += parseInt(selections[id], 10);
+    if (Object.keys(selections).length === 0) {
 
+        tbody.innerHTML =
+        '<tr><td colspan="5" class="text-center text-slate-500 py-10">Your cart is currently empty.</td></tr>';
 
-    // Choose correct unit price based on total units
-    const unitPrice = totalSelectedItems >= 5 
-        ? pricing[currency].tier2 
-        : pricing[currency].tier1;
+        countSpan.textContent = '0';
 
-    // Build table rows
+        return;
+    }
+
+     // Count total units first (to decide tier)
     for (const id in selections) {
+        totalSelectedItems += parseInt(selections[id], 10);
+    }
+
+ // Choose correct unit price based on total units
+    const unitPrice = totalSelectedItems >= BULK_THRESHOLD
+        ? PRICING_CONFIG[currency].decors.tier2
+        : PRICING_CONFIG[currency].decors.tier1;
+
+
+    for (const id in selections) {
+
         const quantity = parseInt(selections[id], 10);
+
         const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
-        const name = card ? card.dataset.name : ` #${id}`;
+
+        const name = card ? card.dataset.name : `Decor #${id}`;
+
         const subtotal = quantity * unitPrice;
 
         const row = document.createElement('tr');
+
         row.innerHTML = `
             <td class="px-3 py-2 text-left">${name}</td>
             <td class="px-2 py-2 text-center">${quantity}</td>
             <td class="px-2 py-2 text-right">${formatPrice(unitPrice, currency)}</td>
             <td class="px-2 py-2 text-right">${formatPrice(subtotal, currency)}</td>
             <td class="px-2 py-2 text-center">
-                <button onclick="removePortrait('${id}')" title="Remove ${name}" class="text-red-600 hover:text-red-800 underline">Remove</button>
+                <button onclick="removeDecor('${id}')" title="Remove ${name}" class="text-red-600 hover:text-red-800 underline">Remove</button>
             </td>
         `;
+
         tbody.appendChild(row);
+
     }
 
     countSpan.textContent = totalSelectedItems.toString();
-    }
+
+}
 
 
 
- window.removePortrait = function(id) {
-        let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
-        delete selections[id];
-        localStorage.setItem('clockSelections', JSON.stringify(selections));
-        calculateAndUpdateUI(); // Redraw everything
-    }
+window.removeDecor = function(id) {
+
+    let selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
+
+    delete selections[id];
+
+    localStorage.setItem('decorSelections', JSON.stringify(selections));
+
+    calculateAndUpdateUI();
+}
 
 
 
@@ -846,7 +745,7 @@ function updateQuantity(button, change) {
 
     // Get the portrait's ID and selections from localStorage.
     const id = card.dataset.id;
-    let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+    let selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
     // Update the selections object and save it back to localStorage.
     if (newValue > 0) {
@@ -854,11 +753,15 @@ function updateQuantity(button, change) {
     } else {
         delete selections[id]; // Remove the item if its quantity becomes zero.
     }
-    localStorage.setItem('clockSelections', JSON.stringify(selections));
+    localStorage.setItem('decorSelections', JSON.stringify(selections));
 
     // Call the main UI function to redraw everything consistently based on the new state.
     calculateAndUpdateUI();
 }
+
+// HERE
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -930,15 +833,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-
  function showUserDetailsModal() {
   const inputs = document.querySelectorAll("input[name^='quantities']");
   let totalSelected = 0;
   inputs.forEach(input => totalSelected += parseInt(input.value) || 0);
 
   if (totalSelected === 0) {
-    alert("Please select at least one Clock before proceeding.");
+    alert("Please select at least one Decor before proceeding.");
     return;
   }
 
@@ -955,6 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Currency symbols (no conversion here anymore!)
+
 const rates = {
   KES: { symbol: 'KSh' },
   UGX: { symbol: 'UGX' },
@@ -1004,12 +906,13 @@ function handleCurrencyChange() {
 }
 
 // Init on page load
-window.addEventListener('DOMContentLoaded', () => {
-  const savedCurrency = localStorage.getItem('preferredCurrency') || 'KES';
+document.addEventListener('DOMContentLoaded', () => {
+  const savedCurrency = localStorage.getItem('preferredCurrency') || 'UGX';
   const select = document.getElementById('currency-select');
 
   // Set dropdown and hidden input
   select.value = savedCurrency;
+  localStorage.setItem('preferredCurrency', savedCurrency);
   document.getElementById('currency').value = savedCurrency;
 
   // Update UI
@@ -1026,7 +929,6 @@ document.querySelector('form').addEventListener('submit', function() {
 
 
 </script>
-
     
     
 <style>

@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('portraits', function (Blueprint $table) {
             $table->id();
+            $table->string('title')->nullable();
             $table->string('image_path');
             $table->decimal('price', 8, 2);
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_featured')->default(false);
             $table->timestamps();
         });
     }

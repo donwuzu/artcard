@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SampleClock;
+use App\Models\SampleDecor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class SampleClockController extends Controller
+class SampleDecorController extends Controller
 {
     /**
      * Public guest page
      */
     public function index()
     {
-        $sampleClocks = SampleClock::latest()->paginate(50);
+        $sampleDecors = SampleDecor::latest()->paginate(50);
 
         return view('sample-clocks.index', compact('sampleClocks'));
     }
@@ -23,7 +23,7 @@ class SampleClockController extends Controller
      */
     public function dashboard()
     {
-        $sampleClocks = SampleClock::latest()->get();
+        $sampleClocks = SampleDecor::latest()->get();
 
         return view('admin.sample-clocks.dashboard', compact('sampleClocks'));
     }
@@ -74,7 +74,7 @@ class SampleClockController extends Controller
         imagedestroy($resized);
 
         // Save relative path
-        SampleClock::create([
+        SampleDecor::create([
             'image_path' => 'sample_clocks/' . $filename,
             // 'price' => $request->price,
         ]);
@@ -87,11 +87,11 @@ class SampleClockController extends Controller
     /**
      * Delete clock
      */
-    public function destroy(SampleClock $sampleClock)
+    public function destroy(SampleDecor $sampleDecor)
     {
-        Storage::disk('public')->delete($sampleClock->image_path);
-        $sampleClock->delete();
+        Storage::disk('public')->delete($sampleDecor->image_path);
+        $sampleDecor->delete();
 
-        return back()->with('success', 'Sample clock deleted');
+        return back()->with('success', 'Sample decor deleted');
     }
 }

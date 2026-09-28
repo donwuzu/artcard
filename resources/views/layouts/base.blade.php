@@ -15,6 +15,10 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <script>
+    window.APP_PRICING = @json(config('pricing'));
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
@@ -39,14 +43,7 @@
 </head>
 <body class="font-sans antialiased bg-slate-50">
 
-    @php
-        $isGuest = auth()->guest();
-        $isAdmin = auth()->check() && auth()->user()->hasRole('admin');
-
-        $homeRoute    = $isGuest ? 'home' : ($isAdmin ? 'admin.home' : 'client.home');
-        $clocksRoute  = $isGuest ? 'clocks.index' : ($isAdmin ? 'admin.clocks.index' : 'client.clocks.index');
-        $samplesRoute = $isGuest ? 'sample-images.index' : ($isAdmin ? 'admin.samples.index' : 'client.samples.index');
-    @endphp
+     
 
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
@@ -62,25 +59,38 @@
                 </div>
 
                 <div class="hidden md:flex items-center space-x-2">
-                    @php
+                   @php
                         $navLinks = [
-                            ['label' => 'Portraits', 'route' => $homeRoute, 'active' => ['home', 'admin.home', 'client.home']],
-                            ['label' => '3 Pieces', 'route' => $clocksRoute, 'active' => ['clocks.*', 'admin.clocks.*', 'client.clocks.*']],
-                            ['label' => 'Samples', 'route' => $samplesRoute, 'active' => ['sample-images.*', 'sample-clocks.*', 'admin.samples.*', 'client.samples.*']]
+                            [
+                                'label' => 'Portraits',
+                                'route' => 'home',
+                                'active' => ['home']
+                            ],
+                            [
+                                'label' => 'Decor',
+                                'route' => 'decor.index',
+                                'active' => ['decor.*']
+                            ],
+                            [
+                                'label' => 'Samples',
+                                'route' => 'sample-images.index',
+                                'active' => ['sample-images.*']
+                            ],
                         ];
-                    @endphp
+                        @endphp
 
-                            @foreach($navLinks as $link)
-                @if(\Illuminate\Support\Facades\Route::has($link['route']))
-                    <a href="{{ route($link['route']) }}"
-                    class="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200
+                  
+                        
+
+                        @foreach($navLinks as $link)
+                            <a href="{{ route($link['route']) }}"
+                            class="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200
                             {{ request()->routeIs(...$link['active'])
-                                ? 'bg-green-600 text-white shadow-md shadow-green-200'
-                                : 'text-slate-600 hover:bg-green-50 hover:text-green-700' }}">
-                        {{ $link['label'] }}
-                    </a>
-                @endif
-            @endforeach
+                                    ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                                    : 'text-slate-600 hover:bg-green-50 hover:text-green-700' }}">
+                                {{ $link['label'] }}
+                            </a>
+                        @endforeach
 
                 </div>
 
@@ -121,16 +131,14 @@
             
             <div class="px-4 pt-2 pb-6 space-y-2">
             @foreach($navLinks as $link)
-    @if(\Illuminate\Support\Facades\Route::has($link['route']))
-        <a href="{{ route($link['route']) }}"
-           class="block px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200
-                  {{ request()->routeIs(...$link['active'])
-                     ? 'bg-green-50 text-green-700 border-l-4 border-green-600 pl-3'
-                     : 'text-slate-600 hover:bg-slate-50 hover:text-green-600 hover:pl-6' }}">
-            {{ $link['label'] }}
-        </a>
-    @endif
-@endforeach
+                <a href="{{ route($link['route']) }}"
+                class="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200
+                {{ request()->routeIs(...$link['active'])
+                        ? 'bg-green-600 text-white shadow-md shadow-green-200'
+                        : 'text-slate-600 hover:bg-green-50 hover:text-green-700' }}">
+                    {{ $link['label'] }}
+                </a>
+            @endforeach
 
             </div>
         </div>
