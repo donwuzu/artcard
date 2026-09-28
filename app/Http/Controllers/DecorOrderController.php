@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PortraitClock;
-use App\Models\ClockOrder;
+use App\Models\Decor;
+use App\Models\DecorOrder;
 use Illuminate\Http\Request;
 
-class ClockOrderController extends Controller
+class DecorOrderController extends Controller
 {
     public function store(Request $request)
     {
@@ -16,20 +16,20 @@ class ClockOrderController extends Controller
             'phone'           => 'required|string|max:20',
             'location'        => 'required|string|max:255',
             'currency'        => 'required|string|in:KES,UGX,TZS,RWF',
-            'clockSelections' => 'required|json',
+            'decorSelections' => 'required|json',
         ]);
 
         // 2️⃣ Decode selections safely
         try {
             $selections = json_decode(
-                $validated['clockSelections'],
+                $validated['decorSelections'],
                 true,
                 512,
                 JSON_THROW_ON_ERROR
             );
         } catch (\JsonException $e) {
             return back()->withInput()->withErrors([
-                'clockSelections' => 'Invalid cart data. Please try again.'
+                'decorSelections' => 'Invalid cart data. Please try again.'
             ]);
         }
 
@@ -61,18 +61,18 @@ class ClockOrderController extends Controller
         // 3️⃣ Prevent empty orders
         if (empty($finalQuantities)) {
             return back()->withInput()->withErrors([
-                'quantities' => 'Please select at least one clock.'
+                'quantities' => 'Please select at least one decor.'
             ]);
         }
 
-        // 4️⃣ Validate clock IDs exist
+        // 4️⃣ Validate Decor IDs exist
         $submittedIds = array_keys($finalQuantities);
 
-        $clocks = PortraitClock::whereIn('id', $submittedIds)->get();
+        $decors = Decor::whereIn('id', $submittedIds)->get();
 
-        if ($clocks->count() !== count($finalQuantities)) {
+        if ($decors->count() !== count($finalQuantities)) {
 
-            $validIds = $clocks->pluck('id')->all();
+            $validIds = $decors->pluck('id')->all();
 
             $orderableQuantities = array_intersect_key(
                 $finalQuantities,
@@ -81,13 +81,13 @@ class ClockOrderController extends Controller
 
             if (empty($orderableQuantities)) {
                 return back()->withInput()->withErrors([
-                    'quantities' => 'The clocks you selected are no longer available.'
+                    'quantities' => 'The decor you selected are no longer available.'
                 ]);
             }
 
             session()->flash(
                 'warning',
-                'Some unavailable clocks were removed from your cart.'
+                'Some unavailable decor were removed from your cart.'
             );
 
         } else {
@@ -109,7 +109,7 @@ class ClockOrderController extends Controller
         return back()->withErrors(['currency' => 'Invalid currency selected.']);
     }
 
-    $portraitPricing = $currencyPricing['clocks'] ?? null;
+    $portraitPricing = $currencyPricing['decors'] ?? null;
 
     if (!$portraitPricing || !isset($portraitPricing['tier1'], $portraitPricing['tier2'])) {
         return back()->withErrors(['pricing' => 'Portrait pricing not configured properly.']);
@@ -126,7 +126,7 @@ class ClockOrderController extends Controller
 
 
         // 6️⃣ Save order
-        $order = ClockOrder::create([
+        $order = DecorOrder::create([
             'name'        => $validated['name'],
             'phone'       => $validated['phone'],
             'location'    => $validated['location'],
@@ -138,7 +138,7 @@ class ClockOrderController extends Controller
         // 7️⃣ Generate WhatsApp message
         $whatsappUrl = $this->sendWhatsappNotification(
             $order,
-            $clocks,
+            $decors,
             $totalUnits,
             $subtotal,
             $deliveryFee
@@ -151,7 +151,7 @@ class ClockOrderController extends Controller
 
     protected function sendWhatsappNotification(
         $order,
-        $clocks,
+        $decors,
         $totalUnits,
         $subtotal,
         $deliveryFee
@@ -163,7 +163,7 @@ class ClockOrderController extends Controller
             return $order->currency . ' ' . number_format($amount);
         };
 
-        $message = "*NEW CLOCK ORDER*\n\n";
+        $message = "*NEW DECOR ORDER*\n\n";
 
         $message .= "*Customer Details*\n";
         $message .= "• Name: {$order->name}\n";
@@ -172,18 +172,18 @@ class ClockOrderController extends Controller
 
         $message .= "*Order Summary*\n";
 
-        $clocksById = $clocks->keyBy('id');
+        $decorsById = $decors->keyBy('id');
 
-        foreach ($order->items as $clockId => $qty) {
+        foreach ($order->items as $decorId => $qty) {
 
             if ($qty > 0) {
 
-                $clock = $clocksById->get($clockId);
+                $decor = $decorsById->get($decorId);
 
-                if ($clock) {
-                    $message .= "• Clock \"{$clock->name}\" (ID: {$clock->id}) × {$qty}\n";
+                if ($decor) {
+                    $message .= "• Decor \"{$decor->name}\" (ID: {$decor->id}) × {$qty}\n";
                 } else {
-                    $message .= "• Clock #{$clockId} × {$qty}\n";
+                    $message .= "• Decor #{$decorId} × {$qty}\n";
                 }
             }
         }

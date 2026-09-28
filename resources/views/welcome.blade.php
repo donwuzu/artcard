@@ -78,7 +78,7 @@
 
 
 
-  <form id="order-form" method="POST" action="{{ route('order.store') }}" class="space-y-5">
+  <form id="order-form" method="POST" action="{{ route('cart.store') }}" class="space-y-5">
     @csrf
 <input type="hidden" id="currency" name="currency" value="UGX">
 
@@ -401,7 +401,7 @@
 
       <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-4 text-center">Enter Your Details</h2>
 
-     <form id="order-form" method="POST" action="{{ route('order.store') }}" class="space-y-5">
+     <form id="order-form" method="POST" action="{{ route('cart.store') }}" class="space-y-5">
          @csrf
          <div class="space-y-4">
               <div>

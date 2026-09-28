@@ -1,36 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-
-/*
-|--------------------------------------------------------------------------
-| Controllers
-|--------------------------------------------------------------------------
-*/
-use App\Http\Controllers\Auth\AdminLoginController;
-use App\Http\Controllers\SampleImageController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ClockOrderController;
-use App\Http\Controllers\PortraitController;
-use App\Http\Controllers\PortraitClockController;
-use App\Http\Controllers\ClockExpenseController;
-use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SampleClockController;
-
-/*
-|--------------------------------------------------------------------------
-| Models
-|--------------------------------------------------------------------------
-*/
 use App\Models\Portrait;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Public / Guest Routes
+| PUBLIC ROUTES (STORE FRONT)
 |--------------------------------------------------------------------------
 */
 
@@ -41,74 +17,40 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-// Renamed 'clocks.index' -> 'decor.index'
-Route::get('/decor', [PortraitClockController::class, 'index'])
-    ->name('clocks.index');
+/*
+|--------------------------------------------------------------------------
+| DECOR ROUTES
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/sample-portraits', [SampleImageController::class, 'index'])
+Route::get('/decor', [App\Http\Controllers\DecorController::class, 'index'])
+    ->name('decor.index');
+
+Route::get('/sample-portraits', [App\Http\Controllers\SampleImageController::class, 'index'])
     ->name('sample-images.index');
 
-// Renamed 'sample-clocks.index' -> 'sample-decor.index'
-Route::get('/sample-decor', [SampleClockController::class, 'index'])
-    ->name('sample-clocks.index');      
-    
-Route::get('/cart', [CartController::class, 'show'])
-    ->name('cart.index');
-
-Route::post('/cart', [CartController::class, 'store'])
-    ->name('cart.store');
-
-Route::post('/checkout', [OrderController::class, 'store'])
-    ->name('order.store');
-
-// Renamed 'clocks.order.store' -> 'decor.order.store'
-Route::post('/decor-order', [ClockOrderController::class, 'store'])
-    ->name('clocks.order.store');
-
+Route::get('/sample-decor', [App\Http\Controllers\SampleDecorController::class, 'index'])
+    ->name('sample-decor.index');
 
 /*
 |--------------------------------------------------------------------------
-| Auth Redirect (single entry point)
+| CART & ORDERS
 |--------------------------------------------------------------------------
 */
-Route::get('/home', function () {
-    if (Auth::check() && Auth::user()->hasRole('admin')) {
-        return redirect()->route('admin.home');
-    }
 
-    if (Auth::check()) {
-        return redirect()->route('client.home');
-    }
+Route::get('/cart', [App\Http\Controllers\CartController::class, 'show'])->name('cart.index');
+Route::post('/cart', [App\Http\Controllers\CartController::class, 'store'])->name('cart.store');
+Route::post('/checkout', [App\Http\Controllers\CartController::class, 'store'])->name('order.store');
 
-    return redirect()->route('home'); 
-});
-
+Route::post('/decor-order', [App\Http\Controllers\CartController::class, 'store'])
+    ->name('decor.order.store');
 
 /*
 |--------------------------------------------------------------------------
-| Admin Authentication (Guest Only)
+| CLIENT ROUTES (OPTIONAL FUTURE PANEL)
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->group(function () {
-    Route::middleware('guest')->group(function () {
-        Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
-            ->name('admin.login');
 
-        Route::post('/login', [AdminLoginController::class, 'login'])
-            ->name('admin.login.submit');
-    });
-
-    Route::post('/logout', [AdminLoginController::class, 'logout'])
-        ->middleware('auth')
-        ->name('admin.logout');
-});
-
-
-/*
-|--------------------------------------------------------------------------
-| Client Routes
-|--------------------------------------------------------------------------
-*/
 Route::prefix('client')
     ->name('client.')
     ->group(function () {
@@ -120,135 +62,15 @@ Route::prefix('client')
             ]);
         })->name('home');
 
-        Route::get('/cart', [CartController::class, 'show'])
-            ->name('cart.index');
-
-        Route::post('/cart', [CartController::class, 'store'])
-            ->name('cart.store');
-
-        Route::post('/checkout', [OrderController::class, 'store'])
-            ->name('order.store');
-
-        // Renamed to match public naming convention
-        Route::get('/decor', [PortraitClockController::class, 'index'])
-            ->name('clocks.index');
-
-        Route::post('/decor-order', [ClockOrderController::class, 'store'])
-            ->name('clocks.order.store');
-    });
-
-
-/*
-|--------------------------------------------------------------------------
-| Admin Routes (Admin Only)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-
-        Route::get('/home', function () {
-            return view('welcome', [
-                'portraits' => Portrait::latest()->paginate(50),
-                'showDiscountBanner' => true,
-            ]);
-        })->name('home');
-
-        /* Dashboard */
-        Route::get('/dashboard', [PortraitController::class, 'index'])
-            ->name('dashboard');
-
-        /* Portraits */
-        Route::resource('portraits', PortraitController::class);
-
-        /* Decor (formerly Clocks) */
-        // Manual index route
-        Route::get('/decor', [PortraitClockController::class, 'index'])
-            ->name('clocks.index');
-
-        // Resource for store/update/destroy (generates admin.decor.store, etc.)
-        Route::resource('decor', PortraitClockController::class)
-            ->except('index');
-
-        Route::get('/decor-dashboard', [PortraitClockController::class, 'dashboard'])
-            ->name('clocks.dashboard');
-
-        /* Sample Images */
-        Route::resource('sample-images', SampleImageController::class)
-            ->except('index');
-
-        Route::get('/sample-images-dashboard', [SampleImageController::class, 'dashboard'])
-            ->name('sample-images.dashboard');
-
-        /* Sample Decor (formerly Sample Clocks) */
-        // Updated URI to 'sample-decor'
-        Route::resource('sample-decor', SampleClockController::class)
-            ->only(['store', 'destroy'])
-            ->names([
-                'store' => 'sample-clocks.store',
-                'destroy' => 'sample-clocks.destroy',
-            ]);
-
-        Route::get('/sample-decor/dashboard', [SampleClockController::class, 'dashboard'])
-             ->name('sample-clocks.dashboard');
-
-
-        
-            /* Expenses */
-        Route::get('/expenses', [ExpenseController::class, 'index'])
-            ->name('expenses.index');
-
-        Route::delete('/expenses/{order}', [ExpenseController::class, 'destroy'])
-            ->name('expenses.destroy');
-
-        Route::post('/expenses/{order}/toggle', [ExpenseController::class, 'toggleStatus'])
-            ->name('expenses.toggle');
-
-        Route::get('/reports', [ExpenseController::class, 'report'])
-            ->name('expenses.report');
-
-
-       
-
-            /* Decor Expenses */
-        Route::get('/decor-expenses', [ClockExpenseController::class, 'index'])
-            ->name('clockExpenses.index');
-
-        Route::delete('/decor-expenses/{clockOrder}', [ClockExpenseController::class, 'destroy'])
-            ->name('clockExpenses.destroy');
-
-        Route::post('/decor-expenses/{clockOrder}/toggle', [ClockExpenseController::class, 'toggleStatus'])
-            ->name('clockExpenses.toggle');
-
-        Route::get('/decor-reports', [ClockExpenseController::class, 'report'])
-            ->name('clockExpenses.report');
-
-        Route::post('/decor-reports/{clockOrder}/toggle', [ClockExpenseController::class, 'toggleStatusFromReport'])
-            ->name('clockExpenses.toggleFromReport');
-
-
-        /* Users */
-        Route::resource('users', UserController::class)
-            ->only(['index', 'update', 'destroy']);
-
-        Route::patch('users/{user}/role', [UserController::class, 'updateRole'])
-            ->name('users.update-role');
-
-        /* Profile */
-        Route::get('/profile', [ProfileController::class, 'edit'])
-            ->name('profile.edit');
-
-        Route::patch('/profile', [ProfileController::class, 'update'])
-            ->name('profile.update');
-
-        Route::delete('/profile', [ProfileController::class, 'destroy'])
-            ->name('profile.destroy');
+        Route::get('/cart', [App\Http\Controllers\CartController::class, 'show'])->name('cart.index');
+        Route::post('/cart', [App\Http\Controllers\CartController::class, 'store'])->name('cart.store');
+        Route::post('/checkout', [App\Http\Controllers\CartController::class, 'store'])->name('order.store');
     });
 
 /*
 |--------------------------------------------------------------------------
-| Auth Scaffolding
+| AUTH ROUTES
 |--------------------------------------------------------------------------
 */
-require __DIR__ . '/auth.php';
+
+require __DIR__.'/auth.php';

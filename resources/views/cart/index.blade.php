@@ -69,12 +69,12 @@
     </div>
 </div>
 
-   <!-- Clocks Card - Improved -->
+   <!-- Decor Card - Improved -->
 <div class="w-full bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
     <div class="bg-green-600 text-white px-4 sm:px-6 py-3">
         <div class="flex items-center">
-            <i class="fas fa-clock text-white mr-2 sm:mr-3 text-lg"></i>
-            <h3 class="text-base sm:text-lg font-semibold">Clocks</h3>
+            <i class="fas fa-images text-white mr-2 sm:mr-3 text-lg"></i>
+            <h3 class="text-base sm:text-lg font-semibold">Decor</h3>
            
         </div>
     </div>
@@ -84,23 +84,23 @@
             <table class="w-full min-w-max md:w-full">
                 <thead>
                     <tr class="bg-green-50 text-green-800 text-sm sm:text-base">
-                        <th class="text-left py-2 px-2 sm:px-4">Clock</th>
+                        <th class="text-left py-2 px-2 sm:px-4">Decor</th>
                         <th class="text-center py-2 px-1">Qty</th>
                         <th class="text-right py-2 px-2 sm:px-3">Price</th>
                         <th class="text-right py-2 px-2 sm:px-3">Subtotal</th>
                         <th class="text-right py-2 px-2 sm:px-4">Action</th>
                     </tr>
                 </thead>
-                <tbody id="checkout-clocks-body" class="divide-y divide-green-100">
+                <tbody id="checkout-decor-body" class="divide-y divide-green-100">
                     <!-- Empty State -->
                     <tr>
                         <td colspan="5" class="text-center text-gray-500 py-6 sm:py-8">
                             <div class="flex flex-col items-center justify-center">
-                                <i class="fas fa-clock text-3xl sm:text-4xl text-gray-300 mb-2 sm:mb-3"></i>
-                                <p class="text-sm sm:text-base mb-2">No clocks in your cart</p>
+                                <i class="fas fa-images text-3xl sm:text-4xl text-gray-300 mb-2 sm:mb-3"></i>
+                                <p class="text-sm sm:text-base mb-2">No decor in your cart</p>
                                 <a href="" 
                                    class="text-sm text-green-600 hover:text-green-800 font-medium flex items-center">
-                                    <i class="fas fa-plus-circle mr-2"></i> Add Clocks
+                                    <i class="fas fa-plus-circle mr-2"></i> Add Decor
                                 </a>
                             </div>
                         </td>
@@ -113,7 +113,7 @@
 </div>
 
       <input type="hidden" name="portraitSelections" id="portraitSelectionsInput">
-      <input type="hidden" name="clockSelections" id="clockSelectionsInput">
+      <input type="hidden" name="decorSelections" id="decorSelectionsInput">
    
   </div>
 
@@ -158,8 +158,8 @@
                     <span id="summary-portraits-total" class="font-medium">KSh 0</span>
                 </div>
                 <div class="flex justify-between text-gray-700 text-sm sm:text-base">
-                    <span>Clocks Subtotal:</span>
-                    <span id="summary-clocks-total" class="font-medium">KSh 0</span>
+                    <span>Decor Subtotal:</span>
+                    <span id="summary-decor-total" class="font-medium">KSh 0</span>
                 </div>
                 <div class="flex justify-between text-gray-700 text-sm sm:text-base">
                     <span>Delivery Fee:</span>
@@ -225,21 +225,21 @@ document.addEventListener('DOMContentLoaded', () => {
   ================================= */
 
   const portraitSelections = JSON.parse(localStorage.getItem('portraitSelections') || '{}');
-  const clockSelections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+  const decorSelections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
   const portraitBody = document.getElementById('checkout-summary-body');
-  const clockBody = document.getElementById('checkout-clocks-body');
+  const decorBody = document.getElementById('checkout-decor-body');
 
   const portraitInput = document.getElementById('portraitSelectionsInput');
-  const clockInput = document.getElementById('clockSelectionsInput');
+  const decorInput = document.getElementById('decorSelectionsInput');
 
   const subtotalEl = document.getElementById('summary-portraits-total');
-  const clocksSubtotalEl = document.getElementById('summary-clocks-total');
+  const decorSubtotalEl = document.getElementById('summary-decor-total');
   const deliveryFeeEl = document.getElementById('delivery-fee');
   const totalEl = document.getElementById('total');
 
   portraitBody.innerHTML = '';
-  clockBody.innerHTML = '';
+  decorBody.innerHTML = '';
 
 
   /* ================================
@@ -296,55 +296,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ================================
-     4️⃣ CLOCKS CALCULATION
+     4️⃣ DECOR CALCULATION
   ================================= */
 
-  const clockTotalUnits = Object.values(clockSelections)
+  const decorTotalUnits = Object.values(decorSelections)
     .reduce((sum, qty) => sum + parseInt(qty, 10), 0);
 
-  const clockUnitPrice = clockTotalUnits >= BULK_THRESHOLD
-    ? cfg.clocks.tier2
-    : cfg.clocks.tier1;
+  const decorPricing = cfg.decors || cfg.clocks;
 
-  let clockSubtotal = 0;
+  const decorUnitPrice = decorTotalUnits >= BULK_THRESHOLD
+    ? decorPricing.tier2
+    : decorPricing.tier1;
 
-  for (const [id, qtyStr] of Object.entries(clockSelections)) {
+  let decorSubtotal = 0;
+
+  for (const [id, qtyStr] of Object.entries(decorSelections)) {
     const qty = parseInt(qtyStr, 10);
 
     if (qty > 0) {
-      const rowSub = qty * clockUnitPrice;
-      clockSubtotal += rowSub;
+      const rowSub = qty * decorUnitPrice;
+      decorSubtotal += rowSub;
 
       const row = `
 <tr class="hover:bg-green-50 transition-colors border-b border-green-100">
   <td class="px-3 py-2 text-left">
-    <div class="text-gray-800 font-medium text-sm">Clock #${id}</div>
+    <div class="text-gray-800 font-medium text-sm">Decor #${id}</div>
   </td>
   <td class="px-2 py-2 text-center">
     <span class="bg-gray-100 rounded-full px-3 py-1 text-xs font-semibold">${qty}</span>
   </td>
   <td class="px-3 py-2 text-right">
-    ${cfg.symbol} ${clockUnitPrice.toLocaleString()}
+    ${cfg.symbol} ${decorUnitPrice.toLocaleString()}
   </td>
   <td class="px-3 py-2 text-right font-semibold">
     ${cfg.symbol} ${rowSub.toLocaleString()}
   </td>
   <td class="px-3 py-2 text-right">
     <button type="button"
-      data-remove-clock="${id}"
-      class="remove-clock-btn text-red-600 hover:text-red-800 text-sm">
+      data-remove-decor="${id}"
+      class="remove-decor-btn text-red-600 hover:text-red-800 text-sm">
       Remove
     </button>
   </td>
 </tr>
 `;
-      clockBody.insertAdjacentHTML('beforeend', row);
+      decorBody.insertAdjacentHTML('beforeend', row);
     }
   }
 
-  if (clockSubtotal === 0) {
-    clockBody.innerHTML =
-      '<tr><td colspan="5" class="text-center py-6 text-gray-500">Your clock cart is empty.</td></tr>';
+  if (decorSubtotal === 0) {
+    decorBody.innerHTML =
+      '<tr><td colspan="5" class="text-center py-6 text-gray-500">Your decor cart is empty.</td></tr>';
   }
 
 
@@ -352,14 +354,14 @@ document.addEventListener('DOMContentLoaded', () => {
      5️⃣ TOTALS
   ================================= */
 
-  const totalUnits = portraitTotalUnits + clockTotalUnits;
+  const totalUnits = portraitTotalUnits + decorTotalUnits;
   const deliveryFee = totalUnits > 0 ? cfg.delivery : 0;
 
-  const fullSubtotal = portraitSubtotal + clockSubtotal;
+  const fullSubtotal = portraitSubtotal + decorSubtotal;
   const finalTotal = fullSubtotal + deliveryFee;
 
   subtotalEl.textContent = `${cfg.symbol} ${portraitSubtotal.toLocaleString()}`;
-  clocksSubtotalEl.textContent = `${cfg.symbol} ${clockSubtotal.toLocaleString()}`;
+  decorSubtotalEl.textContent = `${cfg.symbol} ${decorSubtotal.toLocaleString()}`;
   deliveryFeeEl.textContent = `${cfg.symbol} ${deliveryFee.toLocaleString()}`;
   totalEl.textContent = `${cfg.symbol} ${finalTotal.toLocaleString()}`;
 
@@ -369,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ================================= */
 
   portraitInput.value = JSON.stringify(portraitSelections);
-  clockInput.value = JSON.stringify(clockSelections);
+  decorInput.value = JSON.stringify(decorSelections);
 
 
   /* ================================
@@ -384,10 +386,10 @@ document.addEventListener('DOMContentLoaded', () => {
       removeItem('portraitSelections', id);
     }
 
-    const clockBtn = e.target.closest('.remove-clock-btn');
-    if (clockBtn) {
-      const id = clockBtn.dataset.removeClock;
-      removeItem('clockSelections', id);
+    const decorBtn = e.target.closest('.remove-decor-btn');
+    if (decorBtn) {
+      const id = decorBtn.dataset.removeDecor;
+      removeItem('decorSelections', id);
     }
 
   });
@@ -409,4 +411,3 @@ function removeItem(storageKey, id) {
 
 
 @endsection
-

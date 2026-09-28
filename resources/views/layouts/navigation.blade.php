@@ -43,8 +43,8 @@
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="left" width="48">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out {{ request()->routeIs('clocks.*') || request()->routeIs('clockExpenses.*') ? 'border-indigo-400 dark:border-indigo-600 text-gray-900 dark:text-gray-100 focus:border-indigo-700' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700' }}">
-                                    <div>{{ __('3 Piece') }}</div>
+                                <button class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out {{ request()->routeIs('decor.*') || request()->routeIs('decorExpenses.*') ? 'border-indigo-400 dark:border-indigo-600 text-gray-900 dark:text-gray-100 focus:border-indigo-700' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700' }}">
+                                    <div>{{ __('Decor') }}</div>
                                     <div class="ms-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -55,13 +55,13 @@
 
                             <x-slot name="content">
                                 <!-- <x-dropdown-link :href="route('admin.clocks.dashboard')" :active="request()->routeIs('clocks.dashboard')">
-                                    {{ __('3 Piece Dashboard') }}
+                                    {{ __('Decor Dashboard') }}
                                 </x-dropdown-link> -->
-                                <x-dropdown-link :href="route('admin.clockExpenses.index')" :active="request()->routeIs('clockExpenses.index')">
-                                    {{ __('3 Piece Expenses') }}
+                                <x-dropdown-link :href="route('admin.decorExpenses.index')" :active="request()->routeIs('decorExpenses.index')">
+                                    {{ __('Decor Expenses') }}
                                 </x-dropdown-link>
-                                <x-dropdown-link :href="route('admin.clockExpenses.report')" :active="request()->routeIs('clockExpenses.report')">
-                                    {{ __('3 Piece Reports') }}
+                                <x-dropdown-link :href="route('admin.decorExpenses.report')" :active="request()->routeIs('decorExpenses.report')">
+                                    {{ __('Decor Reports') }}
                                 </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
@@ -102,9 +102,9 @@
         </x-dropdown-link>
 
            <x-dropdown-link
-            :href="route('admin.sample-clocks.dashboard')"
-            :active="request()->routeIs('admin.sample-clocks.*')">
-            {{ __('Manage Sample Clocks') }}
+            :href="route('admin.sample-decors.dashboard')"
+            :active="request()->routeIs('admin.sample-decors.*')">
+            {{ __('Manage Sample Decor') }}
         </x-dropdown-link>
     </x-slot>
 
@@ -210,29 +210,29 @@
         </div>
     </div>
 
-    {{-- Clocks --}}
+    {{-- Decor --}}
     <div class="pt-4 pb-3 border-t border-gray-200">
         <div class="px-4 text-xs uppercase tracking-wider text-gray-500 font-semibold">
-            Clocks
+            Decor
         </div>
 
         <div class="mt-2 space-y-1 px-3">
             <x-responsive-nav-link
-                :href="route('admin.clocks.dashboard')"
-                :active="request()->routeIs('admin.clocks.*')">
-                🕰️ Clock Dashboard
+                :href="route('admin.decors.dashboard')"
+                :active="request()->routeIs('admin.decors.*')">
+                🕰️ Decor Dashboard
             </x-responsive-nav-link>
 
             <x-responsive-nav-link
-                :href="route('admin.clockExpenses.index')"
-                :active="request()->routeIs('admin.clockExpenses.index')">
-                💸 Clock Expenses
+                :href="route('admin.decorExpenses.index')"
+                :active="request()->routeIs('admin.decorExpenses.index')">
+                💸 Decor Expenses
             </x-responsive-nav-link>
 
             <x-responsive-nav-link
-                :href="route('admin.clockExpenses.report')"
-                :active="request()->routeIs('admin.clockExpenses.report')">
-                📊 Clock Reports
+                :href="route('admin.decorExpenses.report')"
+                :active="request()->routeIs('admin.decorExpenses.report')">
+                📊 Decor Reports
             </x-responsive-nav-link>
         </div>
     </div>
@@ -251,9 +251,9 @@
             </x-responsive-nav-link>
 
             <x-responsive-nav-link
-                :href="route('admin.sample-clocks.dashboard')"
-                :active="request()->routeIs('admin.sample-clocks.*')">
-                🕰️ Sample Clocks
+                :href="route('admin.sample-decors.dashboard')"
+                :active="request()->routeIs('admin.sample-decors.*')">
+                🕰️ Sample Decor
             </x-responsive-nav-link>
         </div>
     </div>

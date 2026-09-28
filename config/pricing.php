@@ -7,7 +7,7 @@ return [
     | Currency Pricing Configuration
     |--------------------------------------------------------------------------
     |
-    | All prices for portraits and clocks per currency.
+    | All prices for portraits and decor per currency.
     | Tier1 = normal price
     | Tier2 = bulk price (applies when bulk_threshold reached)
     |
@@ -21,6 +21,11 @@ return [
             'portraits' => [
                 'tier1' => 250,
                 'tier2' => 190,
+            ],
+
+            'decors' => [
+                'tier1' => 700,
+                'tier2' => 500,
             ],
 
             'clocks' => [
@@ -39,6 +44,11 @@ return [
                 'tier2' => 15000,
             ],
 
+            'decors' => [
+                'tier1' => 50000,
+                'tier2' => 38000,
+            ],
+
             'clocks' => [
                 'tier1' => 50000,
                 'tier2' => 38000,
@@ -55,6 +65,11 @@ return [
                 'tier2' => 4000,
             ],
 
+            'decors' => [
+                'tier1' => 45000,
+                'tier2' => 32000,
+            ],
+
             'clocks' => [
                 'tier1' => 45000,
                 'tier2' => 32000,
@@ -69,6 +84,11 @@ return [
             'portraits' => [
                 'tier1' => 2500,
                 'tier2' => 2000,
+            ],
+
+            'decors' => [
+                'tier1' => 20000,
+                'tier2' => 12000,
             ],
 
             'clocks' => [

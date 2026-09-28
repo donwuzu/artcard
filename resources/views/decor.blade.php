@@ -9,7 +9,7 @@
     <div class="flex justify-between items-start p-4">
         <div class="flex-grow text-center md:text-left">
             <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> 3 PIECES PORTRAITS</h2>
-            <p class="text-gray-600">Explore our gallery and order custom clock portraits directly via Whatsapp.</p>
+            <p class="text-gray-600">Explore our gallery and order custom Decor portraits directly via Whatsapp.</p>
         </div>
 
 
@@ -58,7 +58,7 @@
         <div class="flex justify-between items-center">
             <div>
                 <p class="font-bold">Special Offer!</p>
-                <p>Select 10 or more clock portraits and get a DISCOUNT!</p>
+                <p>Select 10 or more decor portraits and get a DISCOUNT!</p>
             </div>
             <button onclick="document.getElementById('discountBanner').style.display='none'" 
                     class="text-blue-700 hover:text-blue-900">
@@ -70,7 +70,7 @@
     </div>
 @endif --}}
 
-   <form id="order-form" method="POST" action="{{ route('clocks.order.store') }}">
+   <form id="order-form" method="POST" action="{{ route('cart.store') }}">
 
         @csrf
 
@@ -134,9 +134,9 @@
             shadow-md hover:shadow-lg transition-all duration-300 ease-in-out
             cursor-pointer
         ">
-            <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Clocks </span>
+            <span class="block sm:inline me-1 sm:me-2 whitespace-nowrap px-4">Selected Decor </span>
 
-            <span id="selectedClocksCount" class="
+            <span id="selectedDecorsCount" class="
                 inline-flex items-center justify-center flex-shrink-0
                 w-6 h-6 text-base font-bold text-blue-900 bg-blue-300 rounded-full
                 sm:w-7 sm:h-7 sm:text-lg
@@ -155,15 +155,15 @@
 
 <div id="gridView" class=" px-4 py-6">
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        @foreach ($clocks as $clock)
+        @foreach ($decors as $decor)
         <div class="portrait-card group flex flex-col bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1 h-full"
-             data-id="{{ $clock->id }}"
-             data-price="{{ $clock->price }}"  {{-- Assuming this is the raw price for JS calculations --}}
-             data-name="Clock #{{ $clock->id }}">
+             data-id="{{ $decor->id }}"
+             data-price="{{ $decor->price }}"  {{-- Assuming this is the raw price for JS calculations --}}
+             data-name="Decor #{{ $decor->id }}">
 
             <div class="relative flex-shrink-0">
-                <img src="{{ Storage::url($clock->image_path) }}"
-                     alt="Clock #{{ $clock->id }}"
+                <img src="{{ Storage::url($decor->image_path) }}"
+                     alt="Decor #{{ $decor->id }}"
                      onclick="openModal(this.src)"
                      class="cursor-pointer w-full h-56 sm:h-64 object-cover transition-transform duration-300 group-hover:scale-105">
                 {{-- Optional: Add an overlay on hover if desired --}}
@@ -173,9 +173,9 @@
             </div>
 
             <div class="p-4 flex flex-col flex-grow">
-                {{-- CLock Name/ID (Optional but good for context) --}}
-                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="Clock #{{ $clock->id }}">
-                    Clock #{{ $clock->id }}
+                {{-- Decor Name/ID (Optional but good for context) --}}
+                <h3 class="text-md font-semibold text-gray-800 mb-2 truncate" title="Decor #{{ $decor->id }}">
+                    Decor #{{ $decor->id }}
                 </h3>
 
                  {{-- Price Display --}}
@@ -191,7 +191,7 @@
               <div class="flex items-center justify-between mb-3">
     <button
         onclick="updateQuantity(this, -1)"
-        aria-label="Decrease quantity for Clock #{{ $clock->id }}"
+        aria-label="Decrease quantity for Decor #{{ $decor->id }}"
         class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
@@ -199,15 +199,15 @@
     </button>
     <input
         type="number"
-        name="quantities[{{ $clock->id }}]"
+        name="quantities[{{ $decor->id }}]"
         min="0"
         value="0"
-        aria-label="Quantity for Clock #{{ $clock->id }}"
+        aria-label="Quantity for Decor #{{ $decor->id }}"
         class="quantity-input text-center w-16 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-1.5 text-sm mx-2"
     >
     <button
         onclick="updateQuantity(this, 1)"
-        aria-label="Increase quantity for Clock #{{ $clock->id }}"
+        aria-label="Increase quantity for Decor #{{ $decor->id }}"
         class="quantity-button w-8 h-8 flex items-center justify-center bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
@@ -252,7 +252,7 @@
 
 <!-- Pagination Section -->
 <div class="mt-8 mb-8 px-4 flex justify-center">
-    {{ $clocks->links() }}
+    {{ $decors->links() }}
 </div>
 
 
@@ -303,7 +303,7 @@
     <!-- Header -->
     <header class="border-b border-slate-200 px-5 py-4">
       <h2 id="cart-heading" class="text-lg font-semibold text-slate-800 text-center">
-        Your Selected Clocks
+        Your Selected Decor
       </h2>
       <button
         id="closeCart"
@@ -319,7 +319,7 @@
       <table class="w-full text-sm text-slate-600">
         <thead>
           <tr class="border-b border-slate-200">
-            <th class="w-2/5 text-left font-medium pb-3 pl-2">Clock</th>
+            <th class="w-2/5 text-left font-medium pb-3 pl-2">Decor</th>
             <th class="w-1/6 text-center font-medium pb-3">Qty</th>
             <th class="w-1/5 text-right font-medium pb-3">Price</th>
             <th class="w-1/5 text-right font-medium pb-3">Subtotal</th>
@@ -394,7 +394,7 @@
 
       <h2 id="modal-heading" class="text-2xl font-bold text-gray-900 mb-4 text-center">Enter Your Details</h2>
 
-      <form id="order-form" method="POST" action="{{ route('clocks.order.store') }}" class="space-y-5">
+      <form id="order-form" method="POST" action="{{ route('cart.store') }}" class="space-y-5">
           @csrf
           <div class="space-y-4">
               <div>
@@ -456,7 +456,7 @@
         <svg class="h-20 w-20 text-green-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
-        <span class="font-medium text-green-900">Clocks Submitted Successfully</span>
+        <span class="font-medium text-green-900">Decors Submitted Successfully</span>
     </div>
 </div>
 
@@ -497,7 +497,7 @@ const BULK_THRESHOLD = window.APP_PRICING.bulk_threshold;
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+    const selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
     document.querySelectorAll('.quantity-input').forEach(input => {
         const id = input.name.match(/\[(\d+)\]/)[1];
@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const value = Math.max(0, parseInt(input.value) || 0);
             input.value = value;
 
-            let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+            let selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
             if (value > 0) {
                 selections[id] = value;
@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 delete selections[id];
             }
 
-            localStorage.setItem('clockSelections', JSON.stringify(selections));
+            localStorage.setItem('decorSelections', JSON.stringify(selections));
 
             calculateAndUpdateUI();
         }
@@ -538,14 +538,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector('form#order-form')?.addEventListener('submit', function() {
 
-        const selectionsJSON = localStorage.getItem('clockSelections') || '{}';
+        const selectionsJSON = localStorage.getItem('decorSelections') || '{}';
 
-        let hiddenInput = this.querySelector('input[name="clockSelections"]');
+        let hiddenInput = this.querySelector('input[name="decorSelections"]');
 
         if (!hiddenInput) {
             hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
-            hiddenInput.name = 'clockSelections';
+            hiddenInput.name = 'decorSelections';
             this.appendChild(hiddenInput);
         }
 
@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function calculateAndUpdateUI() {
 
-    const selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+    const selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
     const currency = localStorage.getItem('preferredCurrency') || 'UGX';
 
@@ -603,8 +603,8 @@ function calculateAndUpdateUI() {
     const totalUnits = Object.values(selections).reduce((sum, qty) => sum + parseInt(qty, 10), 0);
 
     const unitPrice = totalUnits >= BULK_THRESHOLD
-        ? PRICING_CONFIG[currency].clocks.tier2
-        : PRICING_CONFIG[currency].clocks.tier1;
+        ? PRICING_CONFIG[currency].decors.tier2
+        : PRICING_CONFIG[currency].decors.tier1;
 
     const deliveryFee = totalUnits > 0
         ? PRICING_CONFIG[currency].delivery
@@ -657,7 +657,7 @@ function showSuccessBanner() {
 function renderSelectionTable(selections, currency) {
 
     const tbody = document.getElementById('checkout-summary-body');
-    const countSpan = document.getElementById('selectedClocksCount');
+    const countSpan = document.getElementById('selectedDecorsCount');
 
     let totalSelectedItems = 0;
 
@@ -680,8 +680,8 @@ function renderSelectionTable(selections, currency) {
 
  // Choose correct unit price based on total units
     const unitPrice = totalSelectedItems >= BULK_THRESHOLD
-        ? PRICING_CONFIG[currency].clocks.tier2
-        : PRICING_CONFIG[currency].clocks.tier1;
+        ? PRICING_CONFIG[currency].decors.tier2
+        : PRICING_CONFIG[currency].decors.tier1;
 
 
     for (const id in selections) {
@@ -690,7 +690,7 @@ function renderSelectionTable(selections, currency) {
 
         const card = document.querySelector(`.portrait-card[data-id="${id}"]`);
 
-        const name = card ? card.dataset.name : `Clock #${id}`;
+        const name = card ? card.dataset.name : `Decor #${id}`;
 
         const subtotal = quantity * unitPrice;
 
@@ -702,7 +702,7 @@ function renderSelectionTable(selections, currency) {
             <td class="px-2 py-2 text-right">${formatPrice(unitPrice, currency)}</td>
             <td class="px-2 py-2 text-right">${formatPrice(subtotal, currency)}</td>
             <td class="px-2 py-2 text-center">
-                <button onclick="removeClock('${id}')" title="Remove ${name}" class="text-red-600 hover:text-red-800 underline">Remove</button>
+                <button onclick="removeDecor('${id}')" title="Remove ${name}" class="text-red-600 hover:text-red-800 underline">Remove</button>
             </td>
         `;
 
@@ -716,13 +716,13 @@ function renderSelectionTable(selections, currency) {
 
 
 
-window.removeClock = function(id) {
+window.removeDecor = function(id) {
 
-    let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+    let selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
     delete selections[id];
 
-    localStorage.setItem('clockSelections', JSON.stringify(selections));
+    localStorage.setItem('decorSelections', JSON.stringify(selections));
 
     calculateAndUpdateUI();
 }
@@ -745,7 +745,7 @@ function updateQuantity(button, change) {
 
     // Get the portrait's ID and selections from localStorage.
     const id = card.dataset.id;
-    let selections = JSON.parse(localStorage.getItem('clockSelections') || '{}');
+    let selections = JSON.parse(localStorage.getItem('decorSelections') || '{}');
 
     // Update the selections object and save it back to localStorage.
     if (newValue > 0) {
@@ -753,7 +753,7 @@ function updateQuantity(button, change) {
     } else {
         delete selections[id]; // Remove the item if its quantity becomes zero.
     }
-    localStorage.setItem('clockSelections', JSON.stringify(selections));
+    localStorage.setItem('decorSelections', JSON.stringify(selections));
 
     // Call the main UI function to redraw everything consistently based on the new state.
     calculateAndUpdateUI();
@@ -839,7 +839,7 @@ document.addEventListener('DOMContentLoaded', () => {
   inputs.forEach(input => totalSelected += parseInt(input.value) || 0);
 
   if (totalSelected === 0) {
-    alert("Please select at least one portrait before proceeding.");
+    alert("Please select at least one Decor before proceeding.");
     return;
   }
 

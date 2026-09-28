@@ -2,37 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PortraitClock;
-
-use App\Models\ClockOrder;
+use App\Models\Decor;
+use App\Models\DecorOrder;
 
 use Illuminate\Http\Request;
 
-class PortraitClockController extends Controller
+class DecorController extends Controller
 {
     public function index()
     {
-        $clocks = PortraitClock::latest()->paginate(50);
+        $decors = Decor::latest()->paginate(50);
 
-        return view('portraitClock', [
-            'clocks' => $clocks,
+        return view('decor', [
+            'decors' => $decors,
             'showDiscountBanner' => true
         ]);
     }
 
       public function dashboard()
     {
-        $clocks = PortraitClock::latest()->get();
-        return view('clocksDashboard', compact('clocks'));
+        $decors = Decor::latest()->get();
+        return view('decor.dashboard', compact('decors'));
     }
     public function store(Request $request)
 {
     $request->validate([
-        'clock' => 'required|image|max:30720',
+        'decor' => 'required|image|max:30720',
         'price' => 'required|numeric|min:0',
     ]);
 
-    $file = $request->file('clock');
+    $file = $request->file('decor');
     $mime = $file->getMimeType();
 
     $filename = uniqid() . '.jpg';
@@ -58,12 +57,12 @@ class PortraitClockController extends Controller
     imagedestroy($src);
     imagedestroy($resized);
 
-    PortraitClock::create([
+    Decor::create([
         'image_path' => 'portraits/' . $filename,
         'price' => $request->price,
     ]);
 
-    return redirect()->route('admin.clocks.dashboard')->with('success', 'Clock uploaded!');
+    return redirect()->route('admin.decors.dashboard')->with('success', 'decor uploaded!');
 }
 
 }
